@@ -1,0 +1,35 @@
+{
+  "ticker": "IPGP",
+  "name": "IPG Photonics Corporation",
+  "market": "stocks",
+  "locale": "us",
+  "primary_exchange": "XNAS",
+  "type": "CS",
+  "active": true,
+  "currency_name": "usd",
+  "cik": "0001111928",
+  "composite_figi": "BBG000DCGRL8",
+  "share_class_figi": "BBG001SG95B8",
+  "market_cap": 4309300332.4800005,
+  "phone_number": "(508) 373-1100",
+  "address": {
+    "address1": "377 SIMARANO DRIVE",
+    "city": "MARLBOROUGH",
+    "state": "MA",
+    "postal_code": "01752"
+  },
+  "description": "IPG Photonics Corp is a vertically integrated developer and manufacturer of high-performance fiber lasers, laser and non-laser systems, fiber amplifiers, diode lasers, and related optical components. Its products are used in diverse applications in the manufacturing, automotive, industrial, aerospace, semiconductor, and consumer end markets. The company sells its products globally to original equipment manufacturers (OEMs), system integrators, and end users. Additionally, it manufactures complementary products used with its lasers, including optical delivery cables, fiber couplers, beam switches, optical processing heads, in-line sensors, and chillers. Geographically, the company generates maximum revenue from North America, followed by China, Japan, Germany, and other markets.",
+  "sic_code": "3674",
+  "sic_description": "SEMICONDUCTORS & RELATED DEVICES",
+  "ticker_root": "IPGP",
+  "homepage_url": "https://www.ipgphotonics.com",
+  "total_employees": 4840,
+  "list_date": "2006-12-13",
+  "branding": {
+    "logo_url": "https://api.polygon.io/v1/reference/company-branding/aXBncGhvdG9uaWNzLmNvbQ/images/2025-04-04_logo.svg",
+    "icon_url": "https://api.polygon.io/v1/reference/company-branding/aXBncGhvdG9uaWNzLmNvbQ/images/2025-04-04_icon.jpeg"
+  },
+  "share_class_shares_outstanding": 42443381,
+  "weighted_shares_outstanding": 42443616,
+  "round_lot": 100
+}

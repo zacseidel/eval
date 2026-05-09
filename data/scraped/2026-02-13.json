@@ -1,0 +1,416 @@
+{
+  "date": "2026-02-13",
+  "sp500": [
+    {
+      "rank": 1,
+      "ticker": "MU",
+      "price": 413.97,
+      "return_12m": 351.5,
+      "return_1w": 8.1,
+      "entry_date": "2026-02-13",
+      "status": "\u2728",
+      "new_entrant": true
+    },
+    {
+      "rank": 2,
+      "ticker": "WDC",
+      "price": 284.1,
+      "return_12m": 322.3,
+      "return_1w": 9.2,
+      "entry_date": "2026-01-07",
+      "status": "\ud83d\udd25",
+      "new_entrant": false
+    },
+    {
+      "rank": 3,
+      "ticker": "CIEN",
+      "price": 292.96,
+      "return_12m": 229.9,
+      "return_1w": 15.8,
+      "entry_date": "2026-02-10",
+      "status": "\ud83d\udd25",
+      "new_entrant": false
+    },
+    {
+      "rank": 4,
+      "ticker": "FIX",
+      "price": 1300.02,
+      "return_12m": 226.4,
+      "return_1w": 13.2,
+      "entry_date": "2026-01-30",
+      "status": "\ud83d\udd25",
+      "new_entrant": false
+    },
+    {
+      "rank": 5,
+      "ticker": "WBD",
+      "price": 28.11,
+      "return_12m": 186.3,
+      "return_1w": 5.0,
+      "entry_date": "2026-02-13",
+      "status": "\u2728",
+      "new_entrant": true
+    },
+    {
+      "rank": 6,
+      "ticker": "TER",
+      "price": 311.03,
+      "return_12m": 178.9,
+      "return_1w": 14.7,
+      "entry_date": "2026-02-03",
+      "status": "\ud83d\udd25",
+      "new_entrant": false
+    },
+    {
+      "rank": 7,
+      "ticker": "GLW",
+      "price": 131.5,
+      "return_12m": 152.8,
+      "return_1w": 16.6,
+      "entry_date": "2026-02-04",
+      "status": "\ud83d\udd25",
+      "new_entrant": false
+    },
+    {
+      "rank": 8,
+      "ticker": "HII",
+      "price": 406.76,
+      "return_12m": 148.8,
+      "return_1w": 10.1,
+      "entry_date": "2026-02-10",
+      "status": "\ud83d\udd25",
+      "new_entrant": false
+    },
+    {
+      "rank": 9,
+      "ticker": "GEV",
+      "price": 816.56,
+      "return_12m": 120.9,
+      "return_1w": 10.7,
+      "entry_date": "2026-02-13",
+      "status": "\u2728",
+      "new_entrant": true
+    },
+    {
+      "rank": 10,
+      "ticker": "CAT",
+      "price": 758.29,
+      "return_12m": 115.4,
+      "return_1w": 11.8,
+      "entry_date": "2026-02-13",
+      "status": "\u2728",
+      "new_entrant": true
+    }
+  ],
+  "megacap": [
+    {
+      "rank": 1,
+      "ticker": "MU",
+      "price": 413.97,
+      "return_12m": 351.5,
+      "return_1w": 8.1,
+      "entry_date": "2026-01-07",
+      "status": "\ud83d\udd25",
+      "new_entrant": false
+    },
+    {
+      "rank": 2,
+      "ticker": "CAT",
+      "price": 758.29,
+      "return_12m": 115.4,
+      "return_1w": 11.8,
+      "entry_date": "2026-02-10",
+      "status": "\ud83d\udd25",
+      "new_entrant": false
+    },
+    {
+      "rank": 3,
+      "ticker": "AMD",
+      "price": 205.94,
+      "return_12m": 84.3,
+      "return_1w": 7.0,
+      "entry_date": "2026-02-13",
+      "status": "\u2728",
+      "new_entrant": true
+    },
+    {
+      "rank": 4,
+      "ticker": "GOOGL",
+      "price": 309.0,
+      "return_12m": 68.3,
+      "return_1w": -6.7,
+      "entry_date": "2026-01-10",
+      "status": "\ud83d\udd25",
+      "new_entrant": false
+    },
+    {
+      "rank": 5,
+      "ticker": "JNJ",
+      "price": 244.55,
+      "return_12m": 57.5,
+      "return_1w": 2.8,
+      "entry_date": "2026-02-03",
+      "status": "\ud83d\udd25",
+      "new_entrant": false
+    },
+    {
+      "rank": 6,
+      "ticker": "NVDA",
+      "price": 186.94,
+      "return_12m": 42.5,
+      "return_1w": 8.8,
+      "entry_date": "2026-01-30",
+      "status": "\ud83d\udd25",
+      "new_entrant": false
+    },
+    {
+      "rank": 7,
+      "ticker": "XOM",
+      "price": 149.93,
+      "return_12m": 39.7,
+      "return_1w": 2.6,
+      "entry_date": "2026-01-23",
+      "status": "\ud83d\udd25",
+      "new_entrant": false
+    },
+    {
+      "rank": 8,
+      "ticker": "WMT",
+      "price": 133.64,
+      "return_12m": 29.0,
+      "return_1w": 5.3,
+      "entry_date": "2026-01-07",
+      "status": "\ud83d\udd25",
+      "new_entrant": false
+    },
+    {
+      "rank": 9,
+      "ticker": "TSLA",
+      "price": 417.07,
+      "return_12m": 23.9,
+      "return_1w": 5.0,
+      "entry_date": "2026-02-13",
+      "status": "\u2728",
+      "new_entrant": true
+    },
+    {
+      "rank": 10,
+      "ticker": "CVX",
+      "price": 182.4,
+      "return_12m": 17.8,
+      "return_1w": 1.8,
+      "entry_date": "2026-02-06",
+      "status": "\ud83d\udd25",
+      "new_entrant": false
+    }
+  ],
+  "sp400": [
+    {
+      "rank": 1,
+      "ticker": "LITE",
+      "price": 583.46,
+      "return_12m": 636.5,
+      "return_1w": 15.7,
+      "entry_date": "2026-01-30",
+      "status": "\ud83d\udd25",
+      "new_entrant": false
+    },
+    {
+      "rank": 2,
+      "ticker": "STRL",
+      "price": 431.43,
+      "return_12m": 207.3,
+      "return_1w": 18.2,
+      "entry_date": "2026-01-30",
+      "status": "\ud83d\udd25",
+      "new_entrant": false
+    },
+    {
+      "rank": 3,
+      "ticker": "ROIV",
+      "price": 26.75,
+      "return_12m": 156.2,
+      "return_1w": 26.5,
+      "entry_date": "2026-02-10",
+      "status": "\ud83d\udd25",
+      "new_entrant": false
+    },
+    {
+      "rank": 4,
+      "ticker": "COHR",
+      "price": 216.1,
+      "return_12m": 147.5,
+      "return_1w": 3.3,
+      "entry_date": "2026-01-30",
+      "status": "\ud83d\udd25",
+      "new_entrant": false
+    },
+    {
+      "rank": 5,
+      "ticker": "IPGP",
+      "price": 150.25,
+      "return_12m": 138.6,
+      "return_1w": 51.3,
+      "entry_date": "2026-02-13",
+      "status": "\u2728",
+      "new_entrant": true
+    },
+    {
+      "rank": 6,
+      "ticker": "BWA",
+      "price": 66.55,
+      "return_12m": 130.4,
+      "return_1w": 32.1,
+      "entry_date": "2026-02-13",
+      "status": "\u2728",
+      "new_entrant": true
+    },
+    {
+      "rank": 7,
+      "ticker": "MKSI",
+      "price": 249.42,
+      "return_12m": 124.3,
+      "return_1w": 10.0,
+      "entry_date": "2026-01-30",
+      "status": "\ud83d\udd25",
+      "new_entrant": false
+    },
+    {
+      "rank": 8,
+      "ticker": "FTI",
+      "price": 61.04,
+      "return_12m": 98.9,
+      "return_1w": 8.5,
+      "entry_date": "2026-02-13",
+      "status": "\u2728",
+      "new_entrant": true
+    },
+    {
+      "rank": 9,
+      "ticker": "CRS",
+      "price": 367.98,
+      "return_12m": 97.2,
+      "return_1w": 5.5,
+      "entry_date": "2026-02-13",
+      "status": "\u2728",
+      "new_entrant": true
+    },
+    {
+      "rank": 10,
+      "ticker": "AMG",
+      "price": 328.95,
+      "return_12m": 96.9,
+      "return_1w": 9.1,
+      "entry_date": "2026-02-13",
+      "status": "\u2728",
+      "new_entrant": true
+    }
+  ],
+  "munger": [
+    {
+      "rank": 1,
+      "ticker": "BRK.B",
+      "price": 500.01,
+      "sma_200": 494.19,
+      "entry_date": "2026-02-04",
+      "status": "\ud83d\udd25",
+      "new_entrant": false
+    },
+    {
+      "rank": 2,
+      "ticker": "COST",
+      "price": 998.86,
+      "sma_200": 951.68,
+      "entry_date": "2026-02-04",
+      "status": "\ud83d\udd25",
+      "new_entrant": false
+    },
+    {
+      "rank": 3,
+      "ticker": "HD",
+      "price": 390.22,
+      "sma_200": 375.41,
+      "entry_date": "2026-02-04",
+      "status": "\ud83d\udd25",
+      "new_entrant": false
+    },
+    {
+      "rank": 4,
+      "ticker": "PG",
+      "price": 161.21,
+      "sma_200": 153.74,
+      "entry_date": "2026-02-04",
+      "status": "\ud83d\udd25",
+      "new_entrant": false
+    },
+    {
+      "rank": 5,
+      "ticker": "LIN",
+      "price": 472.86,
+      "sma_200": 452.47,
+      "entry_date": "2026-02-04",
+      "status": "\ud83d\udd25",
+      "new_entrant": false
+    },
+    {
+      "rank": 6,
+      "ticker": "VZ",
+      "price": 49.46,
+      "sma_200": 42.15,
+      "entry_date": "2026-02-13",
+      "status": "\u2728",
+      "new_entrant": true
+    },
+    {
+      "rank": 7,
+      "ticker": "T",
+      "price": 28.8,
+      "sma_200": 26.78,
+      "entry_date": "2026-02-13",
+      "status": "\u2728",
+      "new_entrant": true
+    }
+  ],
+  "universe_updates": [
+    {
+      "cohort": "sp400",
+      "ticker": "ARWR",
+      "action": "add"
+    },
+    {
+      "cohort": "sp400",
+      "ticker": "CIEN",
+      "action": "drop"
+    },
+    {
+      "cohort": "megacap",
+      "ticker": "AMD",
+      "action": "add"
+    },
+    {
+      "cohort": "megacap",
+      "ticker": "NFLX",
+      "action": "drop"
+    },
+    {
+      "cohort": "munger",
+      "ticker": "T",
+      "action": "add"
+    },
+    {
+      "cohort": "munger",
+      "ticker": "VZ",
+      "action": "add"
+    },
+    {
+      "cohort": "munger",
+      "ticker": "AMGN",
+      "action": "drop"
+    },
+    {
+      "cohort": "munger",
+      "ticker": "TMO",
+      "action": "drop"
+    }
+  ]
+}

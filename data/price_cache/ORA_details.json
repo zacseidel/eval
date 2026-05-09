@@ -1,0 +1,35 @@
+{
+  "ticker": "ORA",
+  "name": "Ormat Technologies, Inc.",
+  "market": "stocks",
+  "locale": "us",
+  "primary_exchange": "XNYS",
+  "type": "CS",
+  "active": true,
+  "currency_name": "usd",
+  "cik": "0001296445",
+  "composite_figi": "BBG000Q5BQ63",
+  "share_class_figi": "BBG001S9LPW3",
+  "market_cap": 7529289558.599999,
+  "phone_number": "775-356-9029",
+  "address": {
+    "address1": "6884 SIERRA CENTER PARKWAY",
+    "city": "RENO",
+    "state": "NV",
+    "postal_code": "89511"
+  },
+  "description": "Ormat Technologies Inc is engaged in the geothermal and recovered energy power business. It is engaged in three business segments: the Electricity Segment. where the company develops, builds, owns, and operates geothermal, solar PV, and recovered energy-based power plants in the United States and geothermal power plants in other countries and sells the electricity generated. Product Segment includes designing, manufacturing, and selling equipment for geothermal and recovered energy-based electricity generation and providing services relating to the engineering, procurement, and construction of geothermal & recovered energy-based power plants. Energy Storage Segment includes owning & operating grid-connected which provide capacity, energy, & ancillary services directly to the electric grid.",
+  "sic_code": "4911",
+  "sic_description": "ELECTRIC SERVICES",
+  "ticker_root": "ORA",
+  "homepage_url": "https://www.ormat.com",
+  "total_employees": 1648,
+  "list_date": "2004-11-11",
+  "branding": {
+    "logo_url": "https://api.polygon.io/v1/reference/company-branding/b3JtYXQuY29t/images/2025-04-04_logo.svg",
+    "icon_url": "https://api.polygon.io/v1/reference/company-branding/b3JtYXQuY29t/images/2025-04-04_icon.jpeg"
+  },
+  "share_class_shares_outstanding": 61453555,
+  "weighted_shares_outstanding": 61453555,
+  "round_lot": 100
+}

@@ -1,0 +1,35 @@
+{
+  "ticker": "ENS",
+  "name": "EnerSys, Inc.",
+  "market": "stocks",
+  "locale": "us",
+  "primary_exchange": "XNYS",
+  "type": "CS",
+  "active": true,
+  "currency_name": "usd",
+  "cik": "0001289308",
+  "composite_figi": "BBG000PWTD92",
+  "share_class_figi": "BBG001SLVXW8",
+  "market_cap": 8216013833.299999,
+  "phone_number": "(610) 208-1600",
+  "address": {
+    "address1": "2366 BERNVILLE ROAD",
+    "city": "READING",
+    "state": "PA",
+    "postal_code": "19605"
+  },
+  "description": "EnerSys provides stored energy solutions for industrial applications. It also manufactures and distributes energy systems solutions and motive power batteries, specialty batteries, battery chargers, power equipment, battery accessories, and outdoor equipment enclosure solutions to customers. Energy Systems that combine enclosures, power conversion, power distribution, and energy storage are used in the telecommunication and broadband, utility industries, uninterruptible power supplies, and numerous applications requiring stored energy solutions. Its segments include Energy Systems, Motive Power, and Specialty.",
+  "sic_code": "3690",
+  "sic_description": "MISCELLANEOUS ELECTRICAL MACHINERY, EQUIPMENT & SUPPLIES",
+  "ticker_root": "ENS",
+  "homepage_url": "https://www.enersys.com",
+  "total_employees": 10858,
+  "list_date": "2004-07-30",
+  "branding": {
+    "logo_url": "https://api.polygon.io/v1/reference/company-branding/ZW5lcnN5cy5jb20/images/2025-04-04_logo.svg",
+    "icon_url": "https://api.polygon.io/v1/reference/company-branding/ZW5lcnN5cy5jb20/images/2025-04-04_icon.jpeg"
+  },
+  "share_class_shares_outstanding": 36851374,
+  "weighted_shares_outstanding": 36851374,
+  "round_lot": 100
+}

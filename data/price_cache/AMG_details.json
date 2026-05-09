@@ -1,0 +1,35 @@
+{
+  "ticker": "AMG",
+  "name": "Affiliated Managers Group",
+  "market": "stocks",
+  "locale": "us",
+  "primary_exchange": "XNYS",
+  "type": "CS",
+  "active": true,
+  "currency_name": "usd",
+  "cik": "0001004434",
+  "composite_figi": "BBG000C060M4",
+  "share_class_figi": "BBG001S6DMD6",
+  "market_cap": 7906750602.559999,
+  "phone_number": "(800) 345-1100",
+  "address": {
+    "address1": "1001 U.S. HIGHWAY ONE NORTH",
+    "address2": "SUITE 702",
+    "city": "JUPITER",
+    "state": "FL",
+    "postal_code": "33477"
+  },
+  "description": "Affiliated Managers Group offers investment strategies to investors through its network of affiliates. The firm typically buys a majority interest in small to mid-size boutique asset managers, receiving a fixed percentage of revenue from these firms in return. Affiliates operate independently, with AMG providing strategic, operational, and technology support, as well as global distribution. At the end of December 2025, AMG's affiliate network\u2014which includes firms like Abacus Capital and Pantheon dedicated to private markets (which accounted for 18% of AUM), AQR Capital and Capula Investment Management in liquid alternatives (28%), and Harding Loevner, Tweedy Browne, Parnassus, and Yacktman in equities, multi-asset, and bond strategies (54%)\u2014had $813.3 billion in managed assets.",
+  "sic_code": "6282",
+  "sic_description": "INVESTMENT ADVICE",
+  "ticker_root": "AMG",
+  "homepage_url": "https://www.amg.com",
+  "total_employees": 5600,
+  "list_date": "1997-11-21",
+  "branding": {
+    "logo_url": "https://api.polygon.io/v1/reference/company-branding/YW1nLmNvbQ/images/2025-04-04_logo.svg"
+  },
+  "share_class_shares_outstanding": 26554106,
+  "weighted_shares_outstanding": 26554106,
+  "round_lot": 40
+}

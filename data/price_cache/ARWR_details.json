@@ -1,0 +1,36 @@
+{
+  "ticker": "ARWR",
+  "name": "Arrowhead Research Corporation",
+  "market": "stocks",
+  "locale": "us",
+  "primary_exchange": "XNAS",
+  "type": "CS",
+  "active": true,
+  "currency_name": "usd",
+  "cik": "0000879407",
+  "composite_figi": "BBG000BRVKH0",
+  "share_class_figi": "BBG001SGT8G5",
+  "market_cap": 10915509210.5,
+  "phone_number": "626-696-4702",
+  "address": {
+    "address1": "177 E COLORADO BLVD",
+    "address2": "SUITE 700",
+    "city": "PASADENA",
+    "state": "CA",
+    "postal_code": "91105"
+  },
+  "description": "Arrowhead Pharmaceuticals Inc is an American biotechnology company. Its main target is the development of medicine to treat diseases with a genetic origin, characterized by the overproduction of one or more proteins. Its medical solutions are aimed at the genes that trigger the diseases. Its portfolio includes drugs targeting cardiovascular, Cardiometabolic, Central Nervous System, Pulmonary, Liver, Muscular, and Complement Mediated Disease. It majority products are liver disease curable.",
+  "sic_code": "2834",
+  "sic_description": "PHARMACEUTICAL PREPARATIONS",
+  "ticker_root": "ARWR",
+  "homepage_url": "https://www.arrowheadpharma.com",
+  "total_employees": 711,
+  "list_date": "1995-02-01",
+  "branding": {
+    "logo_url": "https://api.polygon.io/v1/reference/company-branding/YXJyb3doZWFkcGhhcm1hLmNvbQ/images/2025-04-04_logo.svg",
+    "icon_url": "https://api.polygon.io/v1/reference/company-branding/YXJyb3doZWFkcGhhcm1hLmNvbQ/images/2025-04-04_icon.jpeg"
+  },
+  "share_class_shares_outstanding": 140032190,
+  "weighted_shares_outstanding": 140032190,
+  "round_lot": 100
+}

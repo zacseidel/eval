@@ -1,0 +1,35 @@
+{
+  "ticker": "RMBS",
+  "name": "Rambus Inc",
+  "market": "stocks",
+  "locale": "us",
+  "primary_exchange": "XNAS",
+  "type": "CS",
+  "active": true,
+  "currency_name": "usd",
+  "cik": "0000917273",
+  "composite_figi": "BBG000BR32C6",
+  "share_class_figi": "BBG001S7RF80",
+  "market_cap": 13690140022.199999,
+  "phone_number": "408-462-8000",
+  "address": {
+    "address1": "4453 NORTH FIRST STREET, SUITE 100",
+    "city": "SAN JOSE",
+    "state": "CA",
+    "postal_code": "95134"
+  },
+  "description": "Rambus Inc is a semiconductor company providing chips and silicon IP for data-intensive computing systems, focusing on data center and artificial intelligence (AI) infrastructure. The company is at the forefront of enabling the next era of AI-driven computing, addressing challenges of signal and power integrity at increasingly extreme data rates across the data center, edge, and client markets. It offers high-performance memory subsystems, with a balanced and diverse portfolio of products, IP, and patents that maximize performance and security in computationally intensive systems. The company operates in South Korea, Singapore, the United States, and other countries, with the majority of its revenue coming from South Korea.",
+  "sic_code": "3674",
+  "sic_description": "SEMICONDUCTORS & RELATED DEVICES",
+  "ticker_root": "RMBS",
+  "homepage_url": "https://www.rambus.com",
+  "total_employees": 791,
+  "list_date": "1997-05-14",
+  "branding": {
+    "logo_url": "https://api.polygon.io/v1/reference/company-branding/cmFtYnVzLmNvbQ/images/2025-04-04_logo.svg",
+    "icon_url": "https://api.polygon.io/v1/reference/company-branding/cmFtYnVzLmNvbQ/images/2025-04-04_icon.jpeg"
+  },
+  "share_class_shares_outstanding": 108136967,
+  "weighted_shares_outstanding": 108136967,
+  "round_lot": 100
+}

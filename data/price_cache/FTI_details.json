@@ -1,0 +1,34 @@
+{
+  "ticker": "FTI",
+  "name": "TechnipFMC plc Ordinary Share",
+  "market": "stocks",
+  "locale": "us",
+  "primary_exchange": "XNYS",
+  "type": "CS",
+  "active": true,
+  "currency_name": "usd",
+  "cik": "0001681459",
+  "market_cap": 28319795743.91,
+  "phone_number": "44 191 295 0303",
+  "address": {
+    "address1": "HADRIAN HOUSE",
+    "address2": "WINCOMBLEE ROAD",
+    "city": "NEWCASTLE UPON TYNE",
+    "state": "X0",
+    "postal_code": "NE6 3PL"
+  },
+  "description": "TechnipFMC PLC is the key provider of offshore oilfield services, offering integrated deep-water offshore oil and gas development solutions that span the full spectrum of subsea equipment and subsea construction services. The company also provides various pieces of surface equipment used with onshore oil and gas wells. TechnipFMC originated with the 2017 merger of Technip and FMC Technologies. Geographically it operates in Latin America generating the maximum revenue, then Europe and Central Asia, Africa, North America, Asia Pacific and Middle East.",
+  "sic_code": "3533",
+  "sic_description": "OIL & GAS FIELD MACHINERY & EQUIPMENT",
+  "ticker_root": "FTI",
+  "homepage_url": "https://www.technipfmc.com",
+  "total_employees": 23089,
+  "list_date": "2009-09-10",
+  "branding": {
+    "logo_url": "https://api.polygon.io/v1/reference/company-branding/dGVjaG5pcGZtYy5jb20/images/2025-04-04_logo.svg",
+    "icon_url": "https://api.polygon.io/v1/reference/company-branding/dGVjaG5pcGZtYy5jb20/images/2025-04-04_icon.jpeg"
+  },
+  "share_class_shares_outstanding": 401559289,
+  "weighted_shares_outstanding": 398701897,
+  "round_lot": 100
+}

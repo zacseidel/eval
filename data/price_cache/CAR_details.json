@@ -1,0 +1,35 @@
+{
+  "ticker": "CAR",
+  "name": "Avis Budget Group, Inc.",
+  "market": "stocks",
+  "locale": "us",
+  "primary_exchange": "XNAS",
+  "type": "CS",
+  "active": true,
+  "currency_name": "usd",
+  "cik": "0000723612",
+  "composite_figi": "BBG000FLPRH1",
+  "share_class_figi": "BBG001S8S6R6",
+  "market_cap": 5442167343.16,
+  "phone_number": "973-496-4700",
+  "address": {
+    "address1": "379 INTERPACE PARKWAY",
+    "city": "PARSIPPANY",
+    "state": "NJ",
+    "postal_code": "07054"
+  },
+  "description": "Avis Budget Group Inc is a provider of mobility solutions through its three brands Avis, Budget and Zipcar, as well as several other brands, well recognized in their respective markets. Its brands offer a range of options, from car and truck rental to car sharing. The company operates in two reportable business segments: Americas - (i) vehicle rental operations in North America, South America, Central America and the Caribbean, (ii) car sharing operations in certain of these markets, and (iii) licensees in the areas in which do not operate directly. International - consisting of (i) vehicle rental operations in Europe, the Middle East, Africa, Asia and Australasia, (ii) car sharing operations in certain of these markets, and (iii) licensees in the areas in which do not operate directly.",
+  "sic_code": "7510",
+  "sic_description": "SERVICES-AUTO RENTAL & LEASING (NO DRIVERS)",
+  "ticker_root": "CAR",
+  "homepage_url": "https://www.avisbudgetgroup.com",
+  "total_employees": 25000,
+  "list_date": "1968-12-02",
+  "branding": {
+    "logo_url": "https://api.polygon.io/v1/reference/company-branding/YXZpc2J1ZGdldGdyb3VwLmNvbQ/images/2025-04-04_logo.svg",
+    "icon_url": "https://api.polygon.io/v1/reference/company-branding/YXZpc2J1ZGdldGdyb3VwLmNvbQ/images/2025-04-04_icon.jpeg"
+  },
+  "share_class_shares_outstanding": 35324986,
+  "weighted_shares_outstanding": 35324986,
+  "round_lot": 100
+}

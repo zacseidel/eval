@@ -1,0 +1,311 @@
+{
+  "date": "2026-01-07",
+  "sp500": [
+    {
+      "rank": 1,
+      "ticker": "STX",
+      "price": null,
+      "return_12m": null,
+      "return_1w": null,
+      "entry_date": "2026-01-07",
+      "status": "\u2728",
+      "new_entrant": true
+    },
+    {
+      "rank": 2,
+      "ticker": "MU",
+      "price": null,
+      "return_12m": null,
+      "return_1w": null,
+      "entry_date": "2026-01-07",
+      "status": "\u2728",
+      "new_entrant": true
+    },
+    {
+      "rank": 3,
+      "ticker": "WDC",
+      "price": null,
+      "return_12m": null,
+      "return_1w": null,
+      "entry_date": "2026-01-07",
+      "status": "\u2728",
+      "new_entrant": true
+    },
+    {
+      "rank": 4,
+      "ticker": "NEM",
+      "price": null,
+      "return_12m": null,
+      "return_1w": null,
+      "entry_date": "2026-01-07",
+      "status": "\u2728",
+      "new_entrant": true
+    },
+    {
+      "rank": 5,
+      "ticker": "LRCX",
+      "price": null,
+      "return_12m": null,
+      "return_1w": null,
+      "entry_date": "2026-01-07",
+      "status": "\u2728",
+      "new_entrant": true
+    },
+    {
+      "rank": 6,
+      "ticker": "CVNA",
+      "price": null,
+      "return_12m": null,
+      "return_1w": null,
+      "entry_date": "2026-01-07",
+      "status": "\u2728",
+      "new_entrant": true
+    },
+    {
+      "rank": 7,
+      "ticker": "FIX",
+      "price": null,
+      "return_12m": null,
+      "return_1w": null,
+      "entry_date": "2026-01-07",
+      "status": "\u2728",
+      "new_entrant": true
+    },
+    {
+      "rank": 8,
+      "ticker": "KLAC",
+      "price": null,
+      "return_12m": null,
+      "return_1w": null,
+      "entry_date": "2026-01-07",
+      "status": "\u2728",
+      "new_entrant": true
+    },
+    {
+      "rank": 9,
+      "ticker": "HII",
+      "price": null,
+      "return_12m": null,
+      "return_1w": null,
+      "entry_date": "2026-01-07",
+      "status": "\u2728",
+      "new_entrant": true
+    },
+    {
+      "rank": 10,
+      "ticker": "HWM",
+      "price": null,
+      "return_12m": null,
+      "return_1w": null,
+      "entry_date": "2026-01-07",
+      "status": "\u2728",
+      "new_entrant": true
+    }
+  ],
+  "megacap": [
+    {
+      "rank": 1,
+      "ticker": "MU",
+      "price": null,
+      "return_12m": null,
+      "return_1w": null,
+      "entry_date": "2026-01-07",
+      "status": "\u2728",
+      "new_entrant": true
+    },
+    {
+      "rank": 2,
+      "ticker": "GE",
+      "price": null,
+      "return_12m": null,
+      "return_1w": null,
+      "entry_date": "2026-01-07",
+      "status": "\u2728",
+      "new_entrant": true
+    },
+    {
+      "rank": 3,
+      "ticker": "AMD",
+      "price": null,
+      "return_12m": null,
+      "return_1w": null,
+      "entry_date": "2026-01-07",
+      "status": "\u2728",
+      "new_entrant": true
+    },
+    {
+      "rank": 4,
+      "ticker": "JNJ",
+      "price": null,
+      "return_12m": null,
+      "return_1w": null,
+      "entry_date": "2026-01-07",
+      "status": "\u2728",
+      "new_entrant": true
+    },
+    {
+      "rank": 5,
+      "ticker": "LLY",
+      "price": null,
+      "return_12m": null,
+      "return_1w": null,
+      "entry_date": "2026-01-07",
+      "status": "\u2728",
+      "new_entrant": true
+    },
+    {
+      "rank": 6,
+      "ticker": "JPM",
+      "price": null,
+      "return_12m": null,
+      "return_1w": null,
+      "entry_date": "2026-01-07",
+      "status": "\u2728",
+      "new_entrant": true
+    },
+    {
+      "rank": 7,
+      "ticker": "BAC",
+      "price": null,
+      "return_12m": null,
+      "return_1w": null,
+      "entry_date": "2026-01-07",
+      "status": "\u2728",
+      "new_entrant": true
+    },
+    {
+      "rank": 8,
+      "ticker": "WMT",
+      "price": null,
+      "return_12m": null,
+      "return_1w": null,
+      "entry_date": "2026-01-07",
+      "status": "\u2728",
+      "new_entrant": true
+    },
+    {
+      "rank": 9,
+      "ticker": "V",
+      "price": null,
+      "return_12m": null,
+      "return_1w": null,
+      "entry_date": "2026-01-07",
+      "status": "\u2728",
+      "new_entrant": true
+    },
+    {
+      "rank": 10,
+      "ticker": "MA",
+      "price": null,
+      "return_12m": null,
+      "return_1w": null,
+      "entry_date": "2026-01-07",
+      "status": "\u2728",
+      "new_entrant": true
+    }
+  ],
+  "sp400": [
+    {
+      "rank": 1,
+      "ticker": "SATS",
+      "price": null,
+      "return_12m": null,
+      "return_1w": null,
+      "entry_date": "2026-01-07",
+      "status": "\u2728",
+      "new_entrant": true
+    },
+    {
+      "rank": 2,
+      "ticker": "HL",
+      "price": null,
+      "return_12m": null,
+      "return_1w": null,
+      "entry_date": "2026-01-07",
+      "status": "\u2728",
+      "new_entrant": true
+    },
+    {
+      "rank": 3,
+      "ticker": "KTOS",
+      "price": null,
+      "return_12m": null,
+      "return_1w": null,
+      "entry_date": "2026-01-07",
+      "status": "\u2728",
+      "new_entrant": true
+    },
+    {
+      "rank": 4,
+      "ticker": "CIEN",
+      "price": null,
+      "return_12m": null,
+      "return_1w": null,
+      "entry_date": "2026-01-07",
+      "status": "\u2728",
+      "new_entrant": true
+    },
+    {
+      "rank": 5,
+      "ticker": "NXT",
+      "price": null,
+      "return_12m": null,
+      "return_1w": null,
+      "entry_date": "2026-01-07",
+      "status": "\u2728",
+      "new_entrant": true
+    },
+    {
+      "rank": 6,
+      "ticker": "ATI",
+      "price": null,
+      "return_12m": null,
+      "return_1w": null,
+      "entry_date": "2026-01-07",
+      "status": "\u2728",
+      "new_entrant": true
+    },
+    {
+      "rank": 7,
+      "ticker": "ELAN",
+      "price": null,
+      "return_12m": null,
+      "return_1w": null,
+      "entry_date": "2026-01-07",
+      "status": "\u2728",
+      "new_entrant": true
+    },
+    {
+      "rank": 8,
+      "ticker": "FIVE",
+      "price": null,
+      "return_12m": null,
+      "return_1w": null,
+      "entry_date": "2026-01-07",
+      "status": "\u2728",
+      "new_entrant": true
+    },
+    {
+      "rank": 9,
+      "ticker": "AVAV",
+      "price": null,
+      "return_12m": null,
+      "return_1w": null,
+      "entry_date": "2026-01-07",
+      "status": "\u2728",
+      "new_entrant": true
+    },
+    {
+      "rank": 10,
+      "ticker": "COHR",
+      "price": null,
+      "return_12m": null,
+      "return_1w": null,
+      "entry_date": "2026-01-07",
+      "status": "\u2728",
+      "new_entrant": true
+    }
+  ],
+  "munger": [],
+  "universe_updates": []
+}

@@ -1,0 +1,34 @@
+{
+  "ticker": "PBF",
+  "name": "PBF ENERGY INC.",
+  "market": "stocks",
+  "locale": "us",
+  "primary_exchange": "XNYS",
+  "type": "CS",
+  "active": true,
+  "currency_name": "usd",
+  "cik": "0001534504",
+  "composite_figi": "BBG002832GV8",
+  "share_class_figi": "BBG002832HM6",
+  "market_cap": 4802140350.81,
+  "phone_number": "973-455-7500",
+  "address": {
+    "address1": "1 SYLVAN WAY",
+    "city": "PARSIPPANY",
+    "state": "NJ",
+    "postal_code": "07054"
+  },
+  "description": "PBF Energy Inc is an independent petroleum refiner and supplier of unbranded transportation fuels, heating oil, petrochemical feedstocks, lubricants, and other petroleum products in the United States. The company owns refineries in Delaware, Ohio, New Jersey, California, and Louisiana. The Company operates in two reportable business segments: Refining and Logistics. The Company's oil refineries are all engaged in the refining of crude oil and other feedstocks into petroleum products and are aggregated into the Refining segment. PBFX operates logistics assets such as crude oil and refined products terminals, pipelines, and storage facilities. The Logistics segment consists solely of PBFX's operations.",
+  "sic_code": "2911",
+  "sic_description": "PETROLEUM REFINING",
+  "ticker_root": "PBF",
+  "homepage_url": "https://www.pbfenergy.com",
+  "total_employees": 3678,
+  "list_date": "2012-12-13",
+  "branding": {
+    "logo_url": "https://api.polygon.io/v1/reference/company-branding/cGJmZW5lcmd5LmNvbQ/images/2025-04-04_logo.svg"
+  },
+  "share_class_shares_outstanding": 118308459,
+  "weighted_shares_outstanding": 118308459,
+  "round_lot": 100
+}

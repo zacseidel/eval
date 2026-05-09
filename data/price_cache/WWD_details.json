@@ -1,0 +1,35 @@
+{
+  "ticker": "WWD",
+  "name": "Woodward, Inc.",
+  "market": "stocks",
+  "locale": "us",
+  "primary_exchange": "XNAS",
+  "type": "CS",
+  "active": true,
+  "currency_name": "usd",
+  "cik": "0000108312",
+  "composite_figi": "BBG000BD53V2",
+  "share_class_figi": "BBG001S6YZC5",
+  "market_cap": 22091537372.969997,
+  "phone_number": "970-482-5811",
+  "address": {
+    "address1": "1081 WOODWARD WAY",
+    "city": "FORT COLLINS",
+    "state": "CO",
+    "postal_code": "80524"
+  },
+  "description": "Woodward Inc is an independent designer, manufacturer, and service provider of control solutions for the aerospace and industrial markets. It designs, produces, and services reliable, efficient, low-emission, and high-performance energy control products for diverse applications in challenging environments. The company operates in two segments, Aerospace and Industrial. The Aerospace segment provides fuel pumps, actuators, air valves, specialty valves, fuel nozzles, and thrust reverser actuation systems for turbine engines and nacelles, and flight deck controls, actuators, servo controls, motors, and sensors for aircraft. The Industrial segment offers actuators, valves, pumps, fuel injection systems, solenoids, ignition systems, speed controls, electronics and software, and sensors.",
+  "sic_code": "3620",
+  "sic_description": "ELECTRICAL INDUSTRIAL APPARATUS",
+  "ticker_root": "WWD",
+  "homepage_url": "https://www.woodward.com",
+  "total_employees": 10200,
+  "list_date": "1996-05-30",
+  "branding": {
+    "logo_url": "https://api.polygon.io/v1/reference/company-branding/d29vZHdhcmQuY29t/images/2025-04-04_logo.svg",
+    "icon_url": "https://api.polygon.io/v1/reference/company-branding/d29vZHdhcmQuY29t/images/2025-04-04_icon.png"
+  },
+  "share_class_shares_outstanding": 59615869,
+  "weighted_shares_outstanding": 59582861,
+  "round_lot": 40
+}

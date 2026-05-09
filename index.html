@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Strategy Evaluator</title>
+  <link rel="stylesheet" href="css/style.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns@3.0.0/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
+</head>
+<body>
+  <header>
+    <div class="header-top">
+      <h1>Strategy Evaluator</h1>
+      <a class="momentum-link" href="https://zacseidel.github.io/momentum9" target="_blank" rel="noopener">Momentum9 Report ↗</a>
+    </div>
+    <p class="subtitle">Portfolio Performance</p>
+    <nav>
+      <button class="tab-btn active" data-tab="overview">Overview</button>
+      <button class="tab-btn" data-tab="positions">Positions</button>
+      <button class="tab-btn" data-tab="charts">Charts</button>
+    </nav>
+  </header>
+
+  <main>
+    <div id="tab-overview" class="tab-panel active">
+      <div id="strategy-grid"></div>
+    </div>
+
+    <div id="tab-positions" class="tab-panel hidden">
+      <div class="filter-bar">
+        <label>
+          Strategy:
+          <select id="filter-strategy">
+            <option value="">All</option>
+            <option value="sp500_top5">S&amp;P 500 Top 5</option>
+            <option value="sp500_next5">S&amp;P 500 Next 5</option>
+            <option value="megacap_top5">Megacap Top 5</option>
+            <option value="megacap_next5">Megacap Next 5</option>
+            <option value="sp400_mcap5">S&amp;P 400 Mkt Cap Top 5</option>
+            <option value="sp400_mcap_next5">S&amp;P 400 Mkt Cap Next 5</option>
+            <option value="munger">Munger</option>
+          </select>
+        </label>
+        <label>
+          Status:
+          <select id="filter-status">
+            <option value="">All</option>
+            <option value="open">Open</option>
+            <option value="closed">Closed</option>
+          </select>
+        </label>
+        <input id="filter-ticker" type="text" placeholder="Ticker search...">
+      </div>
+      <div class="table-wrap">
+        <table id="positions-table">
+          <thead>
+            <tr>
+              <th data-sort="strategy">Strategy</th>
+              <th data-sort="ticker">Ticker</th>
+              <th data-sort="entry_date">Entry Date</th>
+              <th data-sort="entry_price">Entry $</th>
+              <th data-sort="exit_date">Exit Date</th>
+              <th data-sort="exit_price">Exit $</th>
+              <th data-sort="hold_days">Days Held</th>
+              <th data-sort="return_pct">Return %</th>
+              <th data-sort="status">Status</th>
+            </tr>
+          </thead>
+          <tbody id="positions-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div id="tab-charts" class="tab-panel hidden">
+      <div class="chart-controls">
+        <span>Range:</span>
+        <button class="range-btn active" data-range="all">All</button>
+        <button class="range-btn" data-range="12m">12M</button>
+        <button class="range-btn" data-range="6m">6M</button>
+        <button class="range-btn" data-range="3m">3M</button>
+      </div>
+      <div class="chart-container">
+        <h2>Cumulative Portfolio Returns</h2>
+        <canvas id="cumulative-chart"></canvas>
+      </div>
+      <div class="chart-container">
+        <h2>Rolling 3-Month Returns</h2>
+        <canvas id="rolling3m-chart"></canvas>
+      </div>
+    </div>
+  </main>
+
+  <script src="js/app.js" type="module"></script>
+</body>
+</html>

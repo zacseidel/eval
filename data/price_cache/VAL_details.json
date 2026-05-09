@@ -1,0 +1,34 @@
+{
+  "ticker": "VAL",
+  "name": "Valaris Limited",
+  "market": "stocks",
+  "locale": "us",
+  "primary_exchange": "XNYS",
+  "type": "CS",
+  "active": true,
+  "currency_name": "usd",
+  "cik": "0000314808",
+  "market_cap": 6355928368.4,
+  "phone_number": "4402076594660",
+  "address": {
+    "address1": "CLARENDON HOUSE",
+    "address2": "2 CHURCH STREET",
+    "city": "HAMILTON",
+    "state": "D0",
+    "postal_code": "HM 11"
+  },
+  "description": "Valaris Ltd is an offshore contract drilling company. The company provides offshore contract drilling services to the international oil and gas industry with operations in almost every offshore market across six continents. Its business consists of four operating segments: Floaters, which includes drillships and semisubmersible rigs; Jackups; ARO; and Other, which consists of management services on rigs owned by third parties. It generates the majority of its revenue from the Floaters segment.",
+  "sic_code": "1381",
+  "sic_description": "DRILLING OIL & GAS WELLS",
+  "ticker_root": "VAL",
+  "homepage_url": "https://www.valaris.com",
+  "total_employees": 5070,
+  "list_date": "2021-05-03",
+  "branding": {
+    "logo_url": "https://api.polygon.io/v1/reference/company-branding/dmFsYXJpcy5jb20/images/2024-02-01_logo.png",
+    "icon_url": "https://api.polygon.io/v1/reference/company-branding/dmFsYXJpcy5jb20/images/2024-02-01_icon.jpeg"
+  },
+  "share_class_shares_outstanding": 69251773,
+  "weighted_shares_outstanding": 69251780,
+  "round_lot": 100
+}

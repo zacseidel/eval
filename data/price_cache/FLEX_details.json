@@ -1,0 +1,34 @@
+{
+  "ticker": "FLEX",
+  "name": "Flex Ltd. Ordinary Shares",
+  "market": "stocks",
+  "locale": "us",
+  "primary_exchange": "XNAS",
+  "type": "CS",
+  "active": true,
+  "currency_name": "usd",
+  "cik": "0000866374",
+  "market_cap": 48904308631.24,
+  "phone_number": "(512) 425-7929",
+  "address": {
+    "address1": "12515-8 RESEARCH BLVD",
+    "address2": "SUITE 300",
+    "city": "AUSTIN",
+    "state": "TX",
+    "postal_code": "78759"
+  },
+  "description": "Flex Ltd is a contract manufacturing company providing comprehensive electronics design, manufacturing, and product management services to electronics and technology companies. The company's operating segments include Flex Agility Solutions (FAS) and Flex Reliability Solutions (FRS). Flex Agility Solutions segment includes markets such as Communications, Enterprise and Cloud; Lifestyle; and Consumer Devices. Flex Reliability Solutions segment includes markets such as Automotive, Health Solutions, and Industrial.",
+  "sic_code": "3672",
+  "sic_description": "PRINTED CIRCUIT BOARDS",
+  "ticker_root": "FLEX",
+  "homepage_url": "https://www.flex.com",
+  "total_employees": 147979,
+  "list_date": "1987-09-28",
+  "branding": {
+    "logo_url": "https://api.polygon.io/v1/reference/company-branding/ZmxleC5jb20/images/2025-04-04_logo.svg",
+    "icon_url": "https://api.polygon.io/v1/reference/company-branding/ZmxleC5jb20/images/2025-04-04_icon.jpeg"
+  },
+  "share_class_shares_outstanding": 367673924,
+  "weighted_shares_outstanding": 367673924,
+  "round_lot": 100
+}
