@@ -293,6 +293,13 @@
       "spy_value": 106.9774,
       "rolling_3m": 111.08,
       "spy_rolling_3m": 8.2
+    },
+    {
+      "date": "2026-05-19",
+      "value": 240.4108,
+      "spy_value": 106.9774,
+      "rolling_3m": 88.49,
+      "spy_rolling_3m": 7.48
     }
   ],
   "sp500_next5": [
@@ -589,6 +596,13 @@
       "spy_value": 106.9774,
       "rolling_3m": 80.55,
       "spy_rolling_3m": 8.2
+    },
+    {
+      "date": "2026-05-19",
+      "value": 238.45,
+      "spy_value": 106.9774,
+      "rolling_3m": 66.41,
+      "spy_rolling_3m": 7.48
     }
   ],
   "megacap_top5": [
@@ -885,6 +899,13 @@
       "spy_value": 106.9774,
       "rolling_3m": 57.89,
       "spy_rolling_3m": 8.2
+    },
+    {
+      "date": "2026-05-19",
+      "value": 157.9582,
+      "spy_value": 106.9774,
+      "rolling_3m": 47.48,
+      "spy_rolling_3m": 7.48
     }
   ],
   "megacap_next5": [
@@ -1181,6 +1202,13 @@
       "spy_value": 106.9774,
       "rolling_3m": 24.09,
       "spy_rolling_3m": 8.2
+    },
+    {
+      "date": "2026-05-19",
+      "value": 142.6994,
+      "spy_value": 106.9774,
+      "rolling_3m": 25.79,
+      "spy_rolling_3m": 7.48
     }
   ],
   "sp400_mcap5": [
@@ -1466,17 +1494,24 @@
     },
     {
       "date": "2026-05-12",
-      "value": 194.1642,
+      "value": 191.6936,
       "spy_value": 106.9774,
-      "rolling_3m": 60.52,
+      "rolling_3m": 58.48,
       "spy_rolling_3m": 6.6
     },
     {
       "date": "2026-05-15",
-      "value": 192.5333,
+      "value": 195.6142,
       "spy_value": 106.9774,
-      "rolling_3m": 63.15,
+      "rolling_3m": 65.76,
       "spy_rolling_3m": 8.2
+    },
+    {
+      "date": "2026-05-19",
+      "value": 177.9396,
+      "spy_value": 106.9774,
+      "rolling_3m": 51.2,
+      "spy_rolling_3m": 7.48
     }
   ],
   "sp400_mcap_next5": [
@@ -1769,10 +1804,17 @@
     },
     {
       "date": "2026-05-15",
-      "value": 145.3175,
+      "value": 144.1004,
       "spy_value": 106.9774,
-      "rolling_3m": 39.09,
+      "rolling_3m": 37.92,
       "spy_rolling_3m": 8.2
+    },
+    {
+      "date": "2026-05-19",
+      "value": 130.1372,
+      "spy_value": 106.9774,
+      "rolling_3m": 24.12,
+      "spy_rolling_3m": 7.48
     }
   ],
   "munger": [
@@ -2069,6 +2111,13 @@
       "spy_value": 112.1194,
       "rolling_3m": 47.78,
       "spy_rolling_3m": 12.85
+    },
+    {
+      "date": "2026-05-19",
+      "value": 151.7625,
+      "spy_value": 112.1194,
+      "rolling_3m": 48.63,
+      "spy_rolling_3m": 12.1
     }
   ],
   "spy": [
@@ -2281,6 +2330,11 @@
       "date": "2026-05-15",
       "value": null,
       "rolling_3m": null
+    },
+    {
+      "date": "2026-05-19",
+      "value": 107.1268,
+      "rolling_3m": 7.63
     }
   ]
 }
