@@ -300,6 +300,13 @@
       "spy_value": 106.9774,
       "rolling_3m": 88.49,
       "spy_rolling_3m": 7.48
+    },
+    {
+      "date": "2026-05-22",
+      "value": 258.0468,
+      "spy_value": 107.5669,
+      "rolling_3m": 100.51,
+      "spy_rolling_3m": 7.58
     }
   ],
   "sp500_next5": [
@@ -603,6 +610,13 @@
       "spy_value": 106.9774,
       "rolling_3m": 66.41,
       "spy_rolling_3m": 7.48
+    },
+    {
+      "date": "2026-05-22",
+      "value": 248.7088,
+      "spy_value": 107.5669,
+      "rolling_3m": 71.33,
+      "spy_rolling_3m": 7.58
     }
   ],
   "megacap_top5": [
@@ -906,6 +920,13 @@
       "spy_value": 106.9774,
       "rolling_3m": 47.48,
       "spy_rolling_3m": 7.48
+    },
+    {
+      "date": "2026-05-22",
+      "value": 165.9677,
+      "spy_value": 107.5669,
+      "rolling_3m": 56.29,
+      "spy_rolling_3m": 7.58
     }
   ],
   "megacap_next5": [
@@ -1209,6 +1230,13 @@
       "spy_value": 106.9774,
       "rolling_3m": 25.79,
       "spy_rolling_3m": 7.48
+    },
+    {
+      "date": "2026-05-22",
+      "value": 142.6013,
+      "spy_value": 107.5669,
+      "rolling_3m": 25.09,
+      "spy_rolling_3m": 7.58
     }
   ],
   "sp400_mcap5": [
@@ -1512,6 +1540,13 @@
       "spy_value": 106.9774,
       "rolling_3m": 51.2,
       "spy_rolling_3m": 7.48
+    },
+    {
+      "date": "2026-05-22",
+      "value": 178.2786,
+      "spy_value": 107.5669,
+      "rolling_3m": 45.31,
+      "spy_rolling_3m": 7.58
     }
   ],
   "sp400_mcap_next5": [
@@ -1815,6 +1850,13 @@
       "spy_value": 106.9774,
       "rolling_3m": 24.12,
       "spy_rolling_3m": 7.48
+    },
+    {
+      "date": "2026-05-22",
+      "value": 137.977,
+      "spy_value": 107.5669,
+      "rolling_3m": 37.11,
+      "spy_rolling_3m": 7.58
     }
   ],
   "munger": [
@@ -2118,6 +2160,13 @@
       "spy_value": 112.1194,
       "rolling_3m": 48.63,
       "spy_rolling_3m": 12.1
+    },
+    {
+      "date": "2026-05-22",
+      "value": 154.5796,
+      "spy_value": 112.7372,
+      "rolling_3m": 52.81,
+      "spy_rolling_3m": 12.21
     }
   ],
   "spy": [
@@ -2335,6 +2384,11 @@
       "date": "2026-05-19",
       "value": 107.1268,
       "rolling_3m": 7.63
+    },
+    {
+      "date": "2026-05-22",
+      "value": 107.7171,
+      "rolling_3m": 7.73
     }
   ]
 }
