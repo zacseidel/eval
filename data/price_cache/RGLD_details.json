@@ -10,7 +10,7 @@
   "cik": "0000085535",
   "composite_figi": "BBG000BS5170",
   "share_class_figi": "BBG001S5VNX4",
-  "market_cap": 19746760953.36,
+  "market_cap": 19175608721.899998,
   "phone_number": "303-573-1660",
   "address": {
     "address1": "1144 15TH STREET",
@@ -29,7 +29,7 @@
   "branding": {
     "logo_url": "https://api.polygon.io/v1/reference/company-branding/cm95YWxnb2xkLmNvbQ/images/2025-04-04_logo.svg"
   },
-  "share_class_shares_outstanding": 84839102,
+  "share_class_shares_outstanding": 84866602,
   "weighted_shares_outstanding": 84866602,
   "round_lot": 40
 }

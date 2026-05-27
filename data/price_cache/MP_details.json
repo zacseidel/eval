@@ -10,7 +10,7 @@
   "cik": "0001801368",
   "composite_figi": "BBG00TJGL0F0",
   "share_class_figi": "BBG00TJGL0T5",
-  "market_cap": 12282150818.5,
+  "market_cap": 11925707044.019999,
   "phone_number": "(702) 844-6111",
   "address": {
     "address1": "1700 S. PAVILION CENTER DR.",
@@ -30,7 +30,7 @@
     "logo_url": "https://api.polygon.io/v1/reference/company-branding/bXBtYXRlcmlhbHMuY29t/images/2025-04-04_logo.svg",
     "icon_url": "https://api.polygon.io/v1/reference/company-branding/bXBtYXRlcmlhbHMuY29t/images/2025-04-04_icon.jpeg"
   },
-  "share_class_shares_outstanding": 178018991,
-  "weighted_shares_outstanding": 177667450,
+  "share_class_shares_outstanding": 178022198,
+  "weighted_shares_outstanding": 178022198,
   "round_lot": 100
 }

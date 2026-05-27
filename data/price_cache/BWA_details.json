@@ -10,7 +10,7 @@
   "cik": "0000908255",
   "composite_figi": "BBG000BJ49H3",
   "share_class_figi": "BBG001S7F4D2",
-  "market_cap": 11933587267.38,
+  "market_cap": 14001145872.660002,
   "phone_number": "(248) 754-9200",
   "address": {
     "address1": "3850 HAMLIN RD.",
@@ -29,7 +29,7 @@
     "logo_url": "https://api.polygon.io/v1/reference/company-branding/Ym9yZ3dhcm5lci5jb20/images/2025-04-04_logo.svg",
     "icon_url": "https://api.polygon.io/v1/reference/company-branding/Ym9yZ3dhcm5lci5jb20/images/2025-04-04_icon.jpeg"
   },
-  "share_class_shares_outstanding": 206061488,
+  "share_class_shares_outstanding": 205114941,
   "weighted_shares_outstanding": 205114941,
   "round_lot": 100
 }

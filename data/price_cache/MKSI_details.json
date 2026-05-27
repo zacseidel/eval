@@ -10,7 +10,7 @@
   "cik": "0001049502",
   "composite_figi": "BBG000BVMG26",
   "share_class_figi": "BBG001SBB6Q8",
-  "market_cap": 20249693541.420002,
+  "market_cap": 22567168940.190002,
   "phone_number": "978-645-5500",
   "address": {
     "address1": "2 TECH DRIVE",
@@ -29,7 +29,7 @@
     "logo_url": "https://api.polygon.io/v1/reference/company-branding/bWtzaW5zdC5jb20/images/2024-09-01_logo.png",
     "icon_url": "https://api.polygon.io/v1/reference/company-branding/bWtzaW5zdC5jb20/images/2024-09-01_icon.png"
   },
-  "share_class_shares_outstanding": 67321698,
-  "weighted_shares_outstanding": 67321698,
+  "share_class_shares_outstanding": 67544129,
+  "weighted_shares_outstanding": 67544129,
   "round_lot": 100
 }

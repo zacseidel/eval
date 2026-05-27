@@ -10,7 +10,7 @@
   "cik": "0001633978",
   "composite_figi": "BBG0073F9RT7",
   "share_class_figi": "BBG0073F9RS8",
-  "market_cap": 69442724000.0,
+  "market_cap": 70861018000.0,
   "phone_number": "408-546-5483",
   "address": {
     "address1": "1001 RIDDER PARK DRIVE",
@@ -29,7 +29,7 @@
     "logo_url": "https://api.polygon.io/v1/reference/company-branding/bHVtZW50dW0uY29t/images/2025-04-04_logo.svg",
     "icon_url": "https://api.polygon.io/v1/reference/company-branding/bHVtZW50dW0uY29t/images/2025-04-04_icon.jpeg"
   },
-  "share_class_shares_outstanding": 71400000,
+  "share_class_shares_outstanding": 77800000,
   "weighted_shares_outstanding": 77800000,
   "round_lot": 40
 }

@@ -10,7 +10,7 @@
   "cik": "0001069258",
   "composite_figi": "BBG000C1HQ43",
   "share_class_figi": "BBG001SD5VL1",
-  "market_cap": 10688639088.0,
+  "market_cap": 10651135091.199999,
   "phone_number": "858-812-7300",
   "address": {
     "address1": "10680 TREENA STREET",
@@ -30,7 +30,7 @@
     "logo_url": "https://api.polygon.io/v1/reference/company-branding/a3JhdG9zZGVmZW5zZS5jb20/images/2025-04-04_logo.svg",
     "icon_url": "https://api.polygon.io/v1/reference/company-branding/a3JhdG9zZGVmZW5zZS5jb20/images/2025-04-04_icon.jpeg"
   },
-  "share_class_shares_outstanding": 187423721,
+  "share_class_shares_outstanding": 187519984,
   "weighted_shares_outstanding": 187519984,
   "round_lot": 100
 }

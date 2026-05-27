@@ -10,7 +10,7 @@
   "cik": "0001739104",
   "composite_figi": "BBG00LJYS1P8",
   "share_class_figi": "BBG00LJYS1R6",
-  "market_cap": 11991784487.83,
+  "market_cap": 11397439484.06,
   "phone_number": "877-352-6261",
   "address": {
     "address1": "450 ELANCO CIRCLE",
@@ -29,7 +29,7 @@
     "logo_url": "https://api.polygon.io/v1/reference/company-branding/ZWxhbmNvLmNvbQ/images/2025-04-04_logo.svg",
     "icon_url": "https://api.polygon.io/v1/reference/company-branding/ZWxhbmNvLmNvbQ/images/2025-04-04_icon.jpeg"
   },
-  "share_class_shares_outstanding": 497168077,
+  "share_class_shares_outstanding": 499449583,
   "weighted_shares_outstanding": 499449583,
   "round_lot": 100
 }

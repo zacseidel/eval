@@ -10,7 +10,7 @@
   "cik": "0000751978",
   "composite_figi": "BBG000C3VHF1",
   "share_class_figi": "BBG001S6JQ96",
-  "market_cap": 11912244905.38,
+  "market_cap": 15176329460.65,
   "phone_number": "(978) 470-2900",
   "address": {
     "address1": "25 FRONTAGE ROAD",
@@ -29,7 +29,7 @@
     "logo_url": "https://api.polygon.io/v1/reference/company-branding/dmljb3Jwb3dlci5jb20/images/2025-04-04_logo.svg",
     "icon_url": "https://api.polygon.io/v1/reference/company-branding/dmljb3Jwb3dlci5jb20/images/2025-04-04_icon.jpeg"
   },
-  "share_class_shares_outstanding": 33646426,
+  "share_class_shares_outstanding": 33863689,
   "weighted_shares_outstanding": 45581407,
   "round_lot": 100
 }

@@ -10,7 +10,7 @@
   "cik": "0001582961",
   "composite_figi": "BBG00ZGF6SS3",
   "share_class_figi": "BBG00ZGF6TM7",
-  "market_cap": 15699503747.83,
+  "market_cap": 16773411170.32,
   "phone_number": "(646) 827-4366",
   "address": {
     "address1": "105 EDGEVIEW DRIVE",
@@ -30,7 +30,7 @@
     "logo_url": "https://api.polygon.io/v1/reference/company-branding/ZGlnaXRhbG9jZWFuLmNvbQ/images/2025-04-04_logo.svg",
     "icon_url": "https://api.polygon.io/v1/reference/company-branding/ZGlnaXRhbG9jZWFuLmNvbQ/images/2025-04-04_icon.jpeg"
   },
-  "share_class_shares_outstanding": 104353442,
+  "share_class_shares_outstanding": 104364181,
   "weighted_shares_outstanding": 104364181,
   "round_lot": 100
 }

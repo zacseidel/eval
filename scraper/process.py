@@ -51,6 +51,8 @@ def estimate_market_cap(ticker: str, report_price: float) -> float:
     Returns estimated market cap. Uses Polygon ticker details if available,
     falls back to price × recent volume.
     """
+    if report_price is None:
+        return 0.0
     details = get_ticker_details(ticker)
     mc = details.get("market_cap")
     if mc and mc > 0:
@@ -303,6 +305,7 @@ def build_strategy_returns(reports: list[dict], positions: list[dict], spy_bars:
                     "spy_value": round(spy_value, 4),
                     "rolling_3m": None,
                     "spy_rolling_3m": None,
+                    "spy_12m": None,
                 })
                 prev_date = report_date
                 continue
@@ -314,6 +317,7 @@ def build_strategy_returns(reports: list[dict], positions: list[dict], spy_bars:
                     "spy_value": round(spy_value, 4),
                     "rolling_3m": None,
                     "spy_rolling_3m": None,
+                    "spy_12m": None,
                 })
                 prev_date = report_date
                 continue
@@ -342,6 +346,7 @@ def build_strategy_returns(reports: list[dict], positions: list[dict], spy_bars:
                 "spy_value": round(spy_value, 4),
                 "rolling_3m": None,
                 "spy_rolling_3m": None,
+                "spy_12m": None,
             })
             prev_date = report_date
 
@@ -361,6 +366,15 @@ def build_strategy_returns(reports: list[dict], positions: list[dict], spy_bars:
                 point["rolling_3m"] = round((point["value"] - past_val) / past_val * 100, 2)
             if past_spy and past_spy > 0:
                 point["spy_rolling_3m"] = round((point["spy_value"] - past_spy) / past_spy * 100, 2)
+
+        # Compute spy_12m: actual SPY price % change over past 365 days (raw prices, not indexed)
+        for point in series:
+            dt = datetime.strptime(point["date"], "%Y-%m-%d").date()
+            lookback_12m = (dt - timedelta(days=365)).strftime("%Y-%m-%d")
+            spy_curr = spy_price_on_or_before(point["date"])
+            spy_year_ago = spy_price_on_or_before(lookback_12m)
+            if spy_curr and spy_year_ago and spy_year_ago > 0:
+                point["spy_12m"] = round((spy_curr - spy_year_ago) / spy_year_ago * 100, 2)
 
     return result
 
@@ -431,15 +445,18 @@ def prefetch_all_tickers(reports: list[dict]) -> None:
         return
     today = date.today().strftime("%Y-%m-%d")
     start = (datetime.strptime(reports[0]["date"], "%Y-%m-%d") - timedelta(days=30)).strftime("%Y-%m-%d")
+    spy_start = (datetime.strptime(reports[0]["date"], "%Y-%m-%d") - timedelta(days=396)).strftime("%Y-%m-%d")
 
-    tickers: set[str] = {"SPY"}
+    tickers: set[str] = set()
     for r in reports:
         for section in ("sp500", "megacap", "sp400", "munger"):
             for entry in r.get(section, []):
                 if entry.get("ticker"):
                     tickers.add(entry["ticker"])
 
-    print(f"  Prefetching bars for {len(tickers)} tickers ({start} → {today})...")
+    print(f"  Prefetching SPY bars back 13 months ({spy_start} → {today})...")
+    get_daily_bars("SPY", spy_start, today)
+    print(f"  Prefetching bars for {len(tickers)} other tickers ({start} → {today})...")
     for ticker in sorted(tickers):
         get_daily_bars(ticker, start, today)
 
@@ -459,7 +476,8 @@ def process_all():
 
     first_date = reports[0]["date"]
     today = date.today().strftime("%Y-%m-%d")
-    spy_bars = get_daily_bars("SPY", first_date, today)  # cache hit after prefetch
+    spy_start = (datetime.strptime(first_date, "%Y-%m-%d") - timedelta(days=396)).strftime("%Y-%m-%d")
+    spy_bars = get_daily_bars("SPY", spy_start, today)  # cache hit after prefetch
 
     print("Building strategy return time series...")
     strategy_returns = build_strategy_returns(reports, positions, spy_bars)

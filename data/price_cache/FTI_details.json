@@ -8,7 +8,7 @@
   "active": true,
   "currency_name": "usd",
   "cik": "0001681459",
-  "market_cap": 28319795743.91,
+  "market_cap": 28471302464.77,
   "phone_number": "44 191 295 0303",
   "address": {
     "address1": "HADRIAN HOUSE",
@@ -28,7 +28,7 @@
     "logo_url": "https://api.polygon.io/v1/reference/company-branding/dGVjaG5pcGZtYy5jb20/images/2025-04-04_logo.svg",
     "icon_url": "https://api.polygon.io/v1/reference/company-branding/dGVjaG5pcGZtYy5jb20/images/2025-04-04_icon.jpeg"
   },
-  "share_class_shares_outstanding": 401559289,
+  "share_class_shares_outstanding": 398701897,
   "weighted_shares_outstanding": 398701897,
   "round_lot": 100
 }

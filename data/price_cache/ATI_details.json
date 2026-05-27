@@ -10,7 +10,7 @@
   "cik": "0001018963",
   "composite_figi": "BBG000LC1FS4",
   "share_class_figi": "BBG001S8WY72",
-  "market_cap": 22198279655.82,
+  "market_cap": 23030749260.52,
   "phone_number": "(412) 394-2800",
   "address": {
     "address1": "2021 MCKINNEY AVENUE",
@@ -29,7 +29,7 @@
     "logo_url": "https://api.polygon.io/v1/reference/company-branding/YXRpbWF0ZXJpYWxzLmNvbQ/images/2025-04-04_logo.svg",
     "icon_url": "https://api.polygon.io/v1/reference/company-branding/YXRpbWF0ZXJpYWxzLmNvbQ/images/2025-04-04_icon.png"
   },
-  "share_class_shares_outstanding": 136462390,
+  "share_class_shares_outstanding": 136470427,
   "weighted_shares_outstanding": 136470427,
   "round_lot": 100
 }

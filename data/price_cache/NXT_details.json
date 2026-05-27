@@ -10,7 +10,7 @@
   "cik": "0001852131",
   "composite_figi": "BBG00835TPZ2",
   "share_class_figi": "BBG00835TQ17",
-  "market_cap": 17944790384.98,
+  "market_cap": 19717513471.120003,
   "phone_number": "510-270-2500",
   "address": {
     "address1": "6200 PASEO PADRE PARKWAY",
@@ -23,9 +23,9 @@
   "sic_description": "SEARCH, DETECTION, NAVIGATION, GUIDANCE, AERONAUTICAL SYS",
   "ticker_root": "NXT",
   "homepage_url": "https://www.nextpower.com",
-  "total_employees": 1300,
+  "total_employees": 1993,
   "list_date": "2023-02-09",
-  "share_class_shares_outstanding": 148475843,
-  "weighted_shares_outstanding": 148475843,
+  "share_class_shares_outstanding": 150274472,
+  "weighted_shares_outstanding": 150274472,
   "round_lot": 100
 }

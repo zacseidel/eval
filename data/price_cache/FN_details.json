@@ -8,7 +8,7 @@
   "active": true,
   "currency_name": "usd",
   "cik": "0001408710",
-  "market_cap": 22433716808.8,
+  "market_cap": 24391812099.8,
   "phone_number": "(408) 748 0900",
   "address": {
     "address1": "C/O INTERTRUST CORPORATE SERVICES",
@@ -26,7 +26,7 @@
   "branding": {
     "logo_url": "https://api.polygon.io/v1/reference/company-branding/ZmFicmluZXQuY29t/images/2025-04-04_logo.png"
   },
-  "share_class_shares_outstanding": 35826117,
+  "share_class_shares_outstanding": 35829740,
   "weighted_shares_outstanding": 35829740,
   "round_lot": 40
 }

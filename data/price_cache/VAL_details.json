@@ -8,7 +8,7 @@
   "active": true,
   "currency_name": "usd",
   "cik": "0000314808",
-  "market_cap": 6355928368.4,
+  "market_cap": 6671023967.4,
   "phone_number": "4402076594660",
   "address": {
     "address1": "CLARENDON HOUSE",
@@ -28,7 +28,7 @@
     "logo_url": "https://api.polygon.io/v1/reference/company-branding/dmFsYXJpcy5jb20/images/2024-02-01_logo.png",
     "icon_url": "https://api.polygon.io/v1/reference/company-branding/dmFsYXJpcy5jb20/images/2024-02-01_icon.jpeg"
   },
-  "share_class_shares_outstanding": 69251773,
+  "share_class_shares_outstanding": 69251780,
   "weighted_shares_outstanding": 69251780,
   "round_lot": 100
 }

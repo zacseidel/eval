@@ -10,7 +10,7 @@
   "cik": "0001493594",
   "composite_figi": "BBG000LJQ3H1",
   "share_class_figi": "BBG001T4BB37",
-  "market_cap": 25839373305.9,
+  "market_cap": 31256852692.32,
   "phone_number": "(978) 656-2500",
   "address": {
     "address1": "100 CHELMSFORD STREET",
@@ -29,7 +29,7 @@
     "logo_url": "https://api.polygon.io/v1/reference/company-branding/bWFjb20uY29t/images/2024-09-01_logo.svg",
     "icon_url": "https://api.polygon.io/v1/reference/company-branding/bWFjb20uY29t/images/2024-09-01_icon.jpeg"
   },
-  "share_class_shares_outstanding": 75011970,
-  "weighted_shares_outstanding": 75011970,
+  "share_class_shares_outstanding": 76295774,
+  "weighted_shares_outstanding": 76295774,
   "round_lot": 100
 }

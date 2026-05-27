@@ -10,7 +10,7 @@
   "cik": "0000719413",
   "composite_figi": "BBG000BL5W86",
   "share_class_figi": "BBG001S5RXF7",
-  "market_cap": 12119773122.210001,
+  "market_cap": 11791124044.74,
   "phone_number": "(208) 769-4100",
   "address": {
     "address1": "6500 N MINERAL DRIVE SUITE 200",
@@ -30,7 +30,7 @@
     "logo_url": "https://api.polygon.io/v1/reference/company-branding/aGVjbGEuY29t/images/2025-04-04_logo.png",
     "icon_url": "https://api.polygon.io/v1/reference/company-branding/aGVjbGEuY29t/images/2025-04-04_icon.jpeg"
   },
-  "share_class_shares_outstanding": 670565891,
+  "share_class_shares_outstanding": 670712403,
   "weighted_shares_outstanding": 670712403,
   "round_lot": 100
 }

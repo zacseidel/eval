@@ -46,7 +46,7 @@ export function renderStrategies(positions, strategyReturns) {
     const series = strategyReturns[sid] || [];
     const ret12m = get12mReturn(series);
     const ret3m = getLatest3mReturn(series);
-    const spy12m = get12mReturn(series, "spy_value");
+    const spy12m = getLatest3mReturn(series, "spy_12m");
     const spy3m = getLatest3mReturn(series, "spy_rolling_3m");
     const stratPositions = positions.filter(p => p.strategy === sid);
     const openPositions = stratPositions.filter(p => p.status === "open");

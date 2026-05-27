@@ -10,7 +10,7 @@
   "cik": "0000855658",
   "composite_figi": "BBG000C2D1C1",
   "share_class_figi": "BBG001S6C0G2",
-  "market_cap": 16429982211.44,
+  "market_cap": 20599131299.95,
   "phone_number": "(503) 268-8000",
   "address": {
     "address1": "5555 NE MOORE CT",
@@ -29,7 +29,7 @@
     "logo_url": "https://api.polygon.io/v1/reference/company-branding/bGF0dGljZXNlbWkuY29t/images/2025-04-04_logo.svg",
     "icon_url": "https://api.polygon.io/v1/reference/company-branding/bGF0dGljZXNlbWkuY29t/images/2025-04-04_icon.png"
   },
-  "share_class_shares_outstanding": 136869427,
+  "share_class_shares_outstanding": 137007857,
   "weighted_shares_outstanding": 137007857,
   "round_lot": 100
 }

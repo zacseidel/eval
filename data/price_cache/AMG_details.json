@@ -10,7 +10,7 @@
   "cik": "0001004434",
   "composite_figi": "BBG000C060M4",
   "share_class_figi": "BBG001S6DMD6",
-  "market_cap": 7906750602.559999,
+  "market_cap": 8152090035.249999,
   "phone_number": "(800) 345-1100",
   "address": {
     "address1": "1001 U.S. HIGHWAY ONE NORTH",
@@ -29,7 +29,7 @@
   "branding": {
     "logo_url": "https://api.polygon.io/v1/reference/company-branding/YW1nLmNvbQ/images/2025-04-04_logo.svg"
   },
-  "share_class_shares_outstanding": 26554106,
-  "weighted_shares_outstanding": 26554106,
+  "share_class_shares_outstanding": 26412085,
+  "weighted_shares_outstanding": 26412085,
   "round_lot": 40
 }

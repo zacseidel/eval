@@ -10,7 +10,7 @@
   "cik": "0000879407",
   "composite_figi": "BBG000BRVKH0",
   "share_class_figi": "BBG001SGT8G5",
-  "market_cap": 10915509210.5,
+  "market_cap": 11082630412.28,
   "phone_number": "626-696-4702",
   "address": {
     "address1": "177 E COLORADO BLVD",
@@ -19,7 +19,7 @@
     "state": "CA",
     "postal_code": "91105"
   },
-  "description": "Arrowhead Pharmaceuticals Inc is an American biotechnology company. Its main target is the development of medicine to treat diseases with a genetic origin, characterized by the overproduction of one or more proteins. Its medical solutions are aimed at the genes that trigger the diseases. Its portfolio includes drugs targeting cardiovascular, Cardiometabolic, Central Nervous System, Pulmonary, Liver, Muscular, and Complement Mediated Disease. It majority products are liver disease curable.",
+  "description": "Arrowhead Pharmaceuticals Inc is a commercial-stage pharmaceutical company. It is focused on the development of medicines for diseases associated with genetic abnormalities or protein overproduction. The company develops potential RNAi therapies designed to inhibit the expression of genes known to trigger diseases. Its portfolio includes potential drugs targeting Cardiometabolic, Neuromuscular, Pulmonary, Liver, and other diseases. The company also develops RNAi products and clinical candidates designed to target different cell types within the body.",
   "sic_code": "2834",
   "sic_description": "PHARMACEUTICAL PREPARATIONS",
   "ticker_root": "ARWR",
@@ -30,7 +30,7 @@
     "logo_url": "https://api.polygon.io/v1/reference/company-branding/YXJyb3doZWFkcGhhcm1hLmNvbQ/images/2025-04-04_logo.svg",
     "icon_url": "https://api.polygon.io/v1/reference/company-branding/YXJyb3doZWFkcGhhcm1hLmNvbQ/images/2025-04-04_icon.jpeg"
   },
-  "share_class_shares_outstanding": 140032190,
-  "weighted_shares_outstanding": 140032190,
+  "share_class_shares_outstanding": 140857021,
+  "weighted_shares_outstanding": 140857021,
   "round_lot": 100
 }

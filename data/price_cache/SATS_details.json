@@ -10,7 +10,7 @@
   "cik": "0001415404",
   "composite_figi": "BBG000TGLV00",
   "share_class_figi": "BBG001T048Z5",
-  "market_cap": 35536212203.700005,
+  "market_cap": 35681836642.56,
   "phone_number": "303-723-1000",
   "address": {
     "address1": "9601 SOUTH MERIDIAN BOULEVARD",
@@ -28,7 +28,7 @@
   "branding": {
     "logo_url": "https://api.polygon.io/v1/reference/company-branding/ZWNob3N0YXIuY29t/images/2024-09-01_logo.svg"
   },
-  "share_class_shares_outstanding": 157527391,
-  "weighted_shares_outstanding": 289807635,
+  "share_class_shares_outstanding": 158465020,
+  "weighted_shares_outstanding": 289813488,
   "round_lot": 100
 }

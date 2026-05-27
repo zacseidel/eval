@@ -10,7 +10,7 @@
   "cik": "0001116942",
   "composite_figi": "BBG000BYQ0B1",
   "share_class_figi": "BBG001SFJKF2",
-  "market_cap": 15969023572.43,
+  "market_cap": 20453269120.05,
   "phone_number": "(714) 327-3000",
   "address": {
     "address1": "200 EAST SANDPOINTE",
@@ -30,7 +30,7 @@
     "logo_url": "https://api.polygon.io/v1/reference/company-branding/dHRtLmNvbQ/images/2025-04-04_logo.png",
     "icon_url": "https://api.polygon.io/v1/reference/company-branding/dHRtLmNvbQ/images/2025-04-04_icon.jpeg"
   },
-  "share_class_shares_outstanding": 103843183,
+  "share_class_shares_outstanding": 103850059,
   "weighted_shares_outstanding": 103850059,
   "round_lot": 100
 }

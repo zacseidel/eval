@@ -8,7 +8,7 @@
   "active": true,
   "currency_name": "usd",
   "cik": "0000866374",
-  "market_cap": 48904308631.24,
+  "market_cap": 52479973690.520004,
   "phone_number": "(512) 425-7929",
   "address": {
     "address1": "12515-8 RESEARCH BLVD",
@@ -17,18 +17,18 @@
     "state": "TX",
     "postal_code": "78759"
   },
-  "description": "Flex Ltd is a contract manufacturing company providing comprehensive electronics design, manufacturing, and product management services to electronics and technology companies. The company's operating segments include Flex Agility Solutions (FAS) and Flex Reliability Solutions (FRS). Flex Agility Solutions segment includes markets such as Communications, Enterprise and Cloud; Lifestyle; and Consumer Devices. Flex Reliability Solutions segment includes markets such as Automotive, Health Solutions, and Industrial.",
+  "description": "Flex Ltd is the developed, end-to-end manufacturing partner of choice that helps a diverse customer base design, build, deliver and manage products that improve the world. The Company's full suite of specialized capabilities includes design and engineering, supply chain, manufacturing, and integrated services, plus a portfolio of power and cooling products. Its reportable segments includes Integrated Technology Solutions, Regulated Manufacturing Solutions, and Cloud and Power Infrastructure.",
   "sic_code": "3672",
   "sic_description": "PRINTED CIRCUIT BOARDS",
   "ticker_root": "FLEX",
   "homepage_url": "https://www.flex.com",
-  "total_employees": 147979,
+  "total_employees": 149686,
   "list_date": "1987-09-28",
   "branding": {
     "logo_url": "https://api.polygon.io/v1/reference/company-branding/ZmxleC5jb20/images/2025-04-04_logo.svg",
     "icon_url": "https://api.polygon.io/v1/reference/company-branding/ZmxleC5jb20/images/2025-04-04_icon.jpeg"
   },
-  "share_class_shares_outstanding": 367673924,
-  "weighted_shares_outstanding": 367673924,
+  "share_class_shares_outstanding": 366377923,
+  "weighted_shares_outstanding": 366377923,
   "round_lot": 100
 }

@@ -10,7 +10,7 @@
   "cik": "0000108312",
   "composite_figi": "BBG000BD53V2",
   "share_class_figi": "BBG001S6YZC5",
-  "market_cap": 22091537372.969997,
+  "market_cap": 21524308536.25,
   "phone_number": "970-482-5811",
   "address": {
     "address1": "1081 WOODWARD WAY",
@@ -29,7 +29,7 @@
     "logo_url": "https://api.polygon.io/v1/reference/company-branding/d29vZHdhcmQuY29t/images/2025-04-04_logo.svg",
     "icon_url": "https://api.polygon.io/v1/reference/company-branding/d29vZHdhcmQuY29t/images/2025-04-04_icon.png"
   },
-  "share_class_shares_outstanding": 59615869,
+  "share_class_shares_outstanding": 59582861,
   "weighted_shares_outstanding": 59582861,
   "round_lot": 40
 }

@@ -8,7 +8,7 @@
   "active": true,
   "currency_name": "usd",
   "cik": "0001635088",
-  "market_cap": 20240028154.36,
+  "market_cap": 21337155971.024998,
   "phone_number": "441-295-5950",
   "address": {
     "address1": "7TH FLOOR, 50 BROADWAY",
@@ -26,7 +26,7 @@
     "logo_url": "https://api.polygon.io/v1/reference/company-branding/cm9pdmFudC5jb20/images/2025-04-04_logo.svg",
     "icon_url": "https://api.polygon.io/v1/reference/company-branding/cm9pdmFudC5jb20/images/2025-04-04_icon.jpeg"
   },
-  "share_class_shares_outstanding": 715701137,
-  "weighted_shares_outstanding": 715701137,
+  "share_class_shares_outstanding": 719270385,
+  "weighted_shares_outstanding": 719270385,
   "round_lot": 100
 }

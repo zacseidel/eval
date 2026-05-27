@@ -10,7 +10,7 @@
   "cik": "0001675149",
   "composite_figi": "BBG00B3T3HD3",
   "share_class_figi": "BBG00B3T3HF1",
-  "market_cap": 16530061770.0,
+  "market_cap": 19678267978.75,
   "phone_number": "412-315-2900",
   "address": {
     "address1": "201 ISABELLA STREET",
@@ -30,7 +30,7 @@
     "logo_url": "https://api.polygon.io/v1/reference/company-branding/YWxjb2EuY29t/images/2025-04-04_logo.svg",
     "icon_url": "https://api.polygon.io/v1/reference/company-branding/YWxjb2EuY29t/images/2025-04-04_icon.jpeg"
   },
-  "share_class_shares_outstanding": 263862492,
+  "share_class_shares_outstanding": 263889875,
   "weighted_shares_outstanding": 263889875,
   "round_lot": 100
 }

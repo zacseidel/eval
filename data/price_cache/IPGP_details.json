@@ -10,7 +10,7 @@
   "cik": "0001111928",
   "composite_figi": "BBG000DCGRL8",
   "share_class_figi": "BBG001SG95B8",
-  "market_cap": 4309300332.4800005,
+  "market_cap": 5085594069.12,
   "phone_number": "(508) 373-1100",
   "address": {
     "address1": "377 SIMARANO DRIVE",
@@ -29,7 +29,7 @@
     "logo_url": "https://api.polygon.io/v1/reference/company-branding/aXBncGhvdG9uaWNzLmNvbQ/images/2025-04-04_logo.svg",
     "icon_url": "https://api.polygon.io/v1/reference/company-branding/aXBncGhvdG9uaWNzLmNvbQ/images/2025-04-04_icon.jpeg"
   },
-  "share_class_shares_outstanding": 42443381,
+  "share_class_shares_outstanding": 42443616,
   "weighted_shares_outstanding": 42443616,
   "round_lot": 100
 }

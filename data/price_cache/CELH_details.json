@@ -10,7 +10,7 @@
   "cik": "0001341766",
   "composite_figi": "BBG000NY37X4",
   "share_class_figi": "BBG001SQSKT3",
-  "market_cap": 8801259529.5,
+  "market_cap": 7584849481.200001,
   "phone_number": "561-276-2239",
   "address": {
     "address1": "2424 N. FEDERAL HWY",
@@ -30,7 +30,7 @@
     "logo_url": "https://api.polygon.io/v1/reference/company-branding/Y2Vsc2l1cy5jb20/images/2025-04-04_logo.svg",
     "icon_url": "https://api.polygon.io/v1/reference/company-branding/Y2Vsc2l1cy5jb20/images/2025-04-04_icon.jpeg"
   },
-  "share_class_shares_outstanding": 256896075,
-  "weighted_shares_outstanding": 256896075,
+  "share_class_shares_outstanding": 255640360,
+  "weighted_shares_outstanding": 255640360,
   "round_lot": 100
 }

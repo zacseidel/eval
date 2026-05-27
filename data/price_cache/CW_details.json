@@ -10,7 +10,7 @@
   "cik": "0000026324",
   "composite_figi": "BBG000BGSPS5",
   "share_class_figi": "BBG001S5QBK0",
-  "market_cap": 26736661887.53,
+  "market_cap": 27730254168.239998,
   "phone_number": "(704) 869-4600",
   "address": {
     "address1": "130 HARBOUR PLACE DRIVE",
@@ -30,7 +30,7 @@
     "logo_url": "https://api.polygon.io/v1/reference/company-branding/Y3VydGlzc3dyaWdodC5jb20/images/2025-04-04_logo.svg",
     "icon_url": "https://api.polygon.io/v1/reference/company-branding/Y3VydGlzc3dyaWdodC5jb20/images/2025-04-04_icon.jpeg"
   },
-  "share_class_shares_outstanding": 36907171,
-  "weighted_shares_outstanding": 36907171,
+  "share_class_shares_outstanding": 36941164,
+  "weighted_shares_outstanding": 36941164,
   "round_lot": 40
 }
