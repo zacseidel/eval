@@ -367,6 +367,14 @@
       "rolling_3m": 114.39,
       "spy_rolling_3m": 9.85,
       "spy_12m": 28.03
+    },
+    {
+      "date": "2026-06-02",
+      "value": 339.3514,
+      "spy_value": 109.8581,
+      "rolling_3m": 145.26,
+      "spy_rolling_3m": 10.56,
+      "spy_12m": 27.25
     }
   ],
   "sp500_next5": [
@@ -737,6 +745,14 @@
       "rolling_3m": 76.56,
       "spy_rolling_3m": 9.85,
       "spy_12m": 28.03
+    },
+    {
+      "date": "2026-06-02",
+      "value": 300.9016,
+      "spy_value": 109.8581,
+      "rolling_3m": 100.76,
+      "spy_rolling_3m": 10.56,
+      "spy_12m": 27.25
     }
   ],
   "megacap_top5": [
@@ -1107,6 +1123,14 @@
       "rolling_3m": 70.83,
       "spy_rolling_3m": 9.85,
       "spy_12m": 28.03
+    },
+    {
+      "date": "2026-06-02",
+      "value": 177.0117,
+      "spy_value": 109.8581,
+      "rolling_3m": 68.8,
+      "spy_rolling_3m": 10.56,
+      "spy_12m": 27.25
     }
   ],
   "megacap_next5": [
@@ -1477,6 +1501,14 @@
       "rolling_3m": 28.82,
       "spy_rolling_3m": 9.85,
       "spy_12m": 28.03
+    },
+    {
+      "date": "2026-06-02",
+      "value": 143.6692,
+      "spy_value": 109.8581,
+      "rolling_3m": 24.11,
+      "spy_rolling_3m": 10.56,
+      "spy_12m": 27.25
     }
   ],
   "sp400_mcap5": [
@@ -1847,6 +1879,14 @@
       "rolling_3m": 21.35,
       "spy_rolling_3m": 9.85,
       "spy_12m": 28.03
+    },
+    {
+      "date": "2026-06-02",
+      "value": 150.6859,
+      "spy_value": 109.8581,
+      "rolling_3m": 6.48,
+      "spy_rolling_3m": 10.56,
+      "spy_12m": 27.25
     }
   ],
   "sp400_mcap_next5": [
@@ -2217,6 +2257,14 @@
       "rolling_3m": 68.62,
       "spy_rolling_3m": 9.85,
       "spy_12m": 28.03
+    },
+    {
+      "date": "2026-06-02",
+      "value": 171.2178,
+      "spy_value": 109.8581,
+      "rolling_3m": 74.62,
+      "spy_rolling_3m": 10.56,
+      "spy_12m": 27.25
     }
   ],
   "munger": [
@@ -2587,6 +2635,14 @@
       "rolling_3m": 56.68,
       "spy_rolling_3m": 14.57,
       "spy_12m": 28.03
+    },
+    {
+      "date": "2026-06-02",
+      "value": 161.8839,
+      "spy_value": 115.1385,
+      "rolling_3m": 36.51,
+      "spy_rolling_3m": 15.32,
+      "spy_12m": 27.25
     }
   ],
   "spy": [
@@ -2819,6 +2875,11 @@
       "date": "2026-05-29",
       "value": 109.44,
       "rolling_3m": 10.0
+    },
+    {
+      "date": "2026-06-02",
+      "value": 110.0115,
+      "rolling_3m": 10.71
     }
   ]
 }
