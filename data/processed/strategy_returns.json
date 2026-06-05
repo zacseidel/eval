@@ -370,11 +370,19 @@
     },
     {
       "date": "2026-06-02",
-      "value": 339.3514,
+      "value": 312.5899,
       "spy_value": 109.8581,
-      "rolling_3m": 145.26,
+      "rolling_3m": 125.92,
       "spy_rolling_3m": 10.56,
       "spy_12m": 27.25
+    },
+    {
+      "date": "2026-06-05",
+      "value": 304.225,
+      "spy_value": 109.6481,
+      "rolling_3m": 142.81,
+      "spy_rolling_3m": 12.44,
+      "spy_12m": 26.36
     }
   ],
   "sp500_next5": [
@@ -753,6 +761,14 @@
       "rolling_3m": 100.76,
       "spy_rolling_3m": 10.56,
       "spy_12m": 27.25
+    },
+    {
+      "date": "2026-06-05",
+      "value": 319.8346,
+      "spy_value": 109.6481,
+      "rolling_3m": 128.56,
+      "spy_rolling_3m": 12.44,
+      "spy_12m": 26.36
     }
   ],
   "megacap_top5": [
@@ -1131,6 +1147,14 @@
       "rolling_3m": 68.8,
       "spy_rolling_3m": 10.56,
       "spy_12m": 27.25
+    },
+    {
+      "date": "2026-06-05",
+      "value": 176.8966,
+      "spy_value": 109.6481,
+      "rolling_3m": 69.5,
+      "spy_rolling_3m": 12.44,
+      "spy_12m": 26.36
     }
   ],
   "megacap_next5": [
@@ -1504,11 +1528,19 @@
     },
     {
       "date": "2026-06-02",
-      "value": 143.6692,
+      "value": 144.5063,
       "spy_value": 109.8581,
-      "rolling_3m": 24.11,
+      "rolling_3m": 24.83,
       "spy_rolling_3m": 10.56,
       "spy_12m": 27.25
+    },
+    {
+      "date": "2026-06-05",
+      "value": 146.3694,
+      "spy_value": 109.6481,
+      "rolling_3m": 26.44,
+      "spy_rolling_3m": 12.44,
+      "spy_12m": 26.36
     }
   ],
   "sp400_mcap5": [
@@ -1887,6 +1919,14 @@
       "rolling_3m": 6.48,
       "spy_rolling_3m": 10.56,
       "spy_12m": 27.25
+    },
+    {
+      "date": "2026-06-05",
+      "value": 162.1593,
+      "spy_value": 109.6481,
+      "rolling_3m": 31.22,
+      "spy_rolling_3m": 12.44,
+      "spy_12m": 26.36
     }
   ],
   "sp400_mcap_next5": [
@@ -2265,6 +2305,14 @@
       "rolling_3m": 74.62,
       "spy_rolling_3m": 10.56,
       "spy_12m": 27.25
+    },
+    {
+      "date": "2026-06-05",
+      "value": 173.5201,
+      "spy_value": 109.6481,
+      "rolling_3m": 85.11,
+      "spy_rolling_3m": 12.44,
+      "spy_12m": 26.36
     }
   ],
   "munger": [
@@ -2643,6 +2691,14 @@
       "rolling_3m": 36.51,
       "spy_rolling_3m": 15.32,
       "spy_12m": 27.25
+    },
+    {
+      "date": "2026-06-05",
+      "value": 161.8839,
+      "spy_value": 114.9184,
+      "rolling_3m": 31.71,
+      "spy_rolling_3m": 17.28,
+      "spy_12m": 26.36
     }
   ],
   "spy": [
@@ -2880,6 +2936,11 @@
       "date": "2026-06-02",
       "value": 110.0115,
       "rolling_3m": 10.71
+    },
+    {
+      "date": "2026-06-05",
+      "value": 109.8012,
+      "rolling_3m": 12.6
     }
   ]
 }
