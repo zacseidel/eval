@@ -20,6 +20,17 @@ function formatBenchmark(val) {
   return `<span class="bmark-value ${cls}">SPY ${val >= 0 ? "+" : ""}${val.toFixed(1)}%</span>`;
 }
 
+function formatSharpe(val) {
+  if (val == null) return `<span class="value neutral">—</span>`;
+  const cls = val >= 1.0 ? "positive" : val >= 0 ? "neutral" : "negative";
+  return `<span class="value ${cls}">${val.toFixed(2)}</span>`;
+}
+
+function formatSharpeBenchmark(val) {
+  if (val == null) return `<span class="bmark-value">SPY —</span>`;
+  return `<span class="bmark-value">SPY ${val.toFixed(2)}</span>`;
+}
+
 function get12mReturn(series, field = "value") {
   if (!series || series.length < 2) return null;
   const last = series[series.length - 1];
@@ -41,6 +52,7 @@ function getLatest3mReturn(series, field = "rolling_3m") {
 export function renderStrategies(positions, strategyReturns) {
   const grid = document.getElementById("strategy-grid");
   grid.innerHTML = "";
+  const sharpeMap = strategyReturns["_sharpe"] || {};
 
   for (const [sid, meta] of Object.entries(STRATEGY_META)) {
     const series = strategyReturns[sid] || [];
@@ -53,6 +65,10 @@ export function renderStrategies(positions, strategyReturns) {
     const openCount = openPositions.length;
     const closedCount = stratPositions.filter(p => p.status === "closed").length;
     const openTickers = openPositions.map(p => p.ticker);
+    const stratSharpe12m = sharpeMap[sid]?.["12m"] ?? null;
+    const stratSharpe3m  = sharpeMap[sid]?.["3m"]  ?? null;
+    const spySharpe12m   = sharpeMap["spy"]?.["12m"] ?? null;
+    const spySharpe3m    = sharpeMap["spy"]?.["3m"]  ?? null;
 
     const card = document.createElement("div");
     card.className = "strategy-card";
@@ -72,6 +88,16 @@ export function renderStrategies(positions, strategyReturns) {
           <span class="label">Rolling 3M</span>
           ${formatPct(ret3m)}
           ${formatBenchmark(spy3m)}
+        </div>
+        <div class="metric">
+          <span class="label">Sharpe 12M</span>
+          ${formatSharpe(stratSharpe12m)}
+          ${formatSharpeBenchmark(spySharpe12m)}
+        </div>
+        <div class="metric">
+          <span class="label">Sharpe 3M</span>
+          ${formatSharpe(stratSharpe3m)}
+          ${formatSharpeBenchmark(spySharpe3m)}
         </div>
       </div>
       <div class="card-footer">

@@ -11,6 +11,10 @@ from polygon_client import get_daily_bars, get_ticker_details, get_execution_pri
 SCRAPED_DIR = Path(__file__).parent.parent / "data" / "scraped"
 PROCESSED_DIR = Path(__file__).parent.parent / "data" / "processed"
 
+RISK_FREE_RATE_ANNUAL = 0.05
+MIN_SHARPE_POINTS_12M = 20
+MIN_SHARPE_POINTS_3M = 8
+
 STRATEGIES = {
     "sp500_top5":        {"section": "sp500",   "ranks": range(1, 6)},
     "sp500_next5":       {"section": "sp500",   "ranks": range(6, 11)},
@@ -421,6 +425,43 @@ def build_spy_benchmark(reports: list[dict], spy_bars: list[dict]) -> list[dict]
     return series
 
 
+def _sharpe_from_values(values: list[float], min_points: int) -> float | None:
+    if len(values) < min_points + 1:
+        return None
+    rfr_weekly = RISK_FREE_RATE_ANNUAL / 52
+    log_returns = [
+        math.log(values[i] / values[i - 1])
+        for i in range(1, len(values))
+        if values[i] > 0 and values[i - 1] > 0
+    ]
+    if len(log_returns) < min_points:
+        return None
+    mean_r = sum(log_returns) / len(log_returns)
+    variance = sum((r - mean_r) ** 2 for r in log_returns) / (len(log_returns) - 1)
+    std_r = math.sqrt(variance)
+    if std_r == 0:
+        return None
+    return round((mean_r - rfr_weekly) / std_r * math.sqrt(52), 2)
+
+
+def compute_sharpe(strategy_returns: dict) -> dict:
+    """Compute annualized Sharpe for each strategy and SPY over 12M and 3M windows."""
+    cutoff_12m = (date.today() - timedelta(days=365)).strftime("%Y-%m-%d")
+    cutoff_3m = (date.today() - timedelta(days=91)).strftime("%Y-%m-%d")
+
+    sharpe_map = {}
+    for sid, series in strategy_returns.items():
+        if not isinstance(series, list):
+            continue
+        values_12m = [p["value"] for p in series if p.get("value") is not None and p["date"] >= cutoff_12m]
+        values_3m = [p["value"] for p in series if p.get("value") is not None and p["date"] >= cutoff_3m]
+        sharpe_map[sid] = {
+            "12m": _sharpe_from_values(values_12m, MIN_SHARPE_POINTS_12M),
+            "3m": _sharpe_from_values(values_3m, MIN_SHARPE_POINTS_3M),
+        }
+    return sharpe_map
+
+
 def _price_at_date(ticker: str, strategy_id: str, report_date: str, reports: list[dict]):
     """Look up a ticker's price in a specific report's section."""
     section_map = {
@@ -486,6 +527,12 @@ def process_all():
     spy_series = build_spy_benchmark(reports, spy_bars)
     strategy_returns["spy"] = spy_series
     print(f"  SPY overlay: {len(spy_series)} data points.")
+
+    print("Computing Sharpe ratios...")
+    sharpe_map = compute_sharpe(strategy_returns)
+    strategy_returns["_sharpe"] = sharpe_map
+    for sid, vals in sharpe_map.items():
+        print(f"  {sid}: 12M={vals['12m']}, 3M={vals['3m']}")
 
     positions_path = PROCESSED_DIR / "positions.json"
     returns_path = PROCESSED_DIR / "strategy_returns.json"

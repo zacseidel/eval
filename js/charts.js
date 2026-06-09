@@ -49,7 +49,7 @@ function buildCumulativeChart(range) {
   const strategyOrder = ["sp500_top5", "sp500_next5", "megacap_top5", "megacap_next5", "sp400_mcap5", "munger"];
   const orderedEntries = [
     ...strategyOrder.filter(sid => _strategyReturns[sid]).map(sid => [sid, _strategyReturns[sid]]),
-    ...Object.entries(_strategyReturns).filter(([sid]) => !strategyOrder.includes(sid)),
+    ...Object.entries(_strategyReturns).filter(([sid, v]) => !strategyOrder.includes(sid) && Array.isArray(v)),
   ];
 
   for (const [sid, series] of orderedEntries) {
@@ -119,7 +119,7 @@ function buildRolling3mChart() {
   const colors = [];
 
   for (const [sid, series] of Object.entries(_strategyReturns)) {
-    if (!series || series.length === 0) continue;
+    if (!Array.isArray(series) || series.length === 0) continue;
     const last = series[series.length - 1];
     const val = last.rolling_3m;
     labels.push(STRATEGY_LABELS[sid] ?? sid);

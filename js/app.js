@@ -30,7 +30,7 @@ async function init() {
   renderCharts(strategyReturns);
 
   // Show most recent data date in the header
-  const allDates = Object.values(strategyReturns).flat().map(d => d.date);
+  const allDates = Object.values(strategyReturns).filter(Array.isArray).flat().map(d => d.date);
   const maxDate = allDates.reduce((a, b) => (a > b ? a : b), "");
   if (maxDate) {
     const formatted = new Date(maxDate + "T00:00:00").toLocaleDateString("en-US", {
