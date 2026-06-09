@@ -331,17 +331,6 @@
   },
   {
     "strategy": "sp500_top5",
-    "ticker": "SATS",
-    "entry_date": "2026-03-24",
-    "entry_price": 120.7499,
-    "exit_date": "2026-03-29",
-    "exit_price": 112.5383,
-    "hold_days": 5,
-    "return_pct": -6.8,
-    "status": "closed"
-  },
-  {
-    "strategy": "sp500_top5",
     "ticker": "TER",
     "entry_date": "2026-03-24",
     "entry_price": 321.4448,
@@ -349,6 +338,17 @@
     "exit_price": 278.2088,
     "hold_days": 5,
     "return_pct": -13.45,
+    "status": "closed"
+  },
+  {
+    "strategy": "sp500_top5",
+    "ticker": "SATS",
+    "entry_date": "2026-03-24",
+    "entry_price": 120.7499,
+    "exit_date": "2026-03-29",
+    "exit_price": 112.5383,
+    "hold_days": 5,
+    "return_pct": -6.8,
     "status": "closed"
   },
   {
@@ -389,10 +389,10 @@
     "ticker": "WDC",
     "entry_date": "2026-03-15",
     "entry_price": 284.0662,
-    "exit_date": "2026-05-22",
-    "exit_price": 284.0662,
-    "hold_days": 68,
-    "return_pct": 0.0,
+    "exit_date": "2026-05-28",
+    "exit_price": 537.6294,
+    "hold_days": 74,
+    "return_pct": 89.26,
     "status": "closed"
   },
   {
@@ -400,10 +400,10 @@
     "ticker": "LITE",
     "entry_date": "2026-03-29",
     "entry_price": 665.2705,
-    "exit_date": "2026-05-22",
-    "exit_price": 665.2705,
-    "hold_days": 54,
-    "return_pct": 0.0,
+    "exit_date": "2026-05-28",
+    "exit_price": 883.1744,
+    "hold_days": 60,
+    "return_pct": 32.75,
     "status": "closed"
   },
   {
@@ -411,9 +411,75 @@
     "ticker": "STX",
     "entry_date": "2026-04-05",
     "entry_price": 456.7038,
-    "exit_date": "2026-05-22",
-    "exit_price": 456.7038,
-    "hold_days": 47,
+    "exit_date": "2026-05-28",
+    "exit_price": 885.9614,
+    "hold_days": 53,
+    "return_pct": 93.99,
+    "status": "closed"
+  },
+  {
+    "strategy": "sp500_top5",
+    "ticker": "SATS",
+    "entry_date": "2026-05-28",
+    "entry_price": 128.9364,
+    "exit_date": "2026-06-01",
+    "exit_price": 126.8207,
+    "hold_days": 4,
+    "return_pct": -1.64,
+    "status": "closed"
+  },
+  {
+    "strategy": "sp500_top5",
+    "ticker": "INTC",
+    "entry_date": "2026-05-28",
+    "entry_price": 120.062,
+    "exit_date": "2026-06-03",
+    "exit_price": 113.4341,
+    "hold_days": 6,
+    "return_pct": -5.52,
+    "status": "closed"
+  },
+  {
+    "strategy": "sp500_top5",
+    "ticker": "ALB",
+    "entry_date": "2026-06-01",
+    "entry_price": 171.6999,
+    "exit_date": "2026-06-03",
+    "exit_price": 168.8452,
+    "hold_days": 2,
+    "return_pct": -1.66,
+    "status": "closed"
+  },
+  {
+    "strategy": "sp500_top5",
+    "ticker": "DELL",
+    "entry_date": "2026-06-03",
+    "entry_price": 419.0141,
+    "exit_date": "2026-06-08",
+    "exit_price": 397.9762,
+    "hold_days": 5,
+    "return_pct": -5.02,
+    "status": "closed"
+  },
+  {
+    "strategy": "sp500_top5",
+    "ticker": "MU",
+    "entry_date": "2026-05-08",
+    "entry_price": 646.63,
+    "exit_date": "2026-06-09",
+    "exit_price": 646.63,
+    "hold_days": 32,
+    "return_pct": 0.0,
+    "status": "closed"
+  },
+  {
+    "strategy": "sp500_top5",
+    "ticker": "AMD",
+    "entry_date": "2026-05-28",
+    "entry_price": 513.7847,
+    "exit_date": "2026-06-09",
+    "exit_price": 513.7847,
+    "hold_days": 12,
     "return_pct": 0.0,
     "status": "closed"
   },
@@ -424,64 +490,53 @@
     "entry_price": 590.2129,
     "exit_date": null,
     "exit_price": null,
-    "hold_days": 59,
-    "return_pct": 150.54,
-    "status": "open"
-  },
-  {
-    "strategy": "sp500_top5",
-    "ticker": "MU",
-    "entry_date": "2026-05-08",
-    "entry_price": 646.63,
-    "exit_date": null,
-    "exit_price": null,
-    "hold_days": 19,
-    "return_pct": 16.14,
-    "status": "open"
-  },
-  {
-    "strategy": "sp500_top5",
-    "ticker": "INTC",
-    "entry_date": "2026-05-22",
-    "entry_price": 118.5,
-    "exit_date": null,
-    "exit_price": null,
-    "hold_days": 5,
-    "return_pct": 1.13,
+    "hold_days": 72,
+    "return_pct": 178.2,
     "status": "open"
   },
   {
     "strategy": "sp500_top5",
     "ticker": "SATS",
-    "entry_date": "2026-05-22",
-    "entry_price": 128.44,
+    "entry_date": "2026-06-03",
+    "entry_price": 122.2106,
     "exit_date": null,
     "exit_price": null,
-    "hold_days": 5,
-    "return_pct": -3.3,
+    "hold_days": 6,
+    "return_pct": -4.57,
     "status": "open"
   },
   {
     "strategy": "sp500_top5",
-    "ticker": "AMD",
-    "entry_date": "2026-05-22",
-    "entry_price": 449.59,
+    "ticker": "LRCX",
+    "entry_date": "2026-06-08",
+    "entry_price": 324.3209,
     "exit_date": null,
     "exit_price": null,
-    "hold_days": 5,
-    "return_pct": 3.99,
+    "hold_days": 1,
+    "return_pct": 0.04,
     "status": "open"
   },
   {
-    "strategy": "sp500_next5",
-    "ticker": "HII",
-    "entry_date": "2026-01-07",
-    "entry_price": 380.8312,
-    "exit_date": "2026-01-08",
-    "exit_price": 387.4816,
-    "hold_days": 1,
-    "return_pct": 1.75,
-    "status": "closed"
+    "strategy": "sp500_top5",
+    "ticker": "DELL",
+    "entry_date": "2026-06-09",
+    "entry_price": 400.77,
+    "exit_date": null,
+    "exit_price": null,
+    "hold_days": 0,
+    "return_pct": 0.0,
+    "status": "open"
+  },
+  {
+    "strategy": "sp500_top5",
+    "ticker": "AMAT",
+    "entry_date": "2026-06-09",
+    "entry_price": 492.17,
+    "exit_date": null,
+    "exit_price": null,
+    "hold_days": 0,
+    "return_pct": 0.0,
+    "status": "open"
   },
   {
     "strategy": "sp500_next5",
@@ -492,6 +547,17 @@
     "exit_price": 217.9974,
     "hold_days": 1,
     "return_pct": 4.08,
+    "status": "closed"
+  },
+  {
+    "strategy": "sp500_next5",
+    "ticker": "HII",
+    "entry_date": "2026-01-07",
+    "entry_price": 380.8312,
+    "exit_date": "2026-01-08",
+    "exit_price": 387.4816,
+    "hold_days": 1,
+    "return_pct": 1.75,
     "status": "closed"
   },
   {
@@ -650,17 +716,6 @@
   },
   {
     "strategy": "sp500_next5",
-    "ticker": "ALB",
-    "entry_date": "2026-01-25",
-    "entry_price": 189.9449,
-    "exit_date": "2026-02-01",
-    "exit_price": 165.8673,
-    "hold_days": 7,
-    "return_pct": -12.68,
-    "status": "closed"
-  },
-  {
-    "strategy": "sp500_next5",
     "ticker": "AMD",
     "entry_date": "2026-01-25",
     "entry_price": 252.6715,
@@ -668,6 +723,17 @@
     "exit_price": 246.1778,
     "hold_days": 7,
     "return_pct": -2.57,
+    "status": "closed"
+  },
+  {
+    "strategy": "sp500_next5",
+    "ticker": "ALB",
+    "entry_date": "2026-01-25",
+    "entry_price": 189.9449,
+    "exit_date": "2026-02-01",
+    "exit_price": 165.8673,
+    "hold_days": 7,
+    "return_pct": -12.68,
     "status": "closed"
   },
   {
@@ -694,17 +760,6 @@
   },
   {
     "strategy": "sp500_next5",
-    "ticker": "FIX",
-    "entry_date": "2026-02-01",
-    "entry_price": 1166.3047,
-    "exit_date": "2026-02-03",
-    "exit_price": 1122.2278,
-    "hold_days": 2,
-    "return_pct": -3.78,
-    "status": "closed"
-  },
-  {
-    "strategy": "sp500_next5",
     "ticker": "APH",
     "entry_date": "2026-02-01",
     "entry_price": 145.4891,
@@ -716,13 +771,13 @@
   },
   {
     "strategy": "sp500_next5",
-    "ticker": "AMD",
-    "entry_date": "2026-02-03",
-    "entry_price": 205.7,
-    "exit_date": "2026-02-04",
-    "exit_price": 194.8472,
-    "hold_days": 1,
-    "return_pct": -5.28,
+    "ticker": "FIX",
+    "entry_date": "2026-02-01",
+    "entry_price": 1166.3047,
+    "exit_date": "2026-02-03",
+    "exit_price": 1122.2278,
+    "hold_days": 2,
+    "return_pct": -3.78,
     "status": "closed"
   },
   {
@@ -734,6 +789,17 @@
     "exit_price": 109.847,
     "hold_days": 1,
     "return_pct": -5.74,
+    "status": "closed"
+  },
+  {
+    "strategy": "sp500_next5",
+    "ticker": "AMD",
+    "entry_date": "2026-02-03",
+    "entry_price": 205.7,
+    "exit_date": "2026-02-04",
+    "exit_price": 194.8472,
+    "hold_days": 1,
+    "return_pct": -5.28,
     "status": "closed"
   },
   {
@@ -793,17 +859,6 @@
   },
   {
     "strategy": "sp500_next5",
-    "ticker": "ALB",
-    "entry_date": "2026-02-10",
-    "entry_price": 174.0995,
-    "exit_date": "2026-02-16",
-    "exit_price": 168.7544,
-    "hold_days": 6,
-    "return_pct": -3.07,
-    "status": "closed"
-  },
-  {
-    "strategy": "sp500_next5",
     "ticker": "NEM",
     "entry_date": "2026-02-10",
     "entry_price": 123.5531,
@@ -811,6 +866,17 @@
     "exit_price": 121.5625,
     "hold_days": 6,
     "return_pct": -1.61,
+    "status": "closed"
+  },
+  {
+    "strategy": "sp500_next5",
+    "ticker": "ALB",
+    "entry_date": "2026-02-10",
+    "entry_price": 174.0995,
+    "exit_date": "2026-02-16",
+    "exit_price": 168.7544,
+    "hold_days": 6,
+    "return_pct": -3.07,
     "status": "closed"
   },
   {
@@ -903,17 +969,6 @@
   },
   {
     "strategy": "sp500_next5",
-    "ticker": "ALB",
-    "entry_date": "2026-03-03",
-    "entry_price": 169.7318,
-    "exit_date": "2026-03-10",
-    "exit_price": 167.403,
-    "hold_days": 7,
-    "return_pct": -1.37,
-    "status": "closed"
-  },
-  {
-    "strategy": "sp500_next5",
     "ticker": "PWR",
     "entry_date": "2026-03-03",
     "entry_price": 567.3448,
@@ -921,6 +976,17 @@
     "exit_price": 569.4321,
     "hold_days": 7,
     "return_pct": 0.37,
+    "status": "closed"
+  },
+  {
+    "strategy": "sp500_next5",
+    "ticker": "ALB",
+    "entry_date": "2026-03-03",
+    "entry_price": 169.7318,
+    "exit_date": "2026-03-10",
+    "exit_price": 167.403,
+    "hold_days": 7,
+    "return_pct": -1.37,
     "status": "closed"
   },
   {
@@ -936,28 +1002,6 @@
   },
   {
     "strategy": "sp500_next5",
-    "ticker": "PLTR",
-    "entry_date": "2026-03-10",
-    "entry_price": 151.3136,
-    "exit_date": "2026-03-15",
-    "exit_price": 152.5099,
-    "hold_days": 5,
-    "return_pct": 0.79,
-    "status": "closed"
-  },
-  {
-    "strategy": "sp500_next5",
-    "ticker": "HWM",
-    "entry_date": "2026-03-10",
-    "entry_price": 251.5998,
-    "exit_date": "2026-03-15",
-    "exit_price": 240.8481,
-    "hold_days": 5,
-    "return_pct": -4.27,
-    "status": "closed"
-  },
-  {
-    "strategy": "sp500_next5",
     "ticker": "EME",
     "entry_date": "2026-03-10",
     "entry_price": 720.2812,
@@ -965,6 +1009,17 @@
     "exit_price": 726.9669,
     "hold_days": 5,
     "return_pct": 0.93,
+    "status": "closed"
+  },
+  {
+    "strategy": "sp500_next5",
+    "ticker": "PLTR",
+    "entry_date": "2026-03-10",
+    "entry_price": 151.3136,
+    "exit_date": "2026-03-15",
+    "exit_price": 152.5099,
+    "hold_days": 5,
+    "return_pct": 0.79,
     "status": "closed"
   },
   {
@@ -980,13 +1035,13 @@
   },
   {
     "strategy": "sp500_next5",
-    "ticker": "HOOD",
-    "entry_date": "2026-03-15",
-    "entry_price": 74.9718,
-    "exit_date": "2026-03-17",
-    "exit_price": 75.7304,
-    "hold_days": 2,
-    "return_pct": 1.01,
+    "ticker": "HWM",
+    "entry_date": "2026-03-10",
+    "entry_price": 251.5998,
+    "exit_date": "2026-03-15",
+    "exit_price": 240.8481,
+    "hold_days": 5,
+    "return_pct": -4.27,
     "status": "closed"
   },
   {
@@ -998,6 +1053,17 @@
     "exit_price": 524.2209,
     "hold_days": 2,
     "return_pct": -0.73,
+    "status": "closed"
+  },
+  {
+    "strategy": "sp500_next5",
+    "ticker": "HOOD",
+    "entry_date": "2026-03-15",
+    "entry_price": 74.9718,
+    "exit_date": "2026-03-17",
+    "exit_price": 75.7304,
+    "hold_days": 2,
+    "return_pct": 1.01,
     "status": "closed"
   },
   {
@@ -1046,17 +1112,6 @@
   },
   {
     "strategy": "sp500_next5",
-    "ticker": "ALB",
-    "entry_date": "2026-03-17",
-    "entry_price": 166.9571,
-    "exit_date": "2026-03-29",
-    "exit_price": 178.6769,
-    "hold_days": 12,
-    "return_pct": 7.02,
-    "status": "closed"
-  },
-  {
-    "strategy": "sp500_next5",
     "ticker": "KLAC",
     "entry_date": "2026-03-17",
     "entry_price": 1490.0669,
@@ -1064,6 +1119,17 @@
     "exit_price": 1390.8409,
     "hold_days": 12,
     "return_pct": -6.66,
+    "status": "closed"
+  },
+  {
+    "strategy": "sp500_next5",
+    "ticker": "ALB",
+    "entry_date": "2026-03-17",
+    "entry_price": 166.9571,
+    "exit_date": "2026-03-29",
+    "exit_price": 178.6769,
+    "hold_days": 12,
+    "return_pct": 7.02,
     "status": "closed"
   },
   {
@@ -1079,17 +1145,6 @@
   },
   {
     "strategy": "sp500_next5",
-    "ticker": "GEV",
-    "entry_date": "2026-03-29",
-    "entry_price": 822.6854,
-    "exit_date": "2026-03-31",
-    "exit_price": 901.1708,
-    "hold_days": 2,
-    "return_pct": 9.54,
-    "status": "closed"
-  },
-  {
-    "strategy": "sp500_next5",
     "ticker": "SATS",
     "entry_date": "2026-03-29",
     "entry_price": 112.5383,
@@ -1097,6 +1152,17 @@
     "exit_price": 120.9285,
     "hold_days": 2,
     "return_pct": 7.46,
+    "status": "closed"
+  },
+  {
+    "strategy": "sp500_next5",
+    "ticker": "GEV",
+    "entry_date": "2026-03-29",
+    "entry_price": 822.6854,
+    "exit_date": "2026-03-31",
+    "exit_price": 901.1708,
+    "hold_days": 2,
+    "return_pct": 9.54,
     "status": "closed"
   },
   {
@@ -1189,17 +1255,6 @@
   },
   {
     "strategy": "sp500_next5",
-    "ticker": "VRT",
-    "entry_date": "2026-04-14",
-    "entry_price": 302.6825,
-    "exit_date": "2026-04-19",
-    "exit_price": 312.0573,
-    "hold_days": 5,
-    "return_pct": 3.1,
-    "status": "closed"
-  },
-  {
-    "strategy": "sp500_next5",
     "ticker": "GLW",
     "entry_date": "2026-04-14",
     "entry_price": 167.4649,
@@ -1207,6 +1262,17 @@
     "exit_price": 165.409,
     "hold_days": 5,
     "return_pct": -1.23,
+    "status": "closed"
+  },
+  {
+    "strategy": "sp500_next5",
+    "ticker": "VRT",
+    "entry_date": "2026-04-14",
+    "entry_price": 302.6825,
+    "exit_date": "2026-04-19",
+    "exit_price": 312.0573,
+    "hold_days": 5,
+    "return_pct": 3.1,
     "status": "closed"
   },
   {
@@ -1266,17 +1332,6 @@
   },
   {
     "strategy": "sp500_next5",
-    "ticker": "ALB",
-    "entry_date": "2026-05-03",
-    "entry_price": 190.8795,
-    "exit_date": "2026-05-05",
-    "exit_price": 195.05,
-    "hold_days": 2,
-    "return_pct": 2.18,
-    "status": "closed"
-  },
-  {
-    "strategy": "sp500_next5",
     "ticker": "AMD",
     "entry_date": "2026-05-03",
     "entry_price": 345.8407,
@@ -1284,6 +1339,17 @@
     "exit_price": 416.4858,
     "hold_days": 2,
     "return_pct": 20.43,
+    "status": "closed"
+  },
+  {
+    "strategy": "sp500_next5",
+    "ticker": "ALB",
+    "entry_date": "2026-05-03",
+    "entry_price": 190.8795,
+    "exit_date": "2026-05-05",
+    "exit_price": 195.05,
+    "hold_days": 2,
+    "return_pct": 2.18,
     "status": "closed"
   },
   {
@@ -1379,10 +1445,10 @@
     "ticker": "INTC",
     "entry_date": "2026-04-28",
     "entry_price": 92.1167,
-    "exit_date": "2026-05-22",
-    "exit_price": 118.5,
-    "hold_days": 24,
-    "return_pct": 28.64,
+    "exit_date": "2026-05-28",
+    "exit_price": 120.062,
+    "hold_days": 30,
+    "return_pct": 30.34,
     "status": "closed"
   },
   {
@@ -1390,10 +1456,10 @@
     "ticker": "AMD",
     "entry_date": "2026-05-08",
     "entry_price": 408.46,
-    "exit_date": "2026-05-22",
-    "exit_price": 449.59,
-    "hold_days": 14,
-    "return_pct": 10.07,
+    "exit_date": "2026-05-28",
+    "exit_price": 513.7847,
+    "hold_days": 20,
+    "return_pct": 25.79,
     "status": "closed"
   },
   {
@@ -1401,10 +1467,10 @@
     "ticker": "SATS",
     "entry_date": "2026-05-15",
     "entry_price": 135.11,
-    "exit_date": "2026-05-22",
-    "exit_price": 128.44,
-    "hold_days": 7,
-    "return_pct": -4.94,
+    "exit_date": "2026-05-28",
+    "exit_price": 128.9364,
+    "hold_days": 13,
+    "return_pct": -4.57,
     "status": "closed"
   },
   {
@@ -1412,10 +1478,10 @@
     "ticker": "FIX",
     "entry_date": "2026-05-19",
     "entry_price": 1854.43,
-    "exit_date": "2026-05-22",
-    "exit_price": 1854.43,
-    "hold_days": 3,
-    "return_pct": 0.0,
+    "exit_date": "2026-05-28",
+    "exit_price": 1851.8856,
+    "hold_days": 9,
+    "return_pct": -0.14,
     "status": "closed"
   },
   {
@@ -1423,75 +1489,163 @@
     "ticker": "GLW",
     "entry_date": "2026-05-13",
     "entry_price": 204.4772,
-    "exit_date": "2026-05-26",
-    "exit_price": 204.4772,
-    "hold_days": 13,
-    "return_pct": 0.0,
+    "exit_date": "2026-05-28",
+    "exit_price": 186.6598,
+    "hold_days": 15,
+    "return_pct": -8.71,
     "status": "closed"
   },
   {
     "strategy": "sp500_next5",
     "ticker": "GOOGL",
-    "entry_date": "2026-05-22",
-    "entry_price": 387.66,
-    "exit_date": "2026-05-26",
-    "exit_price": 387.66,
-    "hold_days": 4,
+    "entry_date": "2026-05-28",
+    "entry_price": 389.7251,
+    "exit_date": "2026-05-28",
+    "exit_price": 389.7251,
+    "hold_days": 0,
     "return_pct": 0.0,
     "status": "closed"
   },
   {
     "strategy": "sp500_next5",
-    "ticker": "AMAT",
-    "entry_date": "2026-05-22",
-    "entry_price": 427.36,
-    "exit_date": null,
-    "exit_price": null,
-    "hold_days": 5,
-    "return_pct": 1.12,
-    "status": "open"
-  },
-  {
-    "strategy": "sp500_next5",
-    "ticker": "ON",
-    "entry_date": "2026-05-22",
-    "entry_price": 109.61,
-    "exit_date": null,
-    "exit_price": null,
-    "hold_days": 5,
-    "return_pct": 6.01,
-    "status": "open"
-  },
-  {
-    "strategy": "sp500_next5",
     "ticker": "CAT",
-    "entry_date": "2026-05-22",
-    "entry_price": 865.95,
-    "exit_date": null,
-    "exit_price": null,
-    "hold_days": 5,
-    "return_pct": 1.61,
-    "status": "open"
+    "entry_date": "2026-05-28",
+    "entry_price": 892.686,
+    "exit_date": "2026-06-01",
+    "exit_price": 863.1611,
+    "hold_days": 4,
+    "return_pct": -3.31,
+    "status": "closed"
   },
   {
     "strategy": "sp500_next5",
     "ticker": "WBD",
-    "entry_date": "2026-05-26",
-    "entry_price": 27.03,
+    "entry_date": "2026-05-28",
+    "entry_price": 27.043,
+    "exit_date": "2026-06-01",
+    "exit_price": 27.214,
+    "hold_days": 4,
+    "return_pct": 0.63,
+    "status": "closed"
+  },
+  {
+    "strategy": "sp500_next5",
+    "ticker": "DELL",
+    "entry_date": "2026-05-28",
+    "entry_price": 353.8299,
+    "exit_date": "2026-06-03",
+    "exit_price": 419.0141,
+    "hold_days": 6,
+    "return_pct": 18.42,
+    "status": "closed"
+  },
+  {
+    "strategy": "sp500_next5",
+    "ticker": "GOOGL",
+    "entry_date": "2026-06-01",
+    "entry_price": 375.8643,
+    "exit_date": "2026-06-03",
+    "exit_price": 360.5907,
+    "hold_days": 2,
+    "return_pct": -4.06,
+    "status": "closed"
+  },
+  {
+    "strategy": "sp500_next5",
+    "ticker": "NUE",
+    "entry_date": "2026-06-01",
+    "entry_price": 250.3974,
+    "exit_date": "2026-06-03",
+    "exit_price": 258.5762,
+    "hold_days": 2,
+    "return_pct": 3.27,
+    "status": "closed"
+  },
+  {
+    "strategy": "sp500_next5",
+    "ticker": "DDOG",
+    "entry_date": "2026-06-03",
+    "entry_price": 249.5501,
+    "exit_date": "2026-06-08",
+    "exit_price": 231.8777,
+    "hold_days": 5,
+    "return_pct": -7.08,
+    "status": "closed"
+  },
+  {
+    "strategy": "sp500_next5",
+    "ticker": "AMAT",
+    "entry_date": "2026-05-28",
+    "entry_price": 449.7568,
+    "exit_date": "2026-06-09",
+    "exit_price": 492.17,
+    "hold_days": 12,
+    "return_pct": 9.43,
+    "status": "closed"
+  },
+  {
+    "strategy": "sp500_next5",
+    "ticker": "DELL",
+    "entry_date": "2026-06-08",
+    "entry_price": 397.9762,
+    "exit_date": "2026-06-09",
+    "exit_price": 400.77,
+    "hold_days": 1,
+    "return_pct": 0.7,
+    "status": "closed"
+  },
+  {
+    "strategy": "sp500_next5",
+    "ticker": "ON",
+    "entry_date": "2026-05-28",
+    "entry_price": 123.774,
     "exit_date": null,
     "exit_price": null,
-    "hold_days": 1,
+    "hold_days": 12,
+    "return_pct": -2.32,
+    "status": "open"
+  },
+  {
+    "strategy": "sp500_next5",
+    "ticker": "KLAC",
+    "entry_date": "2026-06-03",
+    "entry_price": 2109.1741,
+    "exit_date": null,
+    "exit_price": null,
+    "hold_days": 6,
+    "return_pct": -0.05,
+    "status": "open"
+  },
+  {
+    "strategy": "sp500_next5",
+    "ticker": "HPE",
+    "entry_date": "2026-06-03",
+    "entry_price": 54.7585,
+    "exit_date": null,
+    "exit_price": null,
+    "hold_days": 6,
+    "return_pct": -8.93,
+    "status": "open"
+  },
+  {
+    "strategy": "sp500_next5",
+    "ticker": "NUE",
+    "entry_date": "2026-06-09",
+    "entry_price": 253.4,
+    "exit_date": null,
+    "exit_price": null,
+    "hold_days": 0,
     "return_pct": 0.0,
     "status": "open"
   },
   {
     "strategy": "sp500_next5",
-    "ticker": "DELL",
-    "entry_date": "2026-05-26",
-    "entry_price": 295.19,
+    "ticker": "MPWR",
+    "entry_date": "2026-06-09",
+    "entry_price": 1559.18,
     "exit_date": null,
     "exit_price": null,
-    "hold_days": 1,
+    "hold_days": 0,
     "return_pct": 0.0,
     "status": "open"
   },
@@ -1992,13 +2146,57 @@
   },
   {
     "strategy": "megacap_top5",
+    "ticker": "GOOGL",
+    "entry_date": "2026-04-28",
+    "entry_price": 353.9049,
+    "exit_date": "2026-06-03",
+    "exit_price": 360.5907,
+    "hold_days": 36,
+    "return_pct": 1.89,
+    "status": "closed"
+  },
+  {
+    "strategy": "megacap_top5",
+    "ticker": "CAT",
+    "entry_date": "2026-05-18",
+    "entry_price": 864.686,
+    "exit_date": "2026-06-08",
+    "exit_price": 912.3287,
+    "hold_days": 21,
+    "return_pct": 5.51,
+    "status": "closed"
+  },
+  {
+    "strategy": "megacap_top5",
+    "ticker": "LRCX",
+    "entry_date": "2026-06-03",
+    "entry_price": 341.7725,
+    "exit_date": "2026-06-08",
+    "exit_price": 324.3209,
+    "hold_days": 5,
+    "return_pct": -5.11,
+    "status": "closed"
+  },
+  {
+    "strategy": "megacap_top5",
+    "ticker": "GOOGL",
+    "entry_date": "2026-06-08",
+    "entry_price": 363.2394,
+    "exit_date": "2026-06-09",
+    "exit_price": 363.31,
+    "hold_days": 1,
+    "return_pct": 0.02,
+    "status": "closed"
+  },
+  {
+    "strategy": "megacap_top5",
     "ticker": "MU",
     "entry_date": "2026-01-07",
     "entry_price": 327.866,
     "exit_date": null,
     "exit_price": null,
-    "hold_days": 140,
-    "return_pct": 129.06,
+    "hold_days": 153,
+    "return_pct": 189.53,
     "status": "open"
   },
   {
@@ -2008,8 +2206,8 @@
     "entry_price": 255.8348,
     "exit_date": null,
     "exit_price": null,
-    "hold_days": 43,
-    "return_pct": 82.74,
+    "hold_days": 56,
+    "return_pct": 91.66,
     "status": "open"
   },
   {
@@ -2019,42 +2217,31 @@
     "entry_price": 92.1167,
     "exit_date": null,
     "exit_price": null,
-    "hold_days": 29,
-    "return_pct": 30.1,
+    "hold_days": 42,
+    "return_pct": 19.71,
     "status": "open"
   },
   {
     "strategy": "megacap_top5",
-    "ticker": "GOOGL",
-    "entry_date": "2026-04-28",
-    "entry_price": 353.9049,
+    "ticker": "AMAT",
+    "entry_date": "2026-06-08",
+    "entry_price": 489.4134,
     "exit_date": null,
     "exit_price": null,
-    "hold_days": 29,
-    "return_pct": 8.21,
-    "status": "open"
-  },
-  {
-    "strategy": "megacap_top5",
-    "ticker": "CAT",
-    "entry_date": "2026-05-18",
-    "entry_price": 864.686,
-    "exit_date": null,
-    "exit_price": null,
-    "hold_days": 9,
-    "return_pct": 1.76,
-    "status": "open"
-  },
-  {
-    "strategy": "megacap_next5",
-    "ticker": "MA",
-    "entry_date": "2026-01-07",
-    "entry_price": 583.2719,
-    "exit_date": "2026-01-08",
-    "exit_price": 578.2321,
     "hold_days": 1,
-    "return_pct": -0.86,
-    "status": "closed"
+    "return_pct": 0.56,
+    "status": "open"
+  },
+  {
+    "strategy": "megacap_top5",
+    "ticker": "LRCX",
+    "entry_date": "2026-06-09",
+    "entry_price": 324.45,
+    "exit_date": null,
+    "exit_price": null,
+    "hold_days": 0,
+    "return_pct": 0.0,
+    "status": "open"
   },
   {
     "strategy": "megacap_next5",
@@ -2065,6 +2252,17 @@
     "exit_price": 350.3405,
     "hold_days": 1,
     "return_pct": -0.83,
+    "status": "closed"
+  },
+  {
+    "strategy": "megacap_next5",
+    "ticker": "MA",
+    "entry_date": "2026-01-07",
+    "entry_price": 583.2719,
+    "exit_date": "2026-01-08",
+    "exit_price": 578.2321,
+    "hold_days": 1,
+    "return_pct": -0.86,
     "status": "closed"
   },
   {
@@ -2124,17 +2322,6 @@
   },
   {
     "strategy": "megacap_next5",
-    "ticker": "MSFT",
-    "entry_date": "2026-01-13",
-    "entry_price": 460.9882,
-    "exit_date": "2026-01-14",
-    "exit_price": 458.5446,
-    "hold_days": 1,
-    "return_pct": -0.53,
-    "status": "closed"
-  },
-  {
-    "strategy": "megacap_next5",
     "ticker": "ORCL",
     "entry_date": "2026-01-13",
     "entry_price": 194.299,
@@ -2142,6 +2329,17 @@
     "exit_price": 192.0031,
     "hold_days": 1,
     "return_pct": -1.18,
+    "status": "closed"
+  },
+  {
+    "strategy": "megacap_next5",
+    "ticker": "MSFT",
+    "entry_date": "2026-01-13",
+    "entry_price": 460.9882,
+    "exit_date": "2026-01-14",
+    "exit_price": 458.5446,
+    "hold_days": 1,
+    "return_pct": -0.53,
     "status": "closed"
   },
   {
@@ -2168,17 +2366,6 @@
   },
   {
     "strategy": "megacap_next5",
-    "ticker": "LLY",
-    "entry_date": "2026-01-14",
-    "entry_price": 1030.6103,
-    "exit_date": "2026-01-19",
-    "exit_price": 1039.0131,
-    "hold_days": 5,
-    "return_pct": 0.82,
-    "status": "closed"
-  },
-  {
-    "strategy": "megacap_next5",
     "ticker": "JNJ",
     "entry_date": "2026-01-14",
     "entry_price": 218.7922,
@@ -2186,6 +2373,17 @@
     "exit_price": 217.4957,
     "hold_days": 5,
     "return_pct": -0.59,
+    "status": "closed"
+  },
+  {
+    "strategy": "megacap_next5",
+    "ticker": "LLY",
+    "entry_date": "2026-01-14",
+    "entry_price": 1030.6103,
+    "exit_date": "2026-01-19",
+    "exit_price": 1039.0131,
+    "hold_days": 5,
+    "return_pct": 0.82,
     "status": "closed"
   },
   {
@@ -2388,17 +2586,6 @@
   },
   {
     "strategy": "megacap_next5",
-    "ticker": "BRK.B",
-    "entry_date": "2026-02-17",
-    "entry_price": 499.5691,
-    "exit_date": "2026-02-22",
-    "exit_price": 496.01,
-    "hold_days": 5,
-    "return_pct": -0.71,
-    "status": "closed"
-  },
-  {
-    "strategy": "megacap_next5",
     "ticker": "PG",
     "entry_date": "2026-02-17",
     "entry_price": 157.0759,
@@ -2406,6 +2593,17 @@
     "exit_price": 164.3965,
     "hold_days": 5,
     "return_pct": 4.66,
+    "status": "closed"
+  },
+  {
+    "strategy": "megacap_next5",
+    "ticker": "BRK.B",
+    "entry_date": "2026-02-17",
+    "entry_price": 499.5691,
+    "exit_date": "2026-02-22",
+    "exit_price": 496.01,
+    "hold_days": 5,
+    "return_pct": -0.71,
     "status": "closed"
   },
   {
@@ -2443,17 +2641,6 @@
   },
   {
     "strategy": "megacap_next5",
-    "ticker": "WMT",
-    "entry_date": "2026-02-22",
-    "entry_price": 125.5865,
-    "exit_date": "2026-03-08",
-    "exit_price": 123.7217,
-    "hold_days": 14,
-    "return_pct": -1.48,
-    "status": "closed"
-  },
-  {
-    "strategy": "megacap_next5",
     "ticker": "XOM",
     "entry_date": "2026-02-22",
     "entry_price": 150.3542,
@@ -2461,6 +2648,17 @@
     "exit_price": 151.5177,
     "hold_days": 14,
     "return_pct": 0.77,
+    "status": "closed"
+  },
+  {
+    "strategy": "megacap_next5",
+    "ticker": "WMT",
+    "entry_date": "2026-02-22",
+    "entry_price": 125.5865,
+    "exit_date": "2026-03-08",
+    "exit_price": 123.7217,
+    "hold_days": 14,
+    "return_pct": -1.48,
     "status": "closed"
   },
   {
@@ -2850,17 +3048,6 @@
   },
   {
     "strategy": "megacap_next5",
-    "ticker": "WMT",
-    "entry_date": "2026-05-15",
-    "entry_price": 132.46,
-    "exit_date": "2026-05-19",
-    "exit_price": 132.46,
-    "hold_days": 4,
-    "return_pct": 0.0,
-    "status": "closed"
-  },
-  {
-    "strategy": "megacap_next5",
     "ticker": "VOO",
     "entry_date": "2026-05-15",
     "entry_price": 687.73,
@@ -2872,13 +3059,24 @@
   },
   {
     "strategy": "megacap_next5",
+    "ticker": "WMT",
+    "entry_date": "2026-05-15",
+    "entry_price": 132.46,
+    "exit_date": "2026-05-19",
+    "exit_price": 132.46,
+    "hold_days": 4,
+    "return_pct": 0.0,
+    "status": "closed"
+  },
+  {
+    "strategy": "megacap_next5",
     "ticker": "CVX",
     "entry_date": "2026-05-19",
     "entry_price": 196.12,
-    "exit_date": "2026-05-22",
-    "exit_price": 196.12,
-    "hold_days": 3,
-    "return_pct": 0.0,
+    "exit_date": "2026-05-28",
+    "exit_price": 183.2142,
+    "hold_days": 9,
+    "return_pct": -6.58,
     "status": "closed"
   },
   {
@@ -2886,8 +3084,74 @@
     "ticker": "JNJ",
     "entry_date": "2026-05-20",
     "entry_price": 229.7485,
-    "exit_date": "2026-05-26",
-    "exit_price": 229.7485,
+    "exit_date": "2026-05-28",
+    "exit_price": 230.9376,
+    "hold_days": 8,
+    "return_pct": 0.52,
+    "status": "closed"
+  },
+  {
+    "strategy": "megacap_next5",
+    "ticker": "XOM",
+    "entry_date": "2026-05-20",
+    "entry_price": 158.7101,
+    "exit_date": "2026-06-01",
+    "exit_price": 148.7721,
+    "hold_days": 12,
+    "return_pct": -6.26,
+    "status": "closed"
+  },
+  {
+    "strategy": "megacap_next5",
+    "ticker": "VOO",
+    "entry_date": "2026-05-28",
+    "entry_price": 692.7816,
+    "exit_date": "2026-06-03",
+    "exit_price": 694.7133,
+    "hold_days": 6,
+    "return_pct": 0.28,
+    "status": "closed"
+  },
+  {
+    "strategy": "megacap_next5",
+    "ticker": "ABBV",
+    "entry_date": "2026-06-01",
+    "entry_price": 212.9803,
+    "exit_date": "2026-06-03",
+    "exit_price": 217.7795,
+    "hold_days": 2,
+    "return_pct": 2.25,
+    "status": "closed"
+  },
+  {
+    "strategy": "megacap_next5",
+    "ticker": "GOOGL",
+    "entry_date": "2026-06-03",
+    "entry_price": 360.5907,
+    "exit_date": "2026-06-08",
+    "exit_price": 363.2394,
+    "hold_days": 5,
+    "return_pct": 0.73,
+    "status": "closed"
+  },
+  {
+    "strategy": "megacap_next5",
+    "ticker": "AAPL",
+    "entry_date": "2026-05-08",
+    "entry_price": 287.44,
+    "exit_date": "2026-06-09",
+    "exit_price": 287.44,
+    "hold_days": 32,
+    "return_pct": 0.0,
+    "status": "closed"
+  },
+  {
+    "strategy": "megacap_next5",
+    "ticker": "ORCL",
+    "entry_date": "2026-06-03",
+    "entry_price": 231.3842,
+    "exit_date": "2026-06-09",
+    "exit_price": 231.3842,
     "hold_days": 6,
     "return_pct": 0.0,
     "status": "closed"
@@ -2899,51 +3163,51 @@
     "entry_price": 88.8848,
     "exit_date": null,
     "exit_price": null,
-    "hold_days": 29,
-    "return_pct": 35.47,
-    "status": "open"
-  },
-  {
-    "strategy": "megacap_next5",
-    "ticker": "AAPL",
-    "entry_date": "2026-05-08",
-    "entry_price": 287.44,
-    "exit_date": null,
-    "exit_price": null,
-    "hold_days": 19,
-    "return_pct": 7.44,
-    "status": "open"
-  },
-  {
-    "strategy": "megacap_next5",
-    "ticker": "XOM",
-    "entry_date": "2026-05-20",
-    "entry_price": 158.7101,
-    "exit_date": null,
-    "exit_price": null,
-    "hold_days": 7,
-    "return_pct": -2.39,
+    "hold_days": 42,
+    "return_pct": 39.68,
     "status": "open"
   },
   {
     "strategy": "megacap_next5",
     "ticker": "LLY",
-    "entry_date": "2026-05-22",
-    "entry_price": 1041.65,
+    "entry_date": "2026-05-28",
+    "entry_price": 1126.0072,
     "exit_date": null,
     "exit_price": null,
-    "hold_days": 5,
-    "return_pct": 2.24,
+    "hold_days": 12,
+    "return_pct": 2.06,
     "status": "open"
   },
   {
     "strategy": "megacap_next5",
-    "ticker": "VOO",
-    "entry_date": "2026-05-26",
-    "entry_price": 685.55,
+    "ticker": "JNJ",
+    "entry_date": "2026-06-08",
+    "entry_price": 232.1128,
     "exit_date": null,
     "exit_price": null,
     "hold_days": 1,
+    "return_pct": 0.02,
+    "status": "open"
+  },
+  {
+    "strategy": "megacap_next5",
+    "ticker": "CAT",
+    "entry_date": "2026-06-09",
+    "entry_price": 915.64,
+    "exit_date": null,
+    "exit_price": null,
+    "hold_days": 0,
+    "return_pct": 0.0,
+    "status": "open"
+  },
+  {
+    "strategy": "megacap_next5",
+    "ticker": "GOOGL",
+    "entry_date": "2026-06-09",
+    "entry_price": 363.31,
+    "exit_date": null,
+    "exit_price": null,
+    "hold_days": 0,
     "return_pct": 0.0,
     "status": "open"
   },
@@ -2971,17 +3235,6 @@
   },
   {
     "strategy": "sp400_mcap5",
-    "ticker": "CIEN",
-    "entry_date": "2026-01-07",
-    "entry_price": 229.7243,
-    "exit_date": "2026-01-08",
-    "exit_price": 225.7696,
-    "hold_days": 1,
-    "return_pct": -1.72,
-    "status": "closed"
-  },
-  {
-    "strategy": "sp400_mcap5",
     "ticker": "HL",
     "entry_date": "2026-01-07",
     "entry_price": 20.7842,
@@ -2993,6 +3246,17 @@
   },
   {
     "strategy": "sp400_mcap5",
+    "ticker": "CIEN",
+    "entry_date": "2026-01-07",
+    "entry_price": 229.7243,
+    "exit_date": "2026-01-11",
+    "exit_price": 229.7838,
+    "hold_days": 4,
+    "return_pct": 0.03,
+    "status": "closed"
+  },
+  {
+    "strategy": "sp400_mcap5",
     "ticker": "FN",
     "entry_date": "2026-01-08",
     "entry_price": 445.5825,
@@ -3000,17 +3264,6 @@
     "exit_price": 457.2264,
     "hold_days": 3,
     "return_pct": 2.61,
-    "status": "closed"
-  },
-  {
-    "strategy": "sp400_mcap5",
-    "ticker": "CRS",
-    "entry_date": "2026-01-08",
-    "entry_price": 329.2016,
-    "exit_date": "2026-01-11",
-    "exit_price": 325.3342,
-    "hold_days": 3,
-    "return_pct": -1.17,
     "status": "closed"
   },
   {
@@ -3136,17 +3389,6 @@
   },
   {
     "strategy": "sp400_mcap5",
-    "ticker": "STRL",
-    "entry_date": "2026-01-20",
-    "entry_price": 357.1769,
-    "exit_date": "2026-01-25",
-    "exit_price": 359.823,
-    "hold_days": 5,
-    "return_pct": 0.74,
-    "status": "closed"
-  },
-  {
-    "strategy": "sp400_mcap5",
     "ticker": "FIVE",
     "entry_date": "2026-01-20",
     "entry_price": 195.6825,
@@ -3154,6 +3396,17 @@
     "exit_price": 188.971,
     "hold_days": 5,
     "return_pct": -3.43,
+    "status": "closed"
+  },
+  {
+    "strategy": "sp400_mcap5",
+    "ticker": "STRL",
+    "entry_date": "2026-01-20",
+    "entry_price": 357.1769,
+    "exit_date": "2026-01-25",
+    "exit_price": 359.823,
+    "hold_days": 5,
+    "return_pct": 0.74,
     "status": "closed"
   },
   {
@@ -3345,17 +3598,6 @@
   },
   {
     "strategy": "sp400_mcap5",
-    "ticker": "FN",
-    "entry_date": "2026-02-24",
-    "entry_price": 621.0314,
-    "exit_date": "2026-03-03",
-    "exit_price": 565.3609,
-    "hold_days": 7,
-    "return_pct": -8.96,
-    "status": "closed"
-  },
-  {
-    "strategy": "sp400_mcap5",
     "ticker": "CW",
     "entry_date": "2026-02-24",
     "entry_price": 699.8079,
@@ -3363,6 +3605,17 @@
     "exit_price": 709.4688,
     "hold_days": 7,
     "return_pct": 1.38,
+    "status": "closed"
+  },
+  {
+    "strategy": "sp400_mcap5",
+    "ticker": "FN",
+    "entry_date": "2026-02-24",
+    "entry_price": 621.0314,
+    "exit_date": "2026-03-03",
+    "exit_price": 565.3609,
+    "hold_days": 7,
+    "return_pct": -8.96,
     "status": "closed"
   },
   {
@@ -3543,17 +3796,6 @@
   },
   {
     "strategy": "sp400_mcap5",
-    "ticker": "TTMI",
-    "entry_date": "2026-03-29",
-    "entry_price": 88.6815,
-    "exit_date": "2026-04-07",
-    "exit_price": 104.5656,
-    "hold_days": 9,
-    "return_pct": 17.91,
-    "status": "closed"
-  },
-  {
-    "strategy": "sp400_mcap5",
     "ticker": "STRL",
     "entry_date": "2026-03-29",
     "entry_price": 387.0317,
@@ -3561,6 +3803,17 @@
     "exit_price": 418.7131,
     "hold_days": 9,
     "return_pct": 8.19,
+    "status": "closed"
+  },
+  {
+    "strategy": "sp400_mcap5",
+    "ticker": "TTMI",
+    "entry_date": "2026-03-29",
+    "entry_price": 88.6815,
+    "exit_date": "2026-04-07",
+    "exit_price": 104.5656,
+    "hold_days": 9,
+    "return_pct": 17.91,
     "status": "closed"
   },
   {
@@ -3752,17 +4005,6 @@
   },
   {
     "strategy": "sp400_mcap5",
-    "ticker": "MTSI",
-    "entry_date": "2026-05-03",
-    "entry_price": 293.9096,
-    "exit_date": "2026-05-05",
-    "exit_price": 308.4336,
-    "hold_days": 2,
-    "return_pct": 4.94,
-    "status": "closed"
-  },
-  {
-    "strategy": "sp400_mcap5",
     "ticker": "FLEX",
     "entry_date": "2026-05-03",
     "entry_price": 91.938,
@@ -3770,6 +4012,17 @@
     "exit_price": 128.3683,
     "hold_days": 2,
     "return_pct": 39.62,
+    "status": "closed"
+  },
+  {
+    "strategy": "sp400_mcap5",
+    "ticker": "MTSI",
+    "entry_date": "2026-05-03",
+    "entry_price": 293.9096,
+    "exit_date": "2026-05-05",
+    "exit_price": 308.4336,
+    "hold_days": 2,
+    "return_pct": 4.94,
     "status": "closed"
   },
   {
@@ -3843,10 +4096,10 @@
     "ticker": "SITM",
     "entry_date": "2026-05-18",
     "entry_price": 727.5193,
-    "exit_date": "2026-05-22",
-    "exit_price": 711.79,
-    "hold_days": 4,
-    "return_pct": -2.16,
+    "exit_date": "2026-05-28",
+    "exit_price": 726.5354,
+    "hold_days": 10,
+    "return_pct": -0.14,
     "status": "closed"
   },
   {
@@ -3854,22 +4107,88 @@
     "ticker": "ROIV",
     "entry_date": "2026-05-15",
     "entry_price": 29.5,
-    "exit_date": "2026-05-22",
-    "exit_price": 29.5,
-    "hold_days": 7,
-    "return_pct": 0.0,
+    "exit_date": "2026-05-28",
+    "exit_price": 29.755,
+    "hold_days": 13,
+    "return_pct": 0.86,
     "status": "closed"
   },
   {
     "strategy": "sp400_mcap5",
     "ticker": "LSCC",
-    "entry_date": "2026-05-22",
-    "entry_price": 139.35,
-    "exit_date": "2026-05-26",
-    "exit_price": 139.35,
-    "hold_days": 4,
+    "entry_date": "2026-05-28",
+    "entry_price": 146.9907,
+    "exit_date": "2026-05-28",
+    "exit_price": 146.9907,
+    "hold_days": 0,
     "return_pct": 0.0,
     "status": "closed"
+  },
+  {
+    "strategy": "sp400_mcap5",
+    "ticker": "TTMI",
+    "entry_date": "2026-05-28",
+    "entry_price": 187.2811,
+    "exit_date": "2026-06-01",
+    "exit_price": 171.377,
+    "hold_days": 4,
+    "return_pct": -8.49,
+    "status": "closed"
+  },
+  {
+    "strategy": "sp400_mcap5",
+    "ticker": "MKSI",
+    "entry_date": "2026-05-28",
+    "entry_price": 324.6657,
+    "exit_date": "2026-06-01",
+    "exit_price": 315.9839,
+    "hold_days": 4,
+    "return_pct": -2.67,
+    "status": "closed"
+  },
+  {
+    "strategy": "sp400_mcap5",
+    "ticker": "ROIV",
+    "entry_date": "2026-06-01",
+    "entry_price": 29.2951,
+    "exit_date": "2026-06-03",
+    "exit_price": 28.6272,
+    "hold_days": 2,
+    "return_pct": -2.28,
+    "status": "closed"
+  },
+  {
+    "strategy": "sp400_mcap5",
+    "ticker": "LSCC",
+    "entry_date": "2026-06-01",
+    "entry_price": 144.6815,
+    "exit_date": "2026-06-09",
+    "exit_price": 142.9,
+    "hold_days": 8,
+    "return_pct": -1.23,
+    "status": "closed"
+  },
+  {
+    "strategy": "sp400_mcap5",
+    "ticker": "AA",
+    "entry_date": "2026-06-03",
+    "entry_price": 81.4677,
+    "exit_date": "2026-06-09",
+    "exit_price": 81.4677,
+    "hold_days": 6,
+    "return_pct": 0.0,
+    "status": "closed"
+  },
+  {
+    "strategy": "sp400_mcap5",
+    "ticker": "FLEX",
+    "entry_date": "2026-05-08",
+    "entry_price": 133.01,
+    "exit_date": null,
+    "exit_price": null,
+    "hold_days": 32,
+    "return_pct": 13.4,
+    "status": "open"
   },
   {
     "strategy": "sp400_mcap5",
@@ -3878,8 +4197,8 @@
     "entry_price": 811.41,
     "exit_date": null,
     "exit_price": null,
-    "hold_days": 19,
-    "return_pct": -9.67,
+    "hold_days": 32,
+    "return_pct": 9.91,
     "status": "open"
   },
   {
@@ -3889,64 +4208,31 @@
     "entry_price": 344.47,
     "exit_date": null,
     "exit_price": null,
-    "hold_days": 19,
-    "return_pct": 12.05,
-    "status": "open"
-  },
-  {
-    "strategy": "sp400_mcap5",
-    "ticker": "FLEX",
-    "entry_date": "2026-05-08",
-    "entry_price": 133.01,
-    "exit_date": null,
-    "exit_price": null,
-    "hold_days": 19,
-    "return_pct": -0.41,
-    "status": "open"
-  },
-  {
-    "strategy": "sp400_mcap5",
-    "ticker": "TTMI",
-    "entry_date": "2026-05-22",
-    "entry_price": 174.55,
-    "exit_date": null,
-    "exit_price": null,
-    "hold_days": 5,
-    "return_pct": 8.81,
+    "hold_days": 32,
+    "return_pct": 5.05,
     "status": "open"
   },
   {
     "strategy": "sp400_mcap5",
     "ticker": "MKSI",
-    "entry_date": "2026-05-26",
-    "entry_price": 320.62,
+    "entry_date": "2026-06-09",
+    "entry_price": 312.09,
     "exit_date": null,
     "exit_price": null,
-    "hold_days": 1,
+    "hold_days": 0,
     "return_pct": 0.0,
     "status": "open"
   },
   {
-    "strategy": "sp400_mcap_next5",
-    "ticker": "COHR",
-    "entry_date": "2026-01-07",
-    "entry_price": 175.6381,
-    "exit_date": "2026-01-08",
-    "exit_price": 176.4826,
-    "hold_days": 1,
-    "return_pct": 0.48,
-    "status": "closed"
-  },
-  {
-    "strategy": "sp400_mcap_next5",
-    "ticker": "AVAV",
-    "entry_date": "2026-01-07",
-    "entry_price": 349.8743,
-    "exit_date": "2026-01-08",
-    "exit_price": 361.8869,
-    "hold_days": 1,
-    "return_pct": 3.43,
-    "status": "closed"
+    "strategy": "sp400_mcap5",
+    "ticker": "FN",
+    "entry_date": "2026-06-09",
+    "entry_price": 623.71,
+    "exit_date": null,
+    "exit_price": null,
+    "hold_days": 0,
+    "return_pct": 0.0,
+    "status": "open"
   },
   {
     "strategy": "sp400_mcap_next5",
@@ -3961,6 +4247,17 @@
   },
   {
     "strategy": "sp400_mcap_next5",
+    "ticker": "COHR",
+    "entry_date": "2026-01-07",
+    "entry_price": 175.6381,
+    "exit_date": "2026-01-08",
+    "exit_price": 176.4826,
+    "hold_days": 1,
+    "return_pct": 0.48,
+    "status": "closed"
+  },
+  {
+    "strategy": "sp400_mcap_next5",
     "ticker": "ATI",
     "entry_date": "2026-01-07",
     "entry_price": 118.6174,
@@ -3968,6 +4265,17 @@
     "exit_price": 122.7474,
     "hold_days": 1,
     "return_pct": 3.48,
+    "status": "closed"
+  },
+  {
+    "strategy": "sp400_mcap_next5",
+    "ticker": "AVAV",
+    "entry_date": "2026-01-07",
+    "entry_price": 349.8743,
+    "exit_date": "2026-01-08",
+    "exit_price": 361.8869,
+    "hold_days": 1,
+    "return_pct": 3.43,
     "status": "closed"
   },
   {
@@ -4104,17 +4412,6 @@
   },
   {
     "strategy": "sp400_mcap_next5",
-    "ticker": "RMBS",
-    "entry_date": "2026-02-01",
-    "entry_price": 117.0366,
-    "exit_date": "2026-02-03",
-    "exit_price": 98.9391,
-    "hold_days": 2,
-    "return_pct": -15.46,
-    "status": "closed"
-  },
-  {
-    "strategy": "sp400_mcap_next5",
     "ticker": "RGLD",
     "entry_date": "2026-02-01",
     "entry_price": 259.7333,
@@ -4122,6 +4419,17 @@
     "exit_price": 262.5552,
     "hold_days": 2,
     "return_pct": 1.09,
+    "status": "closed"
+  },
+  {
+    "strategy": "sp400_mcap_next5",
+    "ticker": "RMBS",
+    "entry_date": "2026-02-01",
+    "entry_price": 117.0366,
+    "exit_date": "2026-02-03",
+    "exit_price": 98.9391,
+    "hold_days": 2,
+    "return_pct": -15.46,
     "status": "closed"
   },
   {
@@ -4137,17 +4445,6 @@
   },
   {
     "strategy": "sp400_mcap_next5",
-    "ticker": "ROIV",
-    "entry_date": "2026-02-03",
-    "entry_price": 21.6232,
-    "exit_date": "2026-02-04",
-    "exit_price": 21.3089,
-    "hold_days": 1,
-    "return_pct": -1.45,
-    "status": "closed"
-  },
-  {
-    "strategy": "sp400_mcap_next5",
     "ticker": "ELAN",
     "entry_date": "2026-02-03",
     "entry_price": 24.4752,
@@ -4155,6 +4452,17 @@
     "exit_price": 24.7356,
     "hold_days": 1,
     "return_pct": 1.06,
+    "status": "closed"
+  },
+  {
+    "strategy": "sp400_mcap_next5",
+    "ticker": "ROIV",
+    "entry_date": "2026-02-03",
+    "entry_price": 21.6232,
+    "exit_date": "2026-02-04",
+    "exit_price": 21.3089,
+    "hold_days": 1,
+    "return_pct": -1.45,
     "status": "closed"
   },
   {
@@ -4203,17 +4511,6 @@
   },
   {
     "strategy": "sp400_mcap_next5",
-    "ticker": "STRL",
-    "entry_date": "2026-02-08",
-    "entry_price": 420.2013,
-    "exit_date": "2026-02-10",
-    "exit_price": 433.1568,
-    "hold_days": 2,
-    "return_pct": 3.08,
-    "status": "closed"
-  },
-  {
-    "strategy": "sp400_mcap_next5",
     "ticker": "NVT",
     "entry_date": "2026-02-08",
     "entry_price": 115.7236,
@@ -4221,6 +4518,17 @@
     "exit_price": 113.4757,
     "hold_days": 2,
     "return_pct": -1.94,
+    "status": "closed"
+  },
+  {
+    "strategy": "sp400_mcap_next5",
+    "ticker": "STRL",
+    "entry_date": "2026-02-08",
+    "entry_price": 420.2013,
+    "exit_date": "2026-02-10",
+    "exit_price": 433.1568,
+    "hold_days": 2,
+    "return_pct": 3.08,
     "status": "closed"
   },
   {
@@ -4236,17 +4544,6 @@
   },
   {
     "strategy": "sp400_mcap_next5",
-    "ticker": "WWD",
-    "entry_date": "2026-02-10",
-    "entry_price": 390.5795,
-    "exit_date": "2026-02-16",
-    "exit_price": 385.0885,
-    "hold_days": 6,
-    "return_pct": -1.41,
-    "status": "closed"
-  },
-  {
-    "strategy": "sp400_mcap_next5",
     "ticker": "NXT",
     "entry_date": "2026-02-10",
     "entry_price": 118.6911,
@@ -4254,6 +4551,17 @@
     "exit_price": 121.1094,
     "hold_days": 6,
     "return_pct": 2.04,
+    "status": "closed"
+  },
+  {
+    "strategy": "sp400_mcap_next5",
+    "ticker": "WWD",
+    "entry_date": "2026-02-10",
+    "entry_price": 390.5795,
+    "exit_date": "2026-02-16",
+    "exit_price": 385.0885,
+    "hold_days": 6,
+    "return_pct": -1.41,
     "status": "closed"
   },
   {
@@ -4379,17 +4687,6 @@
   },
   {
     "strategy": "sp400_mcap_next5",
-    "ticker": "STRL",
-    "entry_date": "2026-03-01",
-    "entry_price": 434.6987,
-    "exit_date": "2026-03-03",
-    "exit_price": 421.0209,
-    "hold_days": 2,
-    "return_pct": -3.15,
-    "status": "closed"
-  },
-  {
-    "strategy": "sp400_mcap_next5",
     "ticker": "DY",
     "entry_date": "2026-03-01",
     "entry_price": 419.9445,
@@ -4401,13 +4698,13 @@
   },
   {
     "strategy": "sp400_mcap_next5",
-    "ticker": "WWD",
-    "entry_date": "2026-03-03",
-    "entry_price": 384.6905,
-    "exit_date": "2026-03-08",
-    "exit_price": 377.3897,
-    "hold_days": 5,
-    "return_pct": -1.9,
+    "ticker": "STRL",
+    "entry_date": "2026-03-01",
+    "entry_price": 434.6987,
+    "exit_date": "2026-03-03",
+    "exit_price": 421.0209,
+    "hold_days": 2,
+    "return_pct": -3.15,
     "status": "closed"
   },
   {
@@ -4419,6 +4716,17 @@
     "exit_price": 120.6097,
     "hold_days": 5,
     "return_pct": -6.43,
+    "status": "closed"
+  },
+  {
+    "strategy": "sp400_mcap_next5",
+    "ticker": "WWD",
+    "entry_date": "2026-03-03",
+    "entry_price": 384.6905,
+    "exit_date": "2026-03-08",
+    "exit_price": 377.3897,
+    "hold_days": 5,
+    "return_pct": -1.9,
     "status": "closed"
   },
   {
@@ -4467,17 +4775,6 @@
   },
   {
     "strategy": "sp400_mcap_next5",
-    "ticker": "DY",
-    "entry_date": "2026-03-10",
-    "entry_price": 365.5265,
-    "exit_date": "2026-03-15",
-    "exit_price": 356.4161,
-    "hold_days": 5,
-    "return_pct": -2.49,
-    "status": "closed"
-  },
-  {
-    "strategy": "sp400_mcap_next5",
     "ticker": "ATI",
     "entry_date": "2026-03-10",
     "entry_price": 157.6698,
@@ -4489,13 +4786,13 @@
   },
   {
     "strategy": "sp400_mcap_next5",
-    "ticker": "KTOS",
-    "entry_date": "2026-03-15",
-    "entry_price": 89.319,
-    "exit_date": "2026-03-17",
-    "exit_price": 94.3321,
-    "hold_days": 2,
-    "return_pct": 5.61,
+    "ticker": "DY",
+    "entry_date": "2026-03-10",
+    "entry_price": 365.5265,
+    "exit_date": "2026-03-15",
+    "exit_price": 356.4161,
+    "hold_days": 5,
+    "return_pct": -2.49,
     "status": "closed"
   },
   {
@@ -4507,6 +4804,17 @@
     "exit_price": 232.881,
     "hold_days": 2,
     "return_pct": 4.69,
+    "status": "closed"
+  },
+  {
+    "strategy": "sp400_mcap_next5",
+    "ticker": "KTOS",
+    "entry_date": "2026-03-15",
+    "entry_price": 89.319,
+    "exit_date": "2026-03-17",
+    "exit_price": 94.3321,
+    "hold_days": 2,
+    "return_pct": 5.61,
     "status": "closed"
   },
   {
@@ -4687,17 +4995,6 @@
   },
   {
     "strategy": "sp400_mcap_next5",
-    "ticker": "DOCN",
-    "entry_date": "2026-04-21",
-    "entry_price": 94.8889,
-    "exit_date": "2026-04-26",
-    "exit_price": 97.1359,
-    "hold_days": 5,
-    "return_pct": 2.37,
-    "status": "closed"
-  },
-  {
-    "strategy": "sp400_mcap_next5",
     "ticker": "SITM",
     "entry_date": "2026-04-21",
     "entry_price": 526.1048,
@@ -4705,6 +5002,17 @@
     "exit_price": 549.8476,
     "hold_days": 5,
     "return_pct": 4.51,
+    "status": "closed"
+  },
+  {
+    "strategy": "sp400_mcap_next5",
+    "ticker": "DOCN",
+    "entry_date": "2026-04-21",
+    "entry_price": 94.8889,
+    "exit_date": "2026-04-26",
+    "exit_price": 97.1359,
+    "hold_days": 5,
+    "return_pct": 2.37,
     "status": "closed"
   },
   {
@@ -4731,17 +5039,6 @@
   },
   {
     "strategy": "sp400_mcap_next5",
-    "ticker": "TTMI",
-    "entry_date": "2026-04-26",
-    "entry_price": 143.1401,
-    "exit_date": "2026-04-28",
-    "exit_price": 136.3215,
-    "hold_days": 2,
-    "return_pct": -4.76,
-    "status": "closed"
-  },
-  {
-    "strategy": "sp400_mcap_next5",
     "ticker": "MP",
     "entry_date": "2026-04-26",
     "entry_price": 63.8087,
@@ -4753,13 +5050,13 @@
   },
   {
     "strategy": "sp400_mcap_next5",
-    "ticker": "RMBS",
+    "ticker": "TTMI",
     "entry_date": "2026-04-26",
-    "entry_price": 143.1614,
-    "exit_date": "2026-05-03",
-    "exit_price": 112.4248,
-    "hold_days": 7,
-    "return_pct": -21.47,
+    "entry_price": 143.1401,
+    "exit_date": "2026-04-28",
+    "exit_price": 136.3215,
+    "hold_days": 2,
+    "return_pct": -4.76,
     "status": "closed"
   },
   {
@@ -4771,6 +5068,17 @@
     "exit_price": 75.6808,
     "hold_days": 7,
     "return_pct": 2.43,
+    "status": "closed"
+  },
+  {
+    "strategy": "sp400_mcap_next5",
+    "ticker": "RMBS",
+    "entry_date": "2026-04-26",
+    "entry_price": 143.1614,
+    "exit_date": "2026-05-03",
+    "exit_price": 112.4248,
+    "hold_days": 7,
+    "return_pct": -21.47,
     "status": "closed"
   },
   {
@@ -4877,9 +5185,64 @@
     "ticker": "VAL",
     "entry_date": "2026-05-20",
     "entry_price": 109.8321,
-    "exit_date": "2026-05-22",
-    "exit_price": 109.8321,
-    "hold_days": 2,
+    "exit_date": "2026-05-28",
+    "exit_price": 92.2946,
+    "hold_days": 8,
+    "return_pct": -15.97,
+    "status": "closed"
+  },
+  {
+    "strategy": "sp400_mcap_next5",
+    "ticker": "SITM",
+    "entry_date": "2026-05-28",
+    "entry_price": 726.5354,
+    "exit_date": "2026-06-01",
+    "exit_price": 676.0224,
+    "hold_days": 4,
+    "return_pct": -6.95,
+    "status": "closed"
+  },
+  {
+    "strategy": "sp400_mcap_next5",
+    "ticker": "MP",
+    "entry_date": "2026-05-08",
+    "entry_price": 69.13,
+    "exit_date": "2026-06-08",
+    "exit_price": 58.2006,
+    "hold_days": 31,
+    "return_pct": -15.81,
+    "status": "closed"
+  },
+  {
+    "strategy": "sp400_mcap_next5",
+    "ticker": "HL",
+    "entry_date": "2026-05-18",
+    "entry_price": 17.4447,
+    "exit_date": "2026-06-08",
+    "exit_price": 14.9208,
+    "hold_days": 21,
+    "return_pct": -14.47,
+    "status": "closed"
+  },
+  {
+    "strategy": "sp400_mcap_next5",
+    "ticker": "ENS",
+    "entry_date": "2026-06-08",
+    "entry_price": 228.4269,
+    "exit_date": "2026-06-09",
+    "exit_price": 228.4269,
+    "hold_days": 1,
+    "return_pct": 0.0,
+    "status": "closed"
+  },
+  {
+    "strategy": "sp400_mcap_next5",
+    "ticker": "RMBS",
+    "entry_date": "2026-06-08",
+    "entry_price": 153.7322,
+    "exit_date": "2026-06-09",
+    "exit_price": 153.7322,
+    "hold_days": 1,
     "return_pct": 0.0,
     "status": "closed"
   },
@@ -4890,8 +5253,8 @@
     "entry_price": 248.3386,
     "exit_date": null,
     "exit_price": null,
-    "hold_days": 29,
-    "return_pct": 7.91,
+    "hold_days": 42,
+    "return_pct": 10.72,
     "status": "open"
   },
   {
@@ -4901,63 +5264,52 @@
     "entry_price": 150.43,
     "exit_date": null,
     "exit_price": null,
-    "hold_days": 19,
-    "return_pct": 5.34,
+    "hold_days": 32,
+    "return_pct": 12.56,
     "status": "open"
   },
   {
     "strategy": "sp400_mcap_next5",
-    "ticker": "MP",
-    "entry_date": "2026-05-08",
-    "entry_price": 69.13,
+    "ticker": "ONTO",
+    "entry_date": "2026-06-01",
+    "entry_price": 254.659,
     "exit_date": null,
     "exit_price": null,
-    "hold_days": 19,
-    "return_pct": -6.76,
+    "hold_days": 8,
+    "return_pct": 5.63,
     "status": "open"
   },
   {
     "strategy": "sp400_mcap_next5",
-    "ticker": "HL",
-    "entry_date": "2026-05-18",
-    "entry_price": 17.4447,
+    "ticker": "LSCC",
+    "entry_date": "2026-06-09",
+    "entry_price": 142.9,
     "exit_date": null,
     "exit_price": null,
-    "hold_days": 9,
-    "return_pct": -2.66,
+    "hold_days": 0,
+    "return_pct": 0.0,
     "status": "open"
   },
   {
     "strategy": "sp400_mcap_next5",
-    "ticker": "SITM",
-    "entry_date": "2026-05-22",
-    "entry_price": 711.79,
+    "ticker": "AMKR",
+    "entry_date": "2026-06-09",
+    "entry_price": 68.29,
     "exit_date": null,
     "exit_price": null,
+    "hold_days": 0,
+    "return_pct": 0.0,
+    "status": "open"
+  },
+  {
+    "strategy": "munger",
+    "ticker": "COST",
+    "entry_date": "2026-02-04",
+    "entry_price": 992.2267,
+    "exit_date": "2026-02-09",
+    "exit_price": 971.23,
     "hold_days": 5,
-    "return_pct": 2.36,
-    "status": "open"
-  },
-  {
-    "strategy": "munger",
-    "ticker": "VZ",
-    "entry_date": "2026-02-04",
-    "entry_price": 47.0956,
-    "exit_date": "2026-02-25",
-    "exit_price": 48.89,
-    "hold_days": 21,
-    "return_pct": 3.81,
-    "status": "closed"
-  },
-  {
-    "strategy": "munger",
-    "ticker": "MA",
-    "entry_date": "2026-02-04",
-    "entry_price": 552.5994,
-    "exit_date": "2026-02-08",
-    "exit_price": 535.33,
-    "hold_days": 4,
-    "return_pct": -3.13,
+    "return_pct": -2.12,
     "status": "closed"
   },
   {
@@ -4973,13 +5325,13 @@
   },
   {
     "strategy": "munger",
-    "ticker": "MCD",
+    "ticker": "V",
     "entry_date": "2026-02-04",
-    "entry_price": 324.6405,
-    "exit_date": "2026-03-02",
-    "exit_price": 332.17,
-    "hold_days": 26,
-    "return_pct": 2.32,
+    "entry_price": 331.2156,
+    "exit_date": "2026-02-08",
+    "exit_price": 325.58,
+    "hold_days": 4,
+    "return_pct": -1.7,
     "status": "closed"
   },
   {
@@ -4995,6 +5347,17 @@
   },
   {
     "strategy": "munger",
+    "ticker": "MCD",
+    "entry_date": "2026-02-04",
+    "entry_price": 324.6405,
+    "exit_date": "2026-03-02",
+    "exit_price": 332.17,
+    "hold_days": 26,
+    "return_pct": 2.32,
+    "status": "closed"
+  },
+  {
+    "strategy": "munger",
     "ticker": "BRK.B",
     "entry_date": "2026-02-04",
     "entry_price": 503.011,
@@ -5002,28 +5365,6 @@
     "exit_price": 497.55,
     "hold_days": 8,
     "return_pct": -1.09,
-    "status": "closed"
-  },
-  {
-    "strategy": "munger",
-    "ticker": "COST",
-    "entry_date": "2026-02-04",
-    "entry_price": 992.2267,
-    "exit_date": "2026-02-09",
-    "exit_price": 971.23,
-    "hold_days": 5,
-    "return_pct": -2.12,
-    "status": "closed"
-  },
-  {
-    "strategy": "munger",
-    "ticker": "HD",
-    "entry_date": "2026-02-04",
-    "entry_price": 383.1001,
-    "exit_date": "2026-02-16",
-    "exit_price": 383.04,
-    "hold_days": 12,
-    "return_pct": -0.02,
     "status": "closed"
   },
   {
@@ -5039,13 +5380,35 @@
   },
   {
     "strategy": "munger",
-    "ticker": "V",
+    "ticker": "MA",
     "entry_date": "2026-02-04",
-    "entry_price": 331.2156,
+    "entry_price": 552.5994,
     "exit_date": "2026-02-08",
-    "exit_price": 325.58,
+    "exit_price": 535.33,
     "hold_days": 4,
-    "return_pct": -1.7,
+    "return_pct": -3.13,
+    "status": "closed"
+  },
+  {
+    "strategy": "munger",
+    "ticker": "VZ",
+    "entry_date": "2026-02-04",
+    "entry_price": 47.0956,
+    "exit_date": "2026-02-25",
+    "exit_price": 48.89,
+    "hold_days": 21,
+    "return_pct": 3.81,
+    "status": "closed"
+  },
+  {
+    "strategy": "munger",
+    "ticker": "HD",
+    "entry_date": "2026-02-04",
+    "entry_price": 383.1001,
+    "exit_date": "2026-02-16",
+    "exit_price": 383.04,
+    "hold_days": 12,
+    "return_pct": -0.02,
     "status": "closed"
   },
   {
@@ -5094,17 +5457,6 @@
   },
   {
     "strategy": "munger",
-    "ticker": "MSFT",
-    "entry_date": "2026-03-08",
-    "entry_price": 407.3066,
-    "exit_date": "2026-03-11",
-    "exit_price": 401.86,
-    "hold_days": 3,
-    "return_pct": -1.34,
-    "status": "closed"
-  },
-  {
-    "strategy": "munger",
     "ticker": "ORCL",
     "entry_date": "2026-03-08",
     "entry_price": 149.3912,
@@ -5112,6 +5464,17 @@
     "exit_price": 149.4,
     "hold_days": 1,
     "return_pct": 0.01,
+    "status": "closed"
+  },
+  {
+    "strategy": "munger",
+    "ticker": "MSFT",
+    "entry_date": "2026-03-08",
+    "entry_price": 407.3066,
+    "exit_date": "2026-03-11",
+    "exit_price": 401.86,
+    "hold_days": 3,
+    "return_pct": -1.34,
     "status": "closed"
   },
   {
@@ -5171,17 +5534,6 @@
   },
   {
     "strategy": "munger",
-    "ticker": "BAC",
-    "entry_date": "2026-04-05",
-    "entry_price": 49.9608,
-    "exit_date": "2026-04-21",
-    "exit_price": 53.12,
-    "hold_days": 16,
-    "return_pct": 6.32,
-    "status": "closed"
-  },
-  {
-    "strategy": "munger",
     "ticker": "WFC",
     "entry_date": "2026-04-05",
     "entry_price": 81.6049,
@@ -5189,6 +5541,17 @@
     "exit_price": 81.7,
     "hold_days": 8,
     "return_pct": 0.12,
+    "status": "closed"
+  },
+  {
+    "strategy": "munger",
+    "ticker": "BAC",
+    "entry_date": "2026-04-05",
+    "entry_price": 49.9608,
+    "exit_date": "2026-04-21",
+    "exit_price": 53.12,
+    "hold_days": 16,
+    "return_pct": 6.32,
     "status": "closed"
   },
   {
@@ -5229,11 +5592,11 @@
     "ticker": "TXN",
     "entry_date": "2026-04-14",
     "entry_price": 215.2132,
-    "exit_date": null,
-    "exit_price": 298.39,
-    "hold_days": 43,
-    "return_pct": 38.65,
-    "status": "open"
+    "exit_date": "2026-06-01",
+    "exit_price": 293.2,
+    "hold_days": 48,
+    "return_pct": 36.24,
+    "status": "closed"
   },
   {
     "strategy": "munger",
@@ -5262,22 +5625,11 @@
     "ticker": "PM",
     "entry_date": "2026-04-26",
     "entry_price": 161.9877,
-    "exit_date": null,
-    "exit_price": 191.86,
-    "hold_days": 31,
-    "return_pct": 18.44,
-    "status": "open"
-  },
-  {
-    "strategy": "munger",
-    "ticker": "LLY",
-    "entry_date": "2026-05-03",
-    "entry_price": 963.8828,
-    "exit_date": null,
-    "exit_price": 1041.65,
-    "hold_days": 24,
-    "return_pct": 8.07,
-    "status": "open"
+    "exit_date": "2026-06-01",
+    "exit_price": 172.66,
+    "hold_days": 36,
+    "return_pct": 6.59,
+    "status": "closed"
   },
   {
     "strategy": "munger",
@@ -5292,24 +5644,35 @@
   },
   {
     "strategy": "munger",
-    "ticker": "QCOM",
-    "entry_date": "2026-05-08",
-    "entry_price": 202.55,
+    "ticker": "LLY",
+    "entry_date": "2026-05-03",
+    "entry_price": 963.8828,
     "exit_date": null,
-    "exit_price": 203.64,
-    "hold_days": 19,
-    "return_pct": 0.54,
+    "exit_price": 1149.15,
+    "hold_days": 37,
+    "return_pct": 19.22,
     "status": "open"
   },
   {
     "strategy": "munger",
+    "ticker": "QCOM",
+    "entry_date": "2026-05-08",
+    "entry_price": 202.55,
+    "exit_date": "2026-06-08",
+    "exit_price": 217.77,
+    "hold_days": 31,
+    "return_pct": 7.51,
+    "status": "closed"
+  },
+  {
+    "strategy": "munger",
     "ticker": "RTX",
-    "entry_date": "2026-05-26",
-    "entry_price": 177.01,
+    "entry_date": "2026-05-28",
+    "entry_price": 179.4153,
     "exit_date": null,
-    "exit_price": null,
-    "hold_days": null,
-    "return_pct": null,
+    "exit_price": 178.66,
+    "hold_days": 12,
+    "return_pct": -0.42,
     "status": "open"
   }
 ]
