@@ -8,6 +8,12 @@ const STRATEGY_META = {
   munger:           { label: "Munger Mean Reversion",   color: "#f472b6" },
 };
 
+const SIZE_ORDER = {
+  megacap_top5: 0, megacap_next5: 1, munger: 2,
+  sp500_top5: 3, sp500_next5: 4,
+  sp400_mcap5: 5, sp400_mcap_next5: 6,
+};
+
 function formatPct(val) {
   if (val == null) return "—";
   const cls = val >= 0 ? "positive" : "negative";
@@ -49,50 +55,39 @@ function getLatest3mReturn(series, field = "rolling_3m") {
   return last[field] ?? null;
 }
 
-export function renderStrategies(positions, strategyReturns) {
-  const grid = document.getElementById("strategy-grid");
-  grid.innerHTML = "";
-  const sharpeMap = strategyReturns["_sharpe"] || {};
+let _cardData = [];
 
-  for (const [sid, meta] of Object.entries(STRATEGY_META)) {
-    const series = strategyReturns[sid] || [];
-    const ret12m = get12mReturn(series);
-    const ret3m = getLatest3mReturn(series);
-    const spy12m = getLatest3mReturn(series, "spy_12m");
-    const spy3m = getLatest3mReturn(series, "spy_rolling_3m");
-    const stratPositions = positions.filter(p => p.strategy === sid);
-    const openPositions = stratPositions.filter(p => p.status === "open");
-    const openCount = openPositions.length;
-    const closedCount = stratPositions.filter(p => p.status === "closed").length;
-    const openTickers = openPositions.map(p => p.ticker);
-    const stratSharpe12m = sharpeMap[sid]?.["12m"] ?? null;
-    const stratSharpe3m  = sharpeMap[sid]?.["3m"]  ?? null;
-    const spySharpe12m   = sharpeMap["spy"]?.["12m"] ?? null;
-    const spySharpe3m    = sharpeMap["spy"]?.["3m"]  ?? null;
+function buildCard(item) {
+  const { sid, meta, ret12m, ret3m, spy12m, spy3m,
+          stratSharpe12m, stratSharpe3m, spySharpe12m, spySharpe3m,
+          openCount, closedCount, openTickers } = item;
 
-    const card = document.createElement("div");
-    card.className = "strategy-card";
-    card.dataset.strategy = sid;
-    card.innerHTML = `
-      <div class="card-header">
-        <div class="dot" style="background:${meta.color}"></div>
-        <h3>${meta.label}</h3>
-      </div>
-      <div class="card-metrics">
+  const card = document.createElement("div");
+  card.className = "strategy-card";
+  card.dataset.strategy = sid;
+  card.innerHTML = `
+    <div class="card-header">
+      <div class="dot" style="background:${meta.color}"></div>
+      <h3>${meta.label}</h3>
+    </div>
+    <div class="card-metrics">
+      <div class="metric-group">
         <div class="metric">
           <span class="label">12M Return</span>
           ${formatPct(ret12m)}
           ${formatBenchmark(spy12m)}
         </div>
         <div class="metric">
-          <span class="label">Rolling 3M</span>
-          ${formatPct(ret3m)}
-          ${formatBenchmark(spy3m)}
-        </div>
-        <div class="metric">
           <span class="label">Sharpe 12M</span>
           ${formatSharpe(stratSharpe12m)}
           ${formatSharpeBenchmark(spySharpe12m)}
+        </div>
+      </div>
+      <div class="metric-group">
+        <div class="metric">
+          <span class="label">Rolling 3M</span>
+          ${formatPct(ret3m)}
+          ${formatBenchmark(spy3m)}
         </div>
         <div class="metric">
           <span class="label">Sharpe 3M</span>
@@ -100,23 +95,76 @@ export function renderStrategies(positions, strategyReturns) {
           ${formatSharpeBenchmark(spySharpe3m)}
         </div>
       </div>
-      <div class="card-footer">
-        <span>${openCount} open</span>
-        <span>${closedCount} closed</span>
-      </div>
-      ${openTickers.length ? `<div class="ticker-tags">${openTickers.map(t => `<span class="ticker-tag">${t}</span>`).join("")}</div>` : ""}
-    `;
+    </div>
+    <div class="card-footer">
+      <span>${openCount} open</span>
+      <span>${closedCount} closed</span>
+    </div>
+    ${openTickers.length ? `<div class="ticker-tags">${openTickers.map(t => `<span class="ticker-tag">${t}</span>`).join("")}</div>` : ""}
+  `;
 
-    // Click card → switch to Positions tab filtered to this strategy
-    card.addEventListener("click", () => {
-      document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
-      document.querySelectorAll(".tab-panel").forEach(p => p.classList.add("hidden"));
-      document.querySelector('[data-tab="positions"]').classList.add("active");
-      document.getElementById("tab-positions").classList.remove("hidden");
-      document.getElementById("filter-strategy").value = sid;
-      document.getElementById("filter-strategy").dispatchEvent(new Event("change"));
+  card.addEventListener("click", () => {
+    document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
+    document.querySelectorAll(".tab-panel").forEach(p => p.classList.add("hidden"));
+    document.querySelector('[data-tab="positions"]').classList.add("active");
+    document.getElementById("tab-positions").classList.remove("hidden");
+    document.getElementById("filter-strategy").value = sid;
+    document.getElementById("filter-strategy").dispatchEvent(new Event("change"));
+  });
+
+  return card;
+}
+
+function renderCards(sortKey) {
+  const grid = document.getElementById("strategy-grid");
+  const sorted = [..._cardData].sort((a, b) => {
+    if (sortKey === "return") {
+      const av = a.ret12m ?? -Infinity;
+      const bv = b.ret12m ?? -Infinity;
+      return bv - av;
+    }
+    if (sortKey === "risk") {
+      const av = a.stratSharpe12m ?? -Infinity;
+      const bv = b.stratSharpe12m ?? -Infinity;
+      return bv - av;
+    }
+    return (SIZE_ORDER[a.sid] ?? 99) - (SIZE_ORDER[b.sid] ?? 99);
+  });
+
+  grid.innerHTML = "";
+  sorted.forEach(item => grid.appendChild(buildCard(item)));
+}
+
+export function renderStrategies(positions, strategyReturns) {
+  const sharpeMap = strategyReturns["_sharpe"] || {};
+
+  _cardData = Object.entries(STRATEGY_META).map(([sid, meta]) => {
+    const series = strategyReturns[sid] || [];
+    const stratPositions = positions.filter(p => p.strategy === sid);
+    const openPositions = stratPositions.filter(p => p.status === "open");
+    return {
+      sid, meta,
+      ret12m:        get12mReturn(series),
+      ret3m:         getLatest3mReturn(series),
+      spy12m:        getLatest3mReturn(series, "spy_12m"),
+      spy3m:         getLatest3mReturn(series, "spy_rolling_3m"),
+      stratSharpe12m: sharpeMap[sid]?.["12m"] ?? null,
+      stratSharpe3m:  sharpeMap[sid]?.["3m"]  ?? null,
+      spySharpe12m:   sharpeMap["spy"]?.["12m"] ?? null,
+      spySharpe3m:    sharpeMap["spy"]?.["3m"]  ?? null,
+      openCount:  openPositions.length,
+      closedCount: stratPositions.filter(p => p.status === "closed").length,
+      openTickers: openPositions.map(p => p.ticker),
+    };
+  });
+
+  renderCards("return");
+
+  document.querySelectorAll(".sort-btn").forEach(btn => {
+    btn.addEventListener("click", () => {
+      document.querySelectorAll(".sort-btn").forEach(b => b.classList.remove("active"));
+      btn.classList.add("active");
+      renderCards(btn.dataset.sort);
     });
-
-    grid.appendChild(card);
-  }
+  });
 }
