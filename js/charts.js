@@ -23,6 +23,7 @@ const STRATEGY_LABELS = {
 let _strategyReturns = {};
 let _cumulativeChart = null;
 let _rolling3mChart = null;
+let _scatterCharts = {};
 let _currentRange = "all";
 
 function filterByRange(series, range) {
@@ -164,6 +165,82 @@ function buildRolling3mChart() {
       },
     },
   });
+}
+
+function buildScatterChart(sid, trades) {
+  if (_scatterCharts[sid]) _scatterCharts[sid].destroy();
+  const canvas = document.getElementById(`scatter-${sid}`);
+  if (!canvas) return;
+
+  const color = STRATEGY_COLORS[sid] ?? "#888";
+  const data = trades.map(t => ({
+    x: t.hold_days,
+    y: Math.log(1 + t.return_pct / 100),
+    label: t.ticker,
+  }));
+
+  _scatterCharts[sid] = new Chart(canvas.getContext("2d"), {
+    type: "scatter",
+    plugins: [ChartDataLabels],
+    data: {
+      datasets: [{
+        data,
+        backgroundColor: color + "cc",
+        borderColor: color,
+        pointRadius: 5,
+        pointHoverRadius: 7,
+      }],
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: { display: false },
+        datalabels: {
+          formatter: val => val.label,
+          color: "#c0c4e0",
+          font: { size: 10 },
+          anchor: "end",
+          align: "top",
+          offset: 2,
+        },
+        tooltip: {
+          callbacks: {
+            label: ctx => {
+              const pt = ctx.raw;
+              const pct = (Math.exp(pt.y) - 1) * 100;
+              const sign = pct >= 0 ? "+" : "";
+              return `${pt.label}: ${sign}${pct.toFixed(1)}% · ${pt.x}d held`;
+            },
+          },
+        },
+      },
+      scales: {
+        x: {
+          title: { display: true, text: "Days Held", color: "#7b7f9e" },
+          ticks: { color: "#7b7f9e" },
+          grid: { color: "#2d3148" },
+        },
+        y: {
+          title: { display: true, text: "Log Return", color: "#7b7f9e" },
+          ticks: { color: "#7b7f9e", callback: v => v.toFixed(2) },
+          grid: { color: ctx => ctx.tick.value === 0 ? "#666" : "#2d3148" },
+        },
+      },
+    },
+  });
+}
+
+export function renderScatterCharts(positions) {
+  const closed = positions.filter(p => p.status === "closed" && p.exit_date);
+  if (!closed.length) return;
+  const latestExit = closed.reduce((a, b) => a.exit_date > b.exit_date ? a : b).exit_date;
+  const cutoff = new Date(latestExit);
+  cutoff.setFullYear(cutoff.getFullYear() - 1);
+  const recent = closed.filter(p => new Date(p.exit_date) >= cutoff);
+
+  for (const sid of Object.keys(STRATEGY_LABELS).filter(s => s !== "spy")) {
+    buildScatterChart(sid, recent.filter(p => p.strategy === sid));
+  }
 }
 
 export function renderCharts(strategyReturns) {

@@ -8,6 +8,7 @@
   <link rel="stylesheet" href="css/style.css">
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns@3.0.0/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js"></script>
 </head>
 <body>
   <header>
@@ -94,6 +95,39 @@
       <div class="chart-container">
         <h2>Rolling 3-Month Returns</h2>
         <canvas id="rolling3m-chart"></canvas>
+      </div>
+      <div class="scatter-section">
+        <h2 class="section-heading">Trade Returns — Last 12 Months</h2>
+        <div class="scatter-grid">
+          <div class="chart-container">
+            <h3>Megacap Top 5</h3>
+            <canvas id="scatter-megacap_top5"></canvas>
+          </div>
+          <div class="chart-container">
+            <h3>Megacap Next 5</h3>
+            <canvas id="scatter-megacap_next5"></canvas>
+          </div>
+          <div class="chart-container">
+            <h3>Munger</h3>
+            <canvas id="scatter-munger"></canvas>
+          </div>
+          <div class="chart-container">
+            <h3>S&amp;P 500 Top 5</h3>
+            <canvas id="scatter-sp500_top5"></canvas>
+          </div>
+          <div class="chart-container">
+            <h3>S&amp;P 500 Next 5</h3>
+            <canvas id="scatter-sp500_next5"></canvas>
+          </div>
+          <div class="chart-container">
+            <h3>S&amp;P 400 Mkt Cap Top 5</h3>
+            <canvas id="scatter-sp400_mcap5"></canvas>
+          </div>
+          <div class="chart-container">
+            <h3>S&amp;P 400 Mkt Cap Next 5</h3>
+            <canvas id="scatter-sp400_mcap_next5"></canvas>
+          </div>
+        </div>
       </div>
     </div>
   </main>

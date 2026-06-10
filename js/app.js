@@ -1,6 +1,6 @@
 import { renderStrategies } from "./strategies.js";
 import { renderPositions } from "./positions.js";
-import { renderCharts } from "./charts.js";
+import { renderCharts, renderScatterCharts } from "./charts.js";
 
 const DATA_BASE = "./data/processed";
 
@@ -28,6 +28,7 @@ async function init() {
   renderStrategies(positions, strategyReturns);
   renderPositions(positions);
   renderCharts(strategyReturns);
+  renderScatterCharts(positions);
 
   // Show most recent data date in the header
   const allDates = Object.values(strategyReturns).filter(Array.isArray).flat().map(d => d.date);
