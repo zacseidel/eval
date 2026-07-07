@@ -1,0 +1,33 @@
+{
+  "ticker": "JAZZ",
+  "name": "Jazz Pharmaceuticals, Inc.",
+  "market": "stocks",
+  "locale": "us",
+  "primary_exchange": "XNAS",
+  "type": "CS",
+  "active": true,
+  "currency_name": "usd",
+  "cik": "0001232524",
+  "market_cap": 15294207889.16,
+  "phone_number": "353-1-634-7800",
+  "address": {
+    "address1": "FIFTH FLOOR, WATERLOO EXCHANGE",
+    "address2": "WATERLOO ROAD",
+    "city": "DUBLIN",
+    "postal_code": "D04 E5W7"
+  },
+  "description": "Jazz Pharmaceuticals is an Ireland-domiciled biopharmaceutical firm focused primarily on treatments for sleeping disorders and oncology. Jazz has nine approved drugs across neuroscience and oncology indications; its portfolio includes Xyrem and Xywav for narcolepsy, Zepzelca for the treatment of metastatic small cell lung cancer, Rylaze for acute lymphoblastic leukemia, and Vyxeos for acute myeloid leukemia. In May 2021, Jazz acquired GW Pharmaceuticals and gained its leading product, Epidiolex for the treatment of severe, rare forms of epilepsy.",
+  "sic_code": "2834",
+  "sic_description": "PHARMACEUTICAL PREPARATIONS",
+  "ticker_root": "JAZZ",
+  "homepage_url": "https://www.jazzpharmaceuticals.com",
+  "total_employees": 2890,
+  "list_date": "2007-06-01",
+  "branding": {
+    "logo_url": "https://api.polygon.io/v1/reference/company-branding/amF6enBoYXJtYWNldXRpY2Fscy5jb20/images/2026-07-01_logo.png",
+    "icon_url": "https://api.polygon.io/v1/reference/company-branding/amF6enBoYXJtYWNldXRpY2Fscy5jb20/images/2026-07-01_icon.jpeg"
+  },
+  "share_class_shares_outstanding": 62817628,
+  "weighted_shares_outstanding": 62817628,
+  "round_lot": 100
+}
