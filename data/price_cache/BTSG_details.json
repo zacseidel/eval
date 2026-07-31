@@ -1,0 +1,35 @@
+{
+  "ticker": "BTSG",
+  "name": "BrightSpring Health Services, Inc. Common Stock",
+  "market": "stocks",
+  "locale": "us",
+  "primary_exchange": "XNAS",
+  "type": "CS",
+  "active": true,
+  "currency_name": "usd",
+  "cik": "0001865782",
+  "composite_figi": "BBG0132WL1X7",
+  "share_class_figi": "BBG0132WL2T0",
+  "market_cap": 14303313066.56,
+  "phone_number": "502-394-2100",
+  "address": {
+    "address1": "805 N. WHITTINGTON PARKWAY",
+    "city": "LOUISVILLE",
+    "state": "KY",
+    "postal_code": "40222"
+  },
+  "description": "BrightSpring Health Services Inc is a home and community-based healthcare services platform, focused on delivering complementary pharmacy and provider services to complex patients. Its platform delivers clinical services and pharmacy solutions across Medicare, Medicaid, and commercially insured populations. Its segments include Pharmacy Solutions, Provider Services, and others. It generates the majority of its revenue from the Pharmacy Solutions segment.",
+  "sic_code": "8082",
+  "sic_description": "SERVICES-HOME HEALTH CARE SERVICES",
+  "ticker_root": "BTSG",
+  "homepage_url": "https://www.brightspringhealth.com",
+  "total_employees": 23500,
+  "list_date": "2024-01-26",
+  "branding": {
+    "logo_url": "https://api.polygon.io/v1/reference/company-branding/YnJpZ2h0c3ByaW5naGVhbHRoLmNvbQ/images/2026-07-01_logo.svg",
+    "icon_url": "https://api.polygon.io/v1/reference/company-branding/YnJpZ2h0c3ByaW5naGVhbHRoLmNvbQ/images/2026-07-01_icon.jpeg"
+  },
+  "share_class_shares_outstanding": 197284877,
+  "weighted_shares_outstanding": 196258412,
+  "round_lot": 100
+}
