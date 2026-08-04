@@ -16,7 +16,7 @@
       <h1>Strategy Evaluator</h1>
       <a class="momentum-link" href="https://zacseidel.github.io/momentum9" target="_blank" rel="noopener">Momentum9 Report ↗</a>
     </div>
-    <p class="subtitle">Quantitative portfolio performance tracking. <span id="last-updated"></span></p>
+    <p class="subtitle">Report-driven entries and momentum exits; 21-day EMA exits for Munger. <span id="last-updated"></span></p>
     <nav>
       <button class="tab-btn active" data-tab="overview">Overview</button>
       <button class="tab-btn" data-tab="positions">Positions</button>
@@ -45,9 +45,9 @@
             <option value="sp500_next5">S&amp;P 500 Next 5</option>
             <option value="megacap_top5">Megacap Top 5</option>
             <option value="megacap_next5">Megacap Next 5</option>
-            <option value="sp400_mcap5">S&amp;P 400 Mkt Cap Top 5</option>
-            <option value="sp400_mcap_next5">S&amp;P 400 Mkt Cap Next 5</option>
-            <option value="munger">Munger</option>
+            <option value="sp400_mcap5">S&amp;P 400 Top 5</option>
+            <option value="sp400_mcap_next5">S&amp;P 400 Next 5</option>
+            <option value="munger">Munger 21-Day EMA</option>
           </select>
         </label>
         <label>
@@ -66,8 +66,12 @@
             <tr>
               <th data-sort="strategy">Strategy</th>
               <th data-sort="ticker">Ticker</th>
+              <th data-sort="signal_date">Signal Date</th>
               <th data-sort="entry_date">Entry Date</th>
               <th data-sort="entry_price">Entry $</th>
+              <th data-sort="exit_signal_date">Exit Signal</th>
+              <th data-sort="exit_signal_close">Signal Close</th>
+              <th data-sort="exit_signal_ema_21">EMA 21</th>
               <th data-sort="exit_date">Exit Date</th>
               <th data-sort="exit_price">Exit $</th>
               <th data-sort="hold_days">Days Held</th>
@@ -108,7 +112,7 @@
             <canvas id="scatter-megacap_next5"></canvas>
           </div>
           <div class="chart-container">
-            <h3>Munger</h3>
+            <h3>Munger 21-Day EMA</h3>
             <canvas id="scatter-munger"></canvas>
           </div>
           <div class="chart-container">
@@ -120,11 +124,11 @@
             <canvas id="scatter-sp500_next5"></canvas>
           </div>
           <div class="chart-container">
-            <h3>S&amp;P 400 Mkt Cap Top 5</h3>
+            <h3>S&amp;P 400 Top 5</h3>
             <canvas id="scatter-sp400_mcap5"></canvas>
           </div>
           <div class="chart-container">
-            <h3>S&amp;P 400 Mkt Cap Next 5</h3>
+            <h3>S&amp;P 400 Next 5</h3>
             <canvas id="scatter-sp400_mcap_next5"></canvas>
           </div>
         </div>

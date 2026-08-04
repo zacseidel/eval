@@ -167,6 +167,49 @@ main { padding: 32px 32px; max-width: 1200px; }
   letter-spacing: .03em;
 }
 
+.signal-note {
+  margin-top: 10px;
+  color: var(--muted);
+  font-size: 0.78rem;
+  line-height: 1.4;
+}
+
+.kelly-panel {
+  margin-top: 14px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border);
+}
+
+.kelly-heading {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  color: var(--text);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.kelly-heading strong {
+  color: var(--accent);
+  font-size: 20px;
+}
+
+.kelly-stats {
+  margin-top: 8px;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 4px 10px;
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.kelly-note {
+  margin-top: 7px;
+  color: var(--muted);
+  font-size: 10px;
+}
+
 /* === Positions Tab === */
 .filter-bar {
   display: flex;
@@ -225,6 +268,7 @@ tbody td { padding: 9px 12px; }
 }
 
 .badge-open   { background: rgba(0,102,204,.1); color: var(--accent); }
+.badge-pending { background: rgba(251,146,60,.14); color: #c65f10; }
 .badge-closed { background: #f0f0f0; color: var(--muted); }
 .ret-pos { color: var(--green); }
 .ret-neg { color: var(--red); }

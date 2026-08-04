@@ -1,6 +1,6 @@
 # Momentum Strategy Evaluator
 
-A GitHub Pages site that backtests portfolio strategies derived from weekly [momentum9](https://zacseidel.github.io/momentum9/) reports. The scraper pulls each report, simulates seven strategies, prices every position via Polygon.io, and writes JSON that the frontend renders as interactive charts and a positions table.
+A GitHub Pages site that evaluates portfolio strategies derived from [momentum9](https://zacseidel.github.io/momentum9/) reports. Scraped reports are the sole source of entries and security selection. Polygon market data supplies execution prices, daily valuation, and the Munger model's 21-day EMA exit signal.
 
 **Live site:** https://zacseidel.github.io/eval/
 
@@ -21,14 +21,16 @@ momentum9 weekly reports
         │              ← caches bars to data/price_cache/{TICKER}.json
         ▼
   data/processed/
-    positions.json          ← one row per trade (entry, exit, return)
-    strategy_returns.json   ← weekly portfolio value time series + SPY benchmark
+    signals.json            ← auditable selected rows from every report
+    positions.json          ← one row per executed trade lifecycle
+    strategy_returns.json   ← daily portfolio NAV + SPY benchmark
+    manifest.json           ← input hashes, rules, cutoff, and data versions
         │
         ▼
   index.html + js/    ← vanilla JS + Chart.js, reads JSON via fetch()
 ```
 
-GitHub Actions runs the pipeline every **Tuesday and Friday at 7 AM MDT** and commits updated data back to the repo, which re-deploys the GitHub Pages site automatically.
+GitHub Actions runs the pipeline every **Tuesday and Friday at 7 PM MDT**, after the US market close, and commits updated data back to the repo. GitHub Pages then deploys the audited JSON automatically.
 
 ### Strategies
 
@@ -38,11 +40,15 @@ GitHub Actions runs the pipeline every **Tuesday and Friday at 7 AM MDT** and co
 | `sp500_next5` | Ranks 6–10 in the S&P 500 Leaders table |
 | `megacap_top5` | Ranks 1–5 in the Megacap Leaders table |
 | `megacap_next5` | Ranks 6–10 in the Megacap Leaders table |
-| `sp400_mcap5` | Top 5 S&P 400 stocks re-ranked by estimated market cap (Polygon) |
-| `sp400_mcap_next5` | Ranks 6–10 after the same market-cap re-sort |
-| `munger` | Buy on first appearance; sell when daily close drops below 10-day SMA |
+| `sp400_mcap5` | Ranks 1–5 in the scraped S&P 400 Leaders table (legacy ID retained) |
+| `sp400_mcap_next5` | Ranks 6–10 in the scraped S&P 400 Leaders table (legacy ID retained) |
+| `munger` | Buy a qualifying report signal while flat; exit after a daily close below its 21-day EMA |
 
-All rank-based strategies trade on the report date itself (VWAP when available, else midpoint of open/close). A position is held until the stock drops out of its slot at the next report.
+All entries use the first trading session on or after the report signal (VWAP when available, else midpoint of open/close). Rank-based positions close when a later report drops the ticker from the selected slot. For Munger, each completed daily adjusted close is compared with its close-based 21-day EMA; a close below the EMA signals an exit for the next available trading session. This one-session delay prevents look-ahead. Portfolios are equal-weighted and rebalanced on trade-event dates, then marked daily at adjusted closes.
+
+### Half-Kelly sizing
+
+Each strategy card estimates a historical half-Kelly risk fraction from closed trades. Winners have positive realized returns, losers have negative realized returns, and break-even trades are reported but excluded from the Kelly odds. With `p` as the non-break-even win probability, `q` as the loss probability, and `b` as average winner divided by the absolute average loser, the displayed value is `0.5 × max(0, p − q/b)`. At least 20 closed trades are required. This is a descriptive estimate based on historical outcomes, not a guarantee or individualized investment recommendation. The criterion originates with [J. L. Kelly Jr.'s 1956 paper](https://www.nokia.com/bell-labs/publications-and-media/publications/a-new-interpretation-of-information-rate/).
 
 ---
 
@@ -66,11 +72,13 @@ eval/
 ├── data/
 │   ├── scraped/                # Raw per-report JSON (YYYY-MM-DD.json)
 │   ├── processed/              # Outputs consumed by the frontend
+│   │   ├── signals.json
 │   │   ├── positions.json
-│   │   └── strategy_returns.json
+│   │   ├── strategy_returns.json
+│   │   └── manifest.json
 │   └── price_cache/            # Polygon bar cache ({TICKER}.json)
 └── .github/workflows/
-    └── scrape.yml              # Scheduled CI pipeline
+    └── update-data.yml         # Scheduled CI pipeline
 ```
 
 ---
@@ -107,6 +115,12 @@ python scraper/scrape.py
 
 # Process only (rebuild positions + returns from cached scrapes)
 python scraper/process.py
+
+# Deterministic historical rebuild
+python scraper/process.py --as-of 2026-07-31
+
+# Regression suite (no network required)
+python -m unittest discover -s tests -v
 ```
 
 ---
@@ -115,14 +129,16 @@ python scraper/process.py
 
 - **Rate limit:** 5 requests/minute on the free tier — the client enforces a 12.5-second delay between calls.
 - **Disk cache:** Every bar range is stored in `data/price_cache/{TICKER}.json`. The cache tracks `_fetched_from` and `_fetched_through` metadata so only genuinely new date ranges hit the API on subsequent runs.
-- **Execution price:** For each trade entry/exit, the client fetches up to 6 calendar days forward from the report date to find the first real trading session (handles weekends and holidays), capped at today to avoid requesting future dates.
-- **Market cap:** Used to re-rank SP400 stocks. Prefers Polygon's `market_cap` field from the reference endpoint; falls back to `price × volume` if unavailable.
+- **Execution price:** Report entries and rank exits use the first session on or after the report signal. Munger EMA exits execute on the first session after the triggering close. VWAP is used when available, with midpoint fallback.
+- **EMA history:** Munger tickers receive 120 calendar days of pre-report history so the 21-day EMA is warm before any trade can exit.
+- **Bar dates:** Polygon timestamps are converted in UTC. Cache schema versions prevent legacy timezone-shifted bars from mixing with corrected data.
+- **Failure handling:** Failed API requests do not advance cache coverage; missing execution data fails processing instead of fabricating a flat return.
 
 ---
 
 ## GitHub Actions
 
-The workflow (`.github/workflows/scrape.yml`) runs on a schedule and can also be triggered manually from the Actions tab:
+The workflow (`.github/workflows/update-data.yml`) runs on a schedule and can also be triggered manually from the Actions tab:
 
 1. Checks out the repo
 2. Installs Python dependencies
@@ -138,8 +154,8 @@ The workflow (`.github/workflows/scrape.yml`) runs on a schedule and can also be
 
 No build step. The frontend is three ES modules loaded directly by `index.html`:
 
-- **Strategies tab** — one card per strategy showing 12M return, rolling 3M return, open/closed position counts, and current holdings. Clicking a card navigates to the Positions tab filtered to that strategy.
-- **Positions tab** — sortable, filterable table of all trades with entry/exit dates, prices, hold duration, and return %.
+- **Strategies tab** — one card per strategy showing 12M return when a full year exists (otherwise since inception), rolling 3M return, open/closed position counts, current holdings, closed-trade win/loss statistics, and the historical half-Kelly estimate. Munger separately shows latest report buy signals and currently open positions.
+- **Positions tab** — sortable, filterable table of all trades with entry/exit dates, prices, Munger EMA trigger values, hold duration, and return %.
 - **Charts tab** — Chart.js line charts of portfolio value (normalized to 100 at first report) and rolling 3-month return, both overlaid with an SPY benchmark.
 
 ---

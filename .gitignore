@@ -1,4 +1,5 @@
 .env
 __pycache__/
 *.pyc
+*.json.tmp
 .DS_Store

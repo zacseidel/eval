@@ -1,0 +1,495 @@
+{
+  "processor_version": 4,
+  "price_cache_schema_version": 2,
+  "as_of": "2026-07-31",
+  "latest_report_date": "2026-07-31",
+  "market_data_through": "2026-07-31",
+  "entry_signal_source": "scraped_reports_only",
+  "rank_exit_signal_source": "scraped_report_membership_only",
+  "execution_price": "entry on report session; EMA exit on next session; VWAP with midpoint fallback",
+  "portfolio_policy": "equal weight, rebalanced on trade-event dates",
+  "munger": {
+    "entry": "qualifying scraped report membership while flat",
+    "exit_signal": "daily adjusted close below close-based 21-day EMA",
+    "exit_execution": "next available trading session after the signal",
+    "ema_span": 21,
+    "ema_lookback_calendar_days": 120
+  },
+  "kelly": {
+    "formula": "0.5 * max(0, p - q / b)",
+    "p_q_denominator": "closed non-breakeven trades",
+    "b": "average winner / absolute average loser",
+    "display_percentages_denominator": "all closed trades",
+    "minimum_closed_trades": 20,
+    "scope": "historical long-only capital-at-risk estimate"
+  },
+  "strategy_trade_stats": {
+    "sp500_top5": {
+      "closed_count": 54,
+      "winner_count": 32,
+      "loser_count": 22,
+      "breakeven_count": 0,
+      "winner_pct": 59.26,
+      "loser_pct": 40.74,
+      "average_win_pct": 14.86,
+      "average_loss_pct": -7.27,
+      "payoff_ratio": 2.0431,
+      "full_kelly_pct": 39.32,
+      "half_kelly_pct": 19.66,
+      "minimum_closed_trades": 20,
+      "minimum_sample_met": true,
+      "kelly_status": "calculated"
+    },
+    "sp500_next5": {
+      "closed_count": 121,
+      "winner_count": 59,
+      "loser_count": 62,
+      "breakeven_count": 0,
+      "winner_pct": 48.76,
+      "loser_pct": 51.24,
+      "average_win_pct": 8.85,
+      "average_loss_pct": -6.02,
+      "payoff_ratio": 1.4713,
+      "full_kelly_pct": 13.93,
+      "half_kelly_pct": 6.97,
+      "minimum_closed_trades": 20,
+      "minimum_sample_met": true,
+      "kelly_status": "calculated"
+    },
+    "megacap_top5": {
+      "closed_count": 54,
+      "winner_count": 25,
+      "loser_count": 29,
+      "breakeven_count": 0,
+      "winner_pct": 46.3,
+      "loser_pct": 53.7,
+      "average_win_pct": 9.42,
+      "average_loss_pct": -4.53,
+      "payoff_ratio": 2.0807,
+      "full_kelly_pct": 20.49,
+      "half_kelly_pct": 10.24,
+      "minimum_closed_trades": 20,
+      "minimum_sample_met": true,
+      "kelly_status": "calculated"
+    },
+    "megacap_next5": {
+      "closed_count": 100,
+      "winner_count": 44,
+      "loser_count": 54,
+      "breakeven_count": 2,
+      "winner_pct": 44.0,
+      "loser_pct": 54.0,
+      "average_win_pct": 3.61,
+      "average_loss_pct": -3.29,
+      "payoff_ratio": 1.0968,
+      "full_kelly_pct": -5.34,
+      "half_kelly_pct": 0.0,
+      "minimum_closed_trades": 20,
+      "minimum_sample_met": true,
+      "kelly_status": "calculated"
+    },
+    "sp400_mcap5": {
+      "closed_count": 84,
+      "winner_count": 46,
+      "loser_count": 38,
+      "breakeven_count": 0,
+      "winner_pct": 54.76,
+      "loser_pct": 45.24,
+      "average_win_pct": 10.08,
+      "average_loss_pct": -7.34,
+      "payoff_ratio": 1.3732,
+      "full_kelly_pct": 21.82,
+      "half_kelly_pct": 10.91,
+      "minimum_closed_trades": 20,
+      "minimum_sample_met": true,
+      "kelly_status": "calculated"
+    },
+    "sp400_mcap_next5": {
+      "closed_count": 156,
+      "winner_count": 71,
+      "loser_count": 85,
+      "breakeven_count": 0,
+      "winner_pct": 45.51,
+      "loser_pct": 54.49,
+      "average_win_pct": 5.67,
+      "average_loss_pct": -5.89,
+      "payoff_ratio": 0.9631,
+      "full_kelly_pct": -11.06,
+      "half_kelly_pct": 0.0,
+      "minimum_closed_trades": 20,
+      "minimum_sample_met": true,
+      "kelly_status": "calculated"
+    },
+    "munger": {
+      "closed_count": 123,
+      "winner_count": 47,
+      "loser_count": 75,
+      "breakeven_count": 1,
+      "winner_pct": 38.21,
+      "loser_pct": 60.98,
+      "average_win_pct": 6.38,
+      "average_loss_pct": -2.85,
+      "payoff_ratio": 2.2394,
+      "full_kelly_pct": 11.07,
+      "half_kelly_pct": 5.54,
+      "minimum_closed_trades": 20,
+      "minimum_sample_met": true,
+      "kelly_status": "calculated"
+    }
+  },
+  "report_count": 64,
+  "signal_snapshot_count": 2392,
+  "position_count": 734,
+  "positions_by_strategy": {
+    "sp500_top5": {
+      "open": 5,
+      "closed": 54
+    },
+    "sp500_next5": {
+      "open": 5,
+      "closed": 121
+    },
+    "megacap_top5": {
+      "open": 5,
+      "closed": 54
+    },
+    "megacap_next5": {
+      "open": 5,
+      "closed": 100
+    },
+    "sp400_mcap5": {
+      "open": 5,
+      "closed": 84
+    },
+    "sp400_mcap_next5": {
+      "open": 5,
+      "closed": 156
+    },
+    "munger": {
+      "open": 12,
+      "closed": 123
+    }
+  },
+  "reports": [
+    {
+      "date": "2026-01-07",
+      "path": "data/scraped/2026-01-07.json",
+      "sha256": "9fa6716ef7f073a18d54a6398d05ee3829bb2263fc360149c92ef9beaf7e946a"
+    },
+    {
+      "date": "2026-01-08",
+      "path": "data/scraped/2026-01-08.json",
+      "sha256": "ca79947501dd13f1e04b1f6866f80425ef5eceb23cd17b0dbc288c426d8d936b"
+    },
+    {
+      "date": "2026-01-09",
+      "path": "data/scraped/2026-01-09.json",
+      "sha256": "6ed1667d7314feb194a29362c5ac31afc9a51b7213c680ee47649adc2fe26a92"
+    },
+    {
+      "date": "2026-01-10",
+      "path": "data/scraped/2026-01-10.json",
+      "sha256": "a87d80e75357a2ca53cc7f472d6890f289b824523d252a30e79606de0f6253c1"
+    },
+    {
+      "date": "2026-01-13",
+      "path": "data/scraped/2026-01-13.json",
+      "sha256": "e5c81838fdba8f4efd4e32d8992b18154a6b9f40972a66b36482db6741e00f89"
+    },
+    {
+      "date": "2026-01-14",
+      "path": "data/scraped/2026-01-14.json",
+      "sha256": "ee1e1b7764f43c7940478c0b369750a8912b2bfd528225e62afdeff0ae5fd10d"
+    },
+    {
+      "date": "2026-01-16",
+      "path": "data/scraped/2026-01-16.json",
+      "sha256": "d21846b66e9cd1adaa52ff616a3583fd4163aea096d85662a8044b03137deccf"
+    },
+    {
+      "date": "2026-01-20",
+      "path": "data/scraped/2026-01-20.json",
+      "sha256": "26b6e1625cf49867741789712fd77bf2c984c382b79a00644407442a68ce6987"
+    },
+    {
+      "date": "2026-01-23",
+      "path": "data/scraped/2026-01-23.json",
+      "sha256": "ef486bb9dec7a3bf48de7bbdd1ac008d7c7ae14227667466cfbb790e4830ca85"
+    },
+    {
+      "date": "2026-01-27",
+      "path": "data/scraped/2026-01-27.json",
+      "sha256": "962040ec8a576c1badbba2c90787320db02094cea6f55e89d219b6a58609ce96"
+    },
+    {
+      "date": "2026-01-30",
+      "path": "data/scraped/2026-01-30.json",
+      "sha256": "42a995de70c20ac119f5e2f0c2b11b63c47035cc0c71ee91fc2f7c39f6c7d7a0"
+    },
+    {
+      "date": "2026-02-03",
+      "path": "data/scraped/2026-02-03.json",
+      "sha256": "f22ad2c02a406dab58a1b0835fa9703caf87465317b438919e1fd222eddafe7d"
+    },
+    {
+      "date": "2026-02-04",
+      "path": "data/scraped/2026-02-04.json",
+      "sha256": "95a64fe76071cb02126e3b9c00000da6a7b580ff47ccdacc5fa164b648b00ac3"
+    },
+    {
+      "date": "2026-02-06",
+      "path": "data/scraped/2026-02-06.json",
+      "sha256": "84df086ce6c1c5ec3277a774f13928337877f68bbfb78a89eea1b76623d73996"
+    },
+    {
+      "date": "2026-02-10",
+      "path": "data/scraped/2026-02-10.json",
+      "sha256": "3b7a8bfb7cc77bdc385388489f36c6c2c3660477a68b96d158ac586be617d8f4"
+    },
+    {
+      "date": "2026-02-13",
+      "path": "data/scraped/2026-02-13.json",
+      "sha256": "7aca5a6d7be81dfaf09fb55a5fc3c043b37299c0f2c5749de642761d0e33cb7a"
+    },
+    {
+      "date": "2026-02-17",
+      "path": "data/scraped/2026-02-17.json",
+      "sha256": "b1d150c23b1c30f20cd3b54e5ba18ac5fec4375ab77d18c9d949fb502520457c"
+    },
+    {
+      "date": "2026-02-20",
+      "path": "data/scraped/2026-02-20.json",
+      "sha256": "11fc8570be89ee7ec5150f50d2976a0715702b8110d7a0b72cf0e83b2e29477b"
+    },
+    {
+      "date": "2026-02-24",
+      "path": "data/scraped/2026-02-24.json",
+      "sha256": "ced90320c32eda82d8920015816ebd83759af960017f708b336fe6161c94e3c6"
+    },
+    {
+      "date": "2026-02-27",
+      "path": "data/scraped/2026-02-27.json",
+      "sha256": "890294c295e16e32654cb25e2fc91b64a52f97eff31e2726c9f58198d8241bbd"
+    },
+    {
+      "date": "2026-03-03",
+      "path": "data/scraped/2026-03-03.json",
+      "sha256": "bb4b3566445cd1911daa13957988d90fae83ff785baee7638d12dd5e49b178ab"
+    },
+    {
+      "date": "2026-03-06",
+      "path": "data/scraped/2026-03-06.json",
+      "sha256": "007fd9248ceb5f5f750d796124cd229cb719dc6e9605e6f4ccb2eb3580ae3bbc"
+    },
+    {
+      "date": "2026-03-10",
+      "path": "data/scraped/2026-03-10.json",
+      "sha256": "2662332d10dde608d65e5b7442a9c582865223432d1ef4f0605a82a6838ef521"
+    },
+    {
+      "date": "2026-03-13",
+      "path": "data/scraped/2026-03-13.json",
+      "sha256": "8f66cdc9724fd933119f7d940246c5340889858ab34a3d1333e0a453131a77aa"
+    },
+    {
+      "date": "2026-03-17",
+      "path": "data/scraped/2026-03-17.json",
+      "sha256": "eb3779a587479301b4fbc73712c6318e034b33a248aae566417b1ee5f7785b36"
+    },
+    {
+      "date": "2026-03-20",
+      "path": "data/scraped/2026-03-20.json",
+      "sha256": "f7f863a1ab39413e77748156ad4621e2c0745e9532806af84ffc9272c56b6515"
+    },
+    {
+      "date": "2026-03-24",
+      "path": "data/scraped/2026-03-24.json",
+      "sha256": "c330fdb3be8384ace535cbc03c77923f18c9f8241a6b9fed4e1bd1eda380ab4f"
+    },
+    {
+      "date": "2026-03-27",
+      "path": "data/scraped/2026-03-27.json",
+      "sha256": "36b5ab565aa6b8297661a5fe4ef7f492b2b3b4bbfa0df655d37b3728d456a353"
+    },
+    {
+      "date": "2026-03-31",
+      "path": "data/scraped/2026-03-31.json",
+      "sha256": "170cc2820a925ce1507ea9aa3d0a5e808ff49caf00735ce0f0f673645e3ee1be"
+    },
+    {
+      "date": "2026-04-03",
+      "path": "data/scraped/2026-04-03.json",
+      "sha256": "d2cdebada18733fd9dc3a648ae6f2b0632338dc289d4392d4bd717c1f242ebd3"
+    },
+    {
+      "date": "2026-04-07",
+      "path": "data/scraped/2026-04-07.json",
+      "sha256": "c3ebada878a56184baab1aac908e4beb0ac96a83089df1125879f1e6da299676"
+    },
+    {
+      "date": "2026-04-10",
+      "path": "data/scraped/2026-04-10.json",
+      "sha256": "e484e383f363387ca270c3e4b92a38647e5d8f4faae99431ebc8e4ff59de34e0"
+    },
+    {
+      "date": "2026-04-14",
+      "path": "data/scraped/2026-04-14.json",
+      "sha256": "dce5b1b03cb13a13261cbbc06d0367b6e6dbeb86adb58b07597ce79d9d44094d"
+    },
+    {
+      "date": "2026-04-17",
+      "path": "data/scraped/2026-04-17.json",
+      "sha256": "1c92c8b5ef9c6eb2d555dfbbe8b8058b84479496c891776602a981a462dae564"
+    },
+    {
+      "date": "2026-04-21",
+      "path": "data/scraped/2026-04-21.json",
+      "sha256": "abc73814b3588139092c96a03a8eb70e284c65e0414637dfd7ba54ea9c23fd46"
+    },
+    {
+      "date": "2026-04-24",
+      "path": "data/scraped/2026-04-24.json",
+      "sha256": "ac3cae1f537d1792542794b6a08303168bff10ed820b020767dcbcf727199dee"
+    },
+    {
+      "date": "2026-04-28",
+      "path": "data/scraped/2026-04-28.json",
+      "sha256": "76e136d2b5cfe1f4df9a0f777c6c96b9a4f8f5bf5e5bc8ccfe16b5d19e435fa9"
+    },
+    {
+      "date": "2026-05-01",
+      "path": "data/scraped/2026-05-01.json",
+      "sha256": "96c3337988ced1ffc1a3a100c388597a613925d9e503a939f40e5008928fa075"
+    },
+    {
+      "date": "2026-05-05",
+      "path": "data/scraped/2026-05-05.json",
+      "sha256": "3573729dc7234c125121f08a5c6c16294b2753d407845f890534de8bcb37bc68"
+    },
+    {
+      "date": "2026-05-08",
+      "path": "data/scraped/2026-05-08.json",
+      "sha256": "1c5ad5916937588e1cef56fbf34be6b36b548dcdb6de48a4d53a95431d8dd3f2"
+    },
+    {
+      "date": "2026-05-12",
+      "path": "data/scraped/2026-05-12.json",
+      "sha256": "d5eb083908f8ad4b7be9836494926300e3c6a54274bf6875f42e20aafd143d61"
+    },
+    {
+      "date": "2026-05-15",
+      "path": "data/scraped/2026-05-15.json",
+      "sha256": "db91682247f58980c69a82e099eb6e9479041a895c5eb3d716f62297f8d05ad8"
+    },
+    {
+      "date": "2026-05-19",
+      "path": "data/scraped/2026-05-19.json",
+      "sha256": "18b7051fa3a1ec7b0bfef13f8435473a6e8752877e4076d9c7c66cc090874381"
+    },
+    {
+      "date": "2026-05-22",
+      "path": "data/scraped/2026-05-22.json",
+      "sha256": "9ed16a14de63bd2d1dc7e7a17b06c3b00c577f8dc117e499c1ad7046f20b71fc"
+    },
+    {
+      "date": "2026-05-26",
+      "path": "data/scraped/2026-05-26.json",
+      "sha256": "ca3a436d739bdeaa9b38f10787718c6e4e6a81f29b8e869ee91a9783c1a520e0"
+    },
+    {
+      "date": "2026-05-29",
+      "path": "data/scraped/2026-05-29.json",
+      "sha256": "d2d53e421b079c669c1162a390705d859bd7d6f45b28e72f0353116ab252fa9c"
+    },
+    {
+      "date": "2026-06-02",
+      "path": "data/scraped/2026-06-02.json",
+      "sha256": "0c38933efcd5c84b6fe6fca31f8be2d15ba70156249dd61c40a93ec09db296c9"
+    },
+    {
+      "date": "2026-06-05",
+      "path": "data/scraped/2026-06-05.json",
+      "sha256": "c119c3b59598e8718be2960cb548e4b3f431cfa7c7e06a7f9e63ad1f6ebefb15"
+    },
+    {
+      "date": "2026-06-09",
+      "path": "data/scraped/2026-06-09.json",
+      "sha256": "b90d6b9215c7aca1f31cf123ec44dd170aff84aaca6ab71b59faae3260f85ff7"
+    },
+    {
+      "date": "2026-06-12",
+      "path": "data/scraped/2026-06-12.json",
+      "sha256": "45b28ffcdda2638a05fa20407e508a06d064302f004f8c08b74160c70e70a724"
+    },
+    {
+      "date": "2026-06-16",
+      "path": "data/scraped/2026-06-16.json",
+      "sha256": "ee20200a0b63d42ebd29725d8d8b0a8b6718533cf0c98913a5dfd735635402e5"
+    },
+    {
+      "date": "2026-06-19",
+      "path": "data/scraped/2026-06-19.json",
+      "sha256": "4d1b8d7e6fbb6b9165bdc027d4a614fad1b241b07bb2fd7f720cd8e5d53221c1"
+    },
+    {
+      "date": "2026-06-23",
+      "path": "data/scraped/2026-06-23.json",
+      "sha256": "393f20ddb95ca77019602ca2dab8ddca8ea9a3a27fccb2bbf9e339fe039136ce"
+    },
+    {
+      "date": "2026-06-26",
+      "path": "data/scraped/2026-06-26.json",
+      "sha256": "32938e616bd40a2c8938ca366a6da7fb733ab41369aac4c4235727e6ab22ab15"
+    },
+    {
+      "date": "2026-06-30",
+      "path": "data/scraped/2026-06-30.json",
+      "sha256": "4607b945d9c55a15cc30aef9a6d6903d4ff4f12457052a2bc5fba8c90d5c245b"
+    },
+    {
+      "date": "2026-07-03",
+      "path": "data/scraped/2026-07-03.json",
+      "sha256": "759c0ef5d34555f101eba15d21a421ca979b765e8aec09445d7afa6f23e53d4a"
+    },
+    {
+      "date": "2026-07-07",
+      "path": "data/scraped/2026-07-07.json",
+      "sha256": "9dca5904c0091dce0bda08cf934d784d29c15ea876b9e24b3b1289a236884164"
+    },
+    {
+      "date": "2026-07-10",
+      "path": "data/scraped/2026-07-10.json",
+      "sha256": "d8ceb3c853b9ad083780407634bf349b3bef80100bc76980ab929fd4ebaf7c7a"
+    },
+    {
+      "date": "2026-07-14",
+      "path": "data/scraped/2026-07-14.json",
+      "sha256": "b925337b943882f30937bcd4a91f62adf55d14622d31886799cc3068fd4aff2f"
+    },
+    {
+      "date": "2026-07-17",
+      "path": "data/scraped/2026-07-17.json",
+      "sha256": "c53e7d8274e29ddc25ceb77f7f56c17e4088897e7e785bfa04cd44b5a9ee640e"
+    },
+    {
+      "date": "2026-07-21",
+      "path": "data/scraped/2026-07-21.json",
+      "sha256": "5086be4d119542f941b84726a5d512e0a9c93fd5aaf06e554b626efa53fb2c2e"
+    },
+    {
+      "date": "2026-07-24",
+      "path": "data/scraped/2026-07-24.json",
+      "sha256": "19289248ed40ee44fec6d3a47b88926d2ce4626cce3085ac1d96015a80ad68f8"
+    },
+    {
+      "date": "2026-07-28",
+      "path": "data/scraped/2026-07-28.json",
+      "sha256": "f5e21a4d44625b7f3516719112b9f99a0b09a28ffcd5029d558bd0180888e4b6"
+    },
+    {
+      "date": "2026-07-31",
+      "path": "data/scraped/2026-07-31.json",
+      "sha256": "7fa8e2fa25c843d9305345915b4403215b8572d98cacf683da92d0d69aa954c6"
+    }
+  ]
+}

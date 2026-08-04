@@ -3,9 +3,9 @@ const STRATEGY_LABELS = {
   sp500_next5:  "S&P 500 Next 5",
   megacap_top5: "Megacap Top 5",
   megacap_next5:"Megacap Next 5",
-  sp400_mcap5:      "S&P 400 Mkt Cap Top 5",
-  sp400_mcap_next5: "S&P 400 Mkt Cap Next 5",
-  munger:           "Munger",
+  sp400_mcap5:      "S&P 400 Top 5",
+  sp400_mcap_next5: "S&P 400 Next 5",
+  munger:           "Munger 21-Day EMA",
 };
 
 let _allPositions = [];
@@ -18,7 +18,7 @@ function fmtPrice(v) {
 
 function fmtExitPrice(p) {
   if (p.status !== "open") return fmtPrice(p.exit_price);
-  const price = p.exit_price ??
+  const price = p.current_price ??
     (p.entry_price != null && p.return_pct != null
       ? p.entry_price * (1 + p.return_pct / 100)
       : null);
@@ -92,13 +92,17 @@ function render() {
     <tr>
       <td>${STRATEGY_LABELS[p.strategy] ?? p.strategy}</td>
       <td><strong>${p.ticker}</strong></td>
+      <td>${p.signal_date ?? "—"}</td>
       <td>${p.entry_date ?? "—"}</td>
       <td>${fmtPrice(p.entry_price)}</td>
+      <td>${p.exit_signal_date ?? "—"}</td>
+      <td>${fmtPrice(p.exit_signal_close)}</td>
+      <td>${fmtPrice(p.exit_signal_ema_21)}</td>
       <td>${p.status === "open" ? "" : (p.exit_date ?? "—")}</td>
       <td>${fmtExitPrice(p)}</td>
       <td>${p.hold_days != null ? p.hold_days + "d" : "—"}</td>
       <td>${fmtReturn(p.return_pct)}</td>
-      <td><span class="badge badge-${p.status}">${p.status}</span></td>
+      <td><span class="badge badge-${p.status === "open" && p.exit_signal_date ? "pending" : p.status}">${p.status === "open" && p.exit_signal_date ? "exit pending" : p.status}</span></td>
     </tr>
   `).join("");
 }

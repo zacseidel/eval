@@ -11,11 +11,13 @@ async function loadJSON(path) {
 }
 
 async function init() {
-  let positions, strategyReturns;
+  let positions, strategyReturns, signals, manifest;
   try {
-    [positions, strategyReturns] = await Promise.all([
+    [positions, strategyReturns, signals, manifest] = await Promise.all([
       loadJSON(`${DATA_BASE}/positions.json`),
       loadJSON(`${DATA_BASE}/strategy_returns.json`),
+      loadJSON(`${DATA_BASE}/signals.json`),
+      loadJSON(`${DATA_BASE}/manifest.json`),
     ]);
   } catch (e) {
     document.querySelector("main").innerHTML =
@@ -25,14 +27,20 @@ async function init() {
     return;
   }
 
-  renderStrategies(positions, strategyReturns);
+  const latestReport = manifest.reports[manifest.reports.length - 1]?.date ?? "";
+  renderStrategies(
+    positions,
+    strategyReturns,
+    signals,
+    latestReport,
+    manifest.strategy_trade_stats || {},
+  );
   renderPositions(positions);
   renderCharts(strategyReturns);
   renderScatterCharts(positions);
 
   // Show most recent data date in the header
-  const allDates = Object.values(strategyReturns).filter(Array.isArray).flat().map(d => d.date);
-  const maxDate = allDates.reduce((a, b) => (a > b ? a : b), "");
+  const maxDate = manifest.market_data_through ?? manifest.as_of;
   if (maxDate) {
     const formatted = new Date(maxDate + "T00:00:00").toLocaleDateString("en-US", {
       year: "numeric", month: "long", day: "numeric",

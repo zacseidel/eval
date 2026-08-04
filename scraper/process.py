@@ -1,546 +1,747 @@
+"""Build auditable trade ledgers and portfolio returns from scraped reports.
+
+Reports are the only source of entries and security selection. Rank-model exits
+also come from report membership; market data supplies the Munger EMA exit,
+execution prices, and daily valuation.
 """
-Portfolio simulation: loads scraped reports, computes positions and strategy returns.
-"""
+import argparse
+import hashlib
 import json
 import math
+from collections import defaultdict
 from datetime import date, datetime, timedelta
 from pathlib import Path
+from typing import Optional
 
-from polygon_client import get_daily_bars, get_ticker_details, get_execution_price
+from dotenv import load_dotenv
+
+from polygon_client import CACHE_SCHEMA_VERSION, get_daily_bars, get_execution_price
 
 SCRAPED_DIR = Path(__file__).parent.parent / "data" / "scraped"
 PROCESSED_DIR = Path(__file__).parent.parent / "data" / "processed"
+load_dotenv(Path(__file__).parent.parent / ".env")
 
+MUNGER_EMA_SPAN = 21
+MUNGER_EMA_LOOKBACK_DAYS = 120
+KELLY_MIN_CLOSED_TRADES = 20
 RISK_FREE_RATE_ANNUAL = 0.05
-MIN_SHARPE_POINTS_12M = 20
-MIN_SHARPE_POINTS_3M = 8
+PROCESSOR_VERSION = 4
 
+# Every selection below is made only from ranks or membership in a scraped
+# report. The legacy IDs are retained so existing links keep working.
 STRATEGIES = {
-    "sp500_top5":        {"section": "sp500",   "ranks": range(1, 6)},
-    "sp500_next5":       {"section": "sp500",   "ranks": range(6, 11)},
-    "megacap_top5":      {"section": "megacap", "ranks": range(1, 6)},
-    "megacap_next5":     {"section": "megacap", "ranks": range(6, 11)},
-    "sp400_mcap5":       {"section": "sp400",   "ranks": None, "mcap_range": range(1, 6)},
-    "sp400_mcap_next5":  {"section": "sp400",   "ranks": None, "mcap_range": range(6, 11)},
-    "munger":            {"section": "munger",  "ranks": None},
+    "sp500_top5":       {"section": "sp500",   "ranks": range(1, 6)},
+    "sp500_next5":      {"section": "sp500",   "ranks": range(6, 11)},
+    "megacap_top5":     {"section": "megacap", "ranks": range(1, 6)},
+    "megacap_next5":    {"section": "megacap", "ranks": range(6, 11)},
+    "sp400_mcap5":      {"section": "sp400",   "ranks": range(1, 6)},
+    "sp400_mcap_next5": {"section": "sp400",   "ranks": range(6, 11)},
+    "munger":           {"section": "munger",  "ranks": None},
 }
 
 
-def load_reports() -> list[dict]:
-    files = sorted(SCRAPED_DIR.glob("*.json"))
+def _parse_date(value: str) -> date:
+    return datetime.strptime(value, "%Y-%m-%d").date()
+
+
+def _atomic_write_json(path: Path, value) -> None:
+    temp_path = path.with_suffix(path.suffix + ".tmp")
+    temp_path.write_text(json.dumps(value, indent=2) + "\n")
+    temp_path.replace(path)
+
+
+def load_reports(as_of: Optional[str] = None) -> list[dict]:
     reports = []
-    for f in files:
+    for path in sorted(SCRAPED_DIR.glob("*.json")):
         try:
-            reports.append(json.loads(f.read_text()))
-        except Exception as e:
-            print(f"  WARNING: could not load {f.name}: {e}")
+            report = json.loads(path.read_text())
+        except Exception as exc:
+            raise RuntimeError(f"Could not load {path.name}: {exc}") from exc
+        if as_of is None or report["date"] <= as_of:
+            reports.append(report)
+    reports.sort(key=lambda report: report["date"])
     return reports
 
 
-def compute_sma(bars: list[dict], window: int = 10) -> dict:
-    """Returns {date: sma} for each date in bars (None if insufficient history)."""
-    result = {}
-    closes = []
-    for bar in sorted(bars, key=lambda b: b["date"]):
-        closes.append(bar["close"])
-        if len(closes) >= window:
-            result[bar["date"]] = sum(closes[-window:]) / window
-        else:
-            result[bar["date"]] = None
-    return result
+def _selected_entries(report: dict, strategy_id: str) -> list[dict]:
+    cfg = STRATEGIES[strategy_id]
+    entries = report.get(cfg["section"], [])
+    if cfg["ranks"] is None:
+        return sorted(entries, key=lambda entry: (entry.get("rank", 999), entry["ticker"]))
+    return sorted(
+        (entry for entry in entries if entry.get("rank") in cfg["ranks"]),
+        key=lambda entry: (entry.get("rank", 999), entry["ticker"]),
+    )
 
 
-def estimate_market_cap(ticker: str, report_price: float) -> float:
-    """
-    Returns estimated market cap. Uses Polygon ticker details if available,
-    falls back to price × recent volume.
-    """
-    if report_price is None:
-        return 0.0
-    details = get_ticker_details(ticker)
-    mc = details.get("market_cap")
-    if mc and mc > 0:
-        return float(mc)
-    # Fallback: price × volume from most recent available bar
-    today = date.today().strftime("%Y-%m-%d")
-    week_ago = (date.today() - timedelta(days=7)).strftime("%Y-%m-%d")
-    bars = get_daily_bars(ticker, week_ago, today)
-    if bars:
-        last = bars[-1]
-        return report_price * (last.get("volume") or 0)
-    return report_price * 1_000_000  # last resort: treat as small cap
+def build_signal_snapshots(reports: list[dict]) -> list[dict]:
+    """Persist every selected report row so positions can be audited to inputs."""
+    snapshots = []
+    previous = {strategy_id: set() for strategy_id in STRATEGIES}
+    for report in reports:
+        for strategy_id in STRATEGIES:
+            entries = _selected_entries(report, strategy_id)
+            current = {entry["ticker"] for entry in entries}
+            for entry in entries:
+                ticker = entry["ticker"]
+                snapshots.append({
+                    "strategy": strategy_id,
+                    "ticker": ticker,
+                    "report_date": report["date"],
+                    "signal_state": "new" if ticker not in previous[strategy_id] else "continuing",
+                    "source_entry_date": entry.get("entry_date"),
+                    "source_new_entrant": bool(entry.get("new_entrant")),
+                    "rank": entry.get("rank"),
+                    "source_price": entry.get("price"),
+                    "source_sma_200": entry.get("sma_200"),
+                    "source_return_12m": entry.get("return_12m"),
+                    "source_return_1w": entry.get("return_1w"),
+                })
+            previous[strategy_id] = current
+    return snapshots
 
 
-def rank_sp400_by_mcap(entries: list[dict]) -> list[dict]:
-    """Re-sort SP400 entries by estimated market cap (descending)."""
-    ranked = []
-    for entry in entries:
-        mc = estimate_market_cap(entry["ticker"], entry["price"])
-        ranked.append({**entry, "_market_cap": mc})
-    ranked.sort(key=lambda x: x["_market_cap"], reverse=True)
-    for i, r in enumerate(ranked):
-        r["rank"] = i + 1
-    return ranked
+def _execution_price(ticker: str, signal_date: str, as_of: str) -> tuple[str, float]:
+    execution_date, price = get_execution_price(ticker, signal_date, as_of=as_of)
+    if execution_date is None or price is None or price <= 0:
+        raise RuntimeError(f"Missing execution price for {ticker} on/after {signal_date}")
+    return execution_date, float(price)
 
 
-def find_munger_exit(ticker: str, entry_date: str, today: str) -> tuple:
-    """
-    Returns (exit_date, exit_price) — the first day after entry_date where
-    close < 10-day SMA. Returns (None, None) if still open.
-    """
-    # Fetch enough history before entry_date to compute 10d SMA on the entry day
-    start = (datetime.strptime(entry_date, "%Y-%m-%d") - timedelta(days=20)).strftime("%Y-%m-%d")
-    bars = get_daily_bars(ticker, start, today)
-    sma_map = compute_sma(bars, window=10)
-
-    entry_dt = datetime.strptime(entry_date, "%Y-%m-%d").date()
-    for bar in sorted(bars, key=lambda b: b["date"]):
-        bar_dt = datetime.strptime(bar["date"], "%Y-%m-%d").date()
-        if bar_dt <= entry_dt:
-            continue
-        sma = sma_map.get(bar["date"])
-        close = bar.get("close")
-        if sma is not None and close is not None and close < sma:
-            return bar["date"], close
-    return None, None
+def _last_bar(ticker: str, start: str, as_of: str) -> dict:
+    bars = get_daily_bars(ticker, start, as_of)
+    if not bars:
+        raise RuntimeError(f"Missing valuation bars for {ticker} from {start} through {as_of}")
+    return bars[-1]
 
 
-def build_positions(reports: list[dict]) -> list[dict]:
+def _new_position(strategy_id: str, ticker: str, signal_date: str,
+                  execution_date: str, entry_price: float) -> dict:
+    return {
+        "trade_id": f"{strategy_id}:{ticker}:{signal_date}",
+        "strategy": strategy_id,
+        "ticker": ticker,
+        "signal_date": signal_date,
+        "entry_date": execution_date,
+        "entry_price": round(entry_price, 4),
+        "exit_signal_date": None,
+        "exit_signal_close": None,
+        "exit_signal_ema_21": None,
+        "exit_date": None,
+        "exit_price": None,
+        "current_date": None,
+        "current_price": None,
+        "hold_days": None,
+        "return_pct": None,
+        "status": "open",
+    }
+
+
+def _close_position(position: dict, exit_signal_date: str,
+                    exit_date: str, exit_price: float) -> dict:
+    entry_price = position["entry_price"]
+    return {
+        **position,
+        "exit_signal_date": exit_signal_date,
+        "exit_date": exit_date,
+        "exit_price": round(exit_price, 4),
+        "current_date": None,
+        "current_price": None,
+        "hold_days": (_parse_date(exit_date) - _parse_date(position["entry_date"])).days,
+        "return_pct": round((exit_price / entry_price - 1) * 100, 2),
+        "status": "closed",
+    }
+
+
+def _mark_open_position_from_bar(position: dict, bar: dict) -> dict:
+    current_price = float(bar["close"])
+    return {
+        **position,
+        "current_date": bar["date"],
+        "current_price": current_price,
+        "hold_days": (_parse_date(bar["date"]) - _parse_date(position["entry_date"])).days,
+        "return_pct": round((current_price / position["entry_price"] - 1) * 100, 2),
+    }
+
+
+def _mark_open_position(position: dict, as_of: str) -> dict:
+    bar = _last_bar(position["ticker"], position["entry_date"], as_of)
+    return _mark_open_position_from_bar(position, bar)
+
+
+def _build_rank_positions(reports: list[dict], strategy_id: str, as_of: str) -> list[dict]:
     positions = []
-    today = date.today().strftime("%Y-%m-%d")
-
-    # --- Rank-based strategies (sp500, megacap, sp400) ---
-    for strategy_id, cfg in STRATEGIES.items():
-        if strategy_id == "munger":
-            continue
-
-        section = cfg["section"]
-        rank_range = cfg["ranks"]
-        open_positions: dict[str, dict] = {}  # ticker → position
-
-        for report in reports:
-            report_date = report["date"]
-            entries = report.get(section, [])
-
-            if "mcap_range" in cfg:
-                entries = rank_sp400_by_mcap(entries)
-                top_tickers = {e["ticker"] for e in entries if e["rank"] in cfg["mcap_range"]}
-            else:
-                top_tickers = {e["ticker"] for e in entries if e["rank"] in rank_range}
-
-            price_map = {e["ticker"]: e["price"] for e in entries if e.get("price") is not None}
-
-            # Close positions that left the slot
-            for ticker in list(open_positions.keys()):
-                if ticker not in top_tickers:
-                    pos = open_positions.pop(ticker)
-                    exec_date, exit_price = get_execution_price(ticker, report_date)
-                    if exit_price is None:
-                        exit_price = price_map.get(ticker) or pos["entry_price"]
-                        exec_date = report_date
-                    entry_price = pos["entry_price"]
-                    if exit_price and entry_price:
-                        ret = round((exit_price - entry_price) / entry_price * 100, 2)
-                    else:
-                        ret = None
-                    entry_dt = datetime.strptime(pos["entry_date"], "%Y-%m-%d").date()
-                    exit_dt = datetime.strptime(exec_date, "%Y-%m-%d").date()
-                    positions.append({
-                        **pos,
-                        "exit_date": exec_date,
-                        "exit_price": exit_price,
-                        "hold_days": (exit_dt - entry_dt).days,
-                        "return_pct": ret,
-                        "status": "closed",
-                    })
-
-            # Open positions for new entrants
-            for ticker in top_tickers:
-                if ticker not in open_positions:
-                    exec_date, entry_price = get_execution_price(ticker, report_date)
-                    if entry_price is None:
-                        exec_date, entry_price = report_date, price_map.get(ticker)
-                    open_positions[ticker] = {
-                        "strategy": strategy_id,
-                        "ticker": ticker,
-                        "entry_date": exec_date,
-                        "entry_price": entry_price,
-                        "exit_date": None,
-                        "exit_price": None,
-                        "hold_days": None,
-                        "return_pct": None,
-                        "status": "open",
-                    }
-
-        # Remaining open positions
-        last_report = reports[-1] if reports else None
-        for ticker, pos in open_positions.items():
-            current_price = None
-            if last_report:
-                entries = last_report.get(section, [])
-                if section == "sp400":
-                    entries = rank_sp400_by_mcap(entries)
-                price_map = {e["ticker"]: e["price"] for e in entries}
-                current_price = price_map.get(ticker)
-            if current_price and pos["entry_price"]:
-                ret = (current_price - pos["entry_price"]) / pos["entry_price"] * 100
-                entry_dt = datetime.strptime(pos["entry_date"], "%Y-%m-%d").date()
-                today_dt = datetime.strptime(today, "%Y-%m-%d").date()
-                pos = {
-                    **pos,
-                    "hold_days": (today_dt - entry_dt).days,
-                    "return_pct": round(ret, 2),
-                }
-            positions.append(pos)
-
-    # --- Munger strategy ---
-    munger_open: dict[str, dict] = {}
-    munger_seen: set[str] = set()
+    open_positions: dict[str, dict] = {}
 
     for report in reports:
         report_date = report["date"]
-        entries = report.get("munger", [])
-        current_tickers = {e["ticker"] for e in entries}
-        price_map = {e["ticker"]: e["price"] for e in entries if e.get("price") is not None}
+        selected = {entry["ticker"] for entry in _selected_entries(report, strategy_id)}
 
-        for ticker in current_tickers:
-            if ticker not in munger_seen:
-                munger_seen.add(ticker)
-                exec_date, entry_price = get_execution_price(ticker, report_date)
-                if entry_price is None:
-                    exec_date, entry_price = report_date, price_map.get(ticker)
-                munger_open[ticker] = {
-                    "strategy": "munger",
-                    "ticker": ticker,
-                    "entry_date": exec_date,
-                    "entry_price": entry_price,
-                    "exit_date": None,
-                    "exit_price": None,
-                    "hold_days": None,
-                    "return_pct": None,
-                    "status": "open",
-                }
+        # Membership in the next report is the sole exit signal.
+        for ticker in sorted(set(open_positions) - selected):
+            position = open_positions.pop(ticker)
+            exit_date, exit_price = _execution_price(ticker, report_date, as_of)
+            positions.append(_close_position(position, report_date, exit_date, exit_price))
 
-    # Determine Munger exits via 10-day SMA check
-    print(f"  Checking 10d SMA exits for {len(munger_open)} Munger positions...")
-    for ticker, pos in munger_open.items():
-        entry_price = pos["entry_price"]
-        exit_date, exit_price = find_munger_exit(ticker, pos["entry_date"], today)
-        if exit_date:
-            ret = round((exit_price - entry_price) / entry_price * 100, 2) if (exit_price and entry_price) else None
-            entry_dt = datetime.strptime(pos["entry_date"], "%Y-%m-%d").date()
-            exit_dt = datetime.strptime(exit_date, "%Y-%m-%d").date()
-            positions.append({
-                **pos,
-                "exit_date": exit_date,
-                "exit_price": exit_price,
-                "hold_days": (exit_dt - entry_dt).days,
-                "return_pct": ret,
-                "status": "closed",
-            })
-        else:
-            # Still open — compute unrealized return from last known price
-            bars = get_daily_bars(ticker, pos["entry_date"], today)
-            if bars:
-                last_close = bars[-1]["close"]
-                ret = round((last_close - entry_price) / entry_price * 100, 2) if (last_close and entry_price) else None
-                entry_dt = datetime.strptime(pos["entry_date"], "%Y-%m-%d").date()
-                today_dt = datetime.strptime(today, "%Y-%m-%d").date()
-                positions.append({
-                    **pos,
-                    "exit_price": last_close,
-                    "hold_days": (today_dt - entry_dt).days,
-                    "return_pct": ret,
-                    "status": "open",
-                })
-            else:
-                positions.append(pos)
+        # Membership while flat is the sole entry signal.
+        for ticker in sorted(selected - set(open_positions)):
+            entry_date, entry_price = _execution_price(ticker, report_date, as_of)
+            open_positions[ticker] = _new_position(
+                strategy_id, ticker, report_date, entry_date, entry_price
+            )
 
+    positions.extend(
+        _mark_open_position(open_positions[ticker], as_of)
+        for ticker in sorted(open_positions)
+    )
     return positions
 
 
-def build_strategy_returns(reports: list[dict], positions: list[dict], spy_bars: list[dict]) -> dict:
-    """
-    For each strategy, compute a portfolio value time series normalized to 100
-    at the first report date. Uses log returns averaged across active positions.
-    Also tracks a per-strategy SPY benchmark using the same approach: SPY's log
-    return for each period, compounded only when positions are active.
-    """
-    today = date.today().strftime("%Y-%m-%d")
-    report_dates = [r["date"] for r in reports]
-    if not report_dates:
+def _ema_by_date(bars: list[dict], span: int = MUNGER_EMA_SPAN) -> dict[str, float]:
+    """Return a close-based EMA only after at least ``span`` observations."""
+    alpha = 2 / (span + 1)
+    ema = None
+    values = {}
+    for index, bar in enumerate(bars, start=1):
+        close = float(bar["close"])
+        ema = close if ema is None else alpha * close + (1 - alpha) * ema
+        if index >= span:
+            values[bar["date"]] = ema
+    return values
+
+
+def _build_munger_ticker_positions(ticker: str, signal_dates: list[str],
+                                    bars: list[dict], as_of: str) -> list[dict]:
+    """Simulate report entries and next-session EMA exits for one ticker."""
+    positions = []
+    open_position = None
+    queued_signal = None
+    pending_exit = None
+    signals_by_date = set(signal_dates)
+    bars_by_date = {bar["date"]: bar for bar in bars}
+    ema_by_date = _ema_by_date(bars)
+    timeline = sorted(signals_by_date | set(bars_by_date))
+
+    for event_date in timeline:
+        if event_date > as_of:
+            break
+
+        # Reports are available before the trading session. Only a ticker that
+        # is flat at signal time can queue an entry. A pending EMA exit still
+        # counts as open and cannot create a same-session sell/rebuy round trip.
+        if event_date in signals_by_date:
+            if open_position is None and pending_exit is None and queued_signal is None:
+                queued_signal = event_date
+
+        bar = bars_by_date.get(event_date)
+        if bar is None:
+            continue
+
+        if pending_exit is not None:
+            exit_price = _bar_execution_price(bar)
+            positions.append(_close_position(
+                open_position,
+                pending_exit["date"],
+                event_date,
+                exit_price,
+            ))
+            open_position = None
+            pending_exit = None
+
+        if queued_signal is not None and open_position is None:
+            open_position = _new_position(
+                "munger", ticker, queued_signal, event_date, _bar_execution_price(bar)
+            )
+            queued_signal = None
+
+        ema = ema_by_date.get(event_date)
+        close = float(bar["close"])
+        if open_position is not None and ema is not None and close < ema:
+            open_position["exit_signal_date"] = event_date
+            open_position["exit_signal_close"] = round(close, 4)
+            open_position["exit_signal_ema_21"] = round(ema, 4)
+            pending_exit = {"date": event_date}
+
+    if open_position is not None:
+        current_bar = next(
+            bar for bar in reversed(bars)
+            if open_position["entry_date"] <= bar["date"] <= as_of
+        )
+        positions.append(_mark_open_position_from_bar(open_position, current_bar))
+    return positions
+
+
+def _build_munger_positions(reports: list[dict], as_of: str) -> list[dict]:
+    """Buy from report membership; exit after a close below the 21-day EMA."""
+    first_date = _parse_date(reports[0]["date"])
+    ema_start = (first_date - timedelta(days=MUNGER_EMA_LOOKBACK_DAYS)).isoformat()
+    signal_dates_by_ticker = defaultdict(list)
+    for report in reports:
+        for entry in _selected_entries(report, "munger"):
+            signal_dates_by_ticker[entry["ticker"]].append(report["date"])
+
+    positions = []
+    for ticker in sorted(signal_dates_by_ticker):
+        bars = get_daily_bars(ticker, ema_start, as_of)
+        positions.extend(_build_munger_ticker_positions(
+            ticker, signal_dates_by_ticker[ticker], bars, as_of
+        ))
+    return positions
+
+
+def build_positions(reports: list[dict], as_of: str) -> list[dict]:
+    positions = []
+    for strategy_id in STRATEGIES:
+        if strategy_id == "munger":
+            positions.extend(_build_munger_positions(reports, as_of))
+        else:
+            positions.extend(_build_rank_positions(reports, strategy_id, as_of))
+    positions.sort(key=lambda p: (p["strategy"], p["entry_date"], p["ticker"]))
+    return positions
+
+
+def validate_positions(positions: list[dict], as_of: str,
+                       signals: Optional[list[dict]] = None) -> None:
+    seen_ids = set()
+    signal_keys = {
+        (signal["strategy"], signal["ticker"], signal["report_date"])
+        for signal in (signals or [])
+    }
+    by_ticker = defaultdict(list)
+    for position in positions:
+        trade_id = position["trade_id"]
+        if trade_id in seen_ids:
+            raise ValueError(f"Duplicate trade id: {trade_id}")
+        seen_ids.add(trade_id)
+        by_ticker[(position["strategy"], position["ticker"])].append(position)
+        if signals is not None and (
+            position["strategy"], position["ticker"], position["signal_date"]
+        ) not in signal_keys:
+            raise ValueError(f"Trade has no scraped report signal: {trade_id}")
+        if position["entry_price"] <= 0:
+            raise ValueError(f"Invalid entry price: {trade_id}")
+        if _parse_date(position["entry_date"]).weekday() >= 5:
+            raise ValueError(f"Weekend entry date: {trade_id} {position['entry_date']}")
+        if position["entry_date"] > as_of:
+            raise ValueError(f"Future entry date: {trade_id}")
+        if position["status"] == "closed":
+            if position["exit_price"] is None or position["exit_price"] <= 0:
+                raise ValueError(f"Invalid exit price: {trade_id}")
+            if _parse_date(position["exit_date"]).weekday() >= 5:
+                raise ValueError(f"Weekend exit date: {trade_id} {position['exit_date']}")
+            if position["exit_date"] < position["entry_date"]:
+                raise ValueError(f"Exit precedes entry: {trade_id}")
+            if position["strategy"] == "munger":
+                if not position["exit_signal_date"]:
+                    raise ValueError(f"Munger exit has no EMA signal: {trade_id}")
+                if position["exit_signal_date"] >= position["exit_date"]:
+                    raise ValueError(f"Munger exit is not after its EMA signal: {trade_id}")
+                if not position["exit_signal_close"] < position["exit_signal_ema_21"]:
+                    raise ValueError(f"Invalid Munger EMA exit signal: {trade_id}")
+        elif position["strategy"] == "munger" and position["exit_signal_date"]:
+            if not position["exit_signal_close"] < position["exit_signal_ema_21"]:
+                raise ValueError(f"Invalid pending Munger EMA exit signal: {trade_id}")
+            if position["exit_signal_date"] > position["current_date"]:
+                raise ValueError(f"Future pending Munger exit signal: {trade_id}")
+
+    for key, ticker_positions in by_ticker.items():
+        ordered = sorted(ticker_positions, key=lambda p: p["entry_date"])
+        for previous, current in zip(ordered, ordered[1:]):
+            if previous["exit_date"] is None or previous["exit_date"] > current["entry_date"]:
+                raise ValueError(f"Overlapping trades for {key}: {previous['trade_id']}, {current['trade_id']}")
+
+
+def compute_trade_stats(positions: list[dict]) -> dict:
+    """Summarize closed outcomes and estimate a long-only half-Kelly risk fraction."""
+    stats = {}
+    for strategy_id in STRATEGIES:
+        closed = [
+            position for position in positions
+            if position["strategy"] == strategy_id
+            and position["status"] == "closed"
+            and position["return_pct"] is not None
+        ]
+        winners = [position["return_pct"] for position in closed if position["return_pct"] > 0]
+        losers = [position["return_pct"] for position in closed if position["return_pct"] < 0]
+        breakeven_count = len(closed) - len(winners) - len(losers)
+        decided_count = len(winners) + len(losers)
+        average_win = sum(winners) / len(winners) if winners else None
+        average_loss = sum(losers) / len(losers) if losers else None
+        payoff_ratio = (
+            average_win / abs(average_loss)
+            if average_win is not None and average_loss is not None and average_loss != 0
+            else None
+        )
+
+        full_kelly = None
+        half_kelly = None
+        if (
+            len(closed) >= KELLY_MIN_CLOSED_TRADES
+            and decided_count > 0
+            and payoff_ratio is not None
+            and payoff_ratio > 0
+        ):
+            win_probability = len(winners) / decided_count
+            loss_probability = len(losers) / decided_count
+            full_kelly = win_probability - loss_probability / payoff_ratio
+            half_kelly = max(0.0, full_kelly / 2)
+
+        if len(closed) < KELLY_MIN_CLOSED_TRADES:
+            kelly_status = "insufficient_sample"
+        elif payoff_ratio is None or decided_count == 0:
+            kelly_status = "needs_winners_and_losers"
+        else:
+            kelly_status = "calculated"
+
+        stats[strategy_id] = {
+            "closed_count": len(closed),
+            "winner_count": len(winners),
+            "loser_count": len(losers),
+            "breakeven_count": breakeven_count,
+            "winner_pct": round(len(winners) / len(closed) * 100, 2) if closed else None,
+            "loser_pct": round(len(losers) / len(closed) * 100, 2) if closed else None,
+            "average_win_pct": round(average_win, 2) if average_win is not None else None,
+            "average_loss_pct": round(average_loss, 2) if average_loss is not None else None,
+            "payoff_ratio": round(payoff_ratio, 4) if payoff_ratio is not None else None,
+            "full_kelly_pct": round(full_kelly * 100, 2) if full_kelly is not None else None,
+            "half_kelly_pct": round(half_kelly * 100, 2) if half_kelly is not None else None,
+            "minimum_closed_trades": KELLY_MIN_CLOSED_TRADES,
+            "minimum_sample_met": len(closed) >= KELLY_MIN_CLOSED_TRADES,
+            "kelly_status": kelly_status,
+        }
+    return stats
+
+
+def prefetch_all_tickers(reports: list[dict], as_of: str,
+                         ticker_offset: int = 0,
+                         ticker_limit: Optional[int] = None) -> None:
+    if not reports:
+        return
+    first_date = reports[0]["date"]
+    ticker_start = (_parse_date(first_date) - timedelta(days=30)).isoformat()
+    munger_start = (
+        _parse_date(first_date) - timedelta(days=MUNGER_EMA_LOOKBACK_DAYS)
+    ).isoformat()
+    spy_start = (_parse_date(first_date) - timedelta(days=396)).isoformat()
+    tickers = sorted({
+        entry["ticker"]
+        for report in reports
+        for section in ("sp500", "megacap", "sp400", "munger")
+        for entry in report.get(section, [])
+        if entry.get("ticker")
+    })
+    munger_tickers = {
+        entry["ticker"]
+        for report in reports
+        for entry in report.get("munger", [])
+        if entry.get("ticker")
+    }
+
+    print(f"  Prefetching SPY bars {spy_start} → {as_of}...")
+    get_daily_bars("SPY", spy_start, as_of)
+    selected_tickers = tickers[ticker_offset:]
+    if ticker_limit is not None:
+        selected_tickers = selected_tickers[:ticker_limit]
+    print(
+        f"  Prefetching bars for {len(selected_tickers)} of {len(tickers)} signal tickers "
+        f"through {as_of}..."
+    )
+    for ticker in selected_tickers:
+        start = munger_start if ticker in munger_tickers else ticker_start
+        get_daily_bars(ticker, start, as_of)
+
+
+def _bar_execution_price(bar: dict) -> float:
+    if bar.get("vwap"):
+        return float(bar["vwap"])
+    if bar.get("open") and bar.get("close"):
+        return (float(bar["open"]) + float(bar["close"])) / 2
+    if bar.get("close"):
+        return float(bar["close"])
+    raise ValueError(f"Bar has no usable price: {bar}")
+
+
+def _add_return_windows(series: list[dict]) -> None:
+    for index, point in enumerate(series):
+        current_date = _parse_date(point["date"])
+        for days, field, benchmark_field in (
+            (91, "rolling_3m", "spy_rolling_3m"),
+            (365, "return_12m", "spy_12m"),
+        ):
+            cutoff = (current_date - timedelta(days=days)).isoformat()
+            past = next(
+                (series[j] for j in range(index - 1, -1, -1) if series[j]["date"] <= cutoff),
+                None,
+            )
+            if past is None:
+                point[field] = None
+                point[benchmark_field] = None
+                continue
+            point[field] = round((point["value"] / past["value"] - 1) * 100, 2)
+            point[benchmark_field] = round(
+                (point["spy_value"] / past["spy_value"] - 1) * 100, 2
+            )
+
+
+def build_strategy_returns(reports: list[dict], positions: list[dict],
+                           spy_bars: list[dict], as_of: str) -> dict:
+    """Simulate an equal-weight portfolio rebalanced only on trade-event days."""
+    if not reports or not spy_bars:
+        return {}
+    first_report_date = reports[0]["date"]
+    trading_dates = [
+        bar["date"] for bar in spy_bars
+        if first_report_date <= bar["date"] <= as_of
+    ]
+    if not trading_dates:
         return {}
 
-    spy_price_map = {b["date"]: b["close"] for b in spy_bars}
-
-    def spy_price_on_or_before(d):
-        if d in spy_price_map:
-            return spy_price_map[d]
-        dt = datetime.strptime(d, "%Y-%m-%d")
-        for i in range(1, 6):
-            prev = (dt - timedelta(days=i)).strftime("%Y-%m-%d")
-            if prev in spy_price_map:
-                return spy_price_map[prev]
-        return None
-
-    result = {sid: [] for sid in STRATEGIES}
+    all_tickers = sorted({position["ticker"] for position in positions})
+    bar_maps = {
+        ticker: {
+            bar["date"]: bar
+            for bar in get_daily_bars(ticker, first_report_date, as_of)
+        }
+        for ticker in all_tickers
+    }
+    spy_map = {bar["date"]: bar for bar in spy_bars}
+    spy_base = float(spy_map[trading_dates[0]]["close"])
+    result = {}
 
     for strategy_id in STRATEGIES:
         strategy_positions = [p for p in positions if p["strategy"] == strategy_id]
-        if not strategy_positions:
-            continue
+        entries_by_date = defaultdict(list)
+        exits_by_date = defaultdict(list)
+        for position in strategy_positions:
+            entries_by_date[position["entry_date"]].append(position)
+            if position["exit_date"]:
+                exits_by_date[position["exit_date"]].append(position)
 
-        portfolio_value = 100.0
-        spy_value = 100.0
-        prev_date = None
+        cash = 100.0
+        holdings: dict[str, float] = {}
+        last_closes: dict[str, float] = {}
+        series = []
 
-        for report_date in report_dates:
-            active = []
-            for pos in strategy_positions:
-                entry = pos["entry_date"]
-                exit_ = pos.get("exit_date")
-                if entry <= report_date and (exit_ is None or exit_ >= report_date):
-                    active.append(pos)
+        for trading_date in trading_dates:
+            for ticker in all_tickers:
+                bar = bar_maps[ticker].get(trading_date)
+                if bar and bar.get("close"):
+                    last_closes[ticker] = float(bar["close"])
 
-            if not active:
-                result[strategy_id].append({
-                    "date": report_date,
-                    "value": round(portfolio_value, 4),
-                    "spy_value": round(spy_value, 4),
-                    "rolling_3m": None,
-                    "spy_rolling_3m": None,
-                    "spy_12m": None,
-                })
-                prev_date = report_date
-                continue
+            day_entries = entries_by_date.get(trading_date, [])
+            day_exits = exits_by_date.get(trading_date, [])
+            if day_entries or day_exits:
+                for position in day_exits:
+                    shares = holdings.pop(position["ticker"], 0.0)
+                    cash += shares * float(position["exit_price"])
 
-            if prev_date is None:
-                result[strategy_id].append({
-                    "date": report_date,
-                    "value": round(portfolio_value, 4),
-                    "spy_value": round(spy_value, 4),
-                    "rolling_3m": None,
-                    "spy_rolling_3m": None,
-                    "spy_12m": None,
-                })
-                prev_date = report_date
-                continue
+                active_tickers = {
+                    p["ticker"] for p in strategy_positions
+                    if p["entry_date"] <= trading_date
+                    and (p["exit_date"] is None or p["exit_date"] > trading_date)
+                }
+                execution_prices = {}
+                for ticker in active_tickers:
+                    bar = bar_maps[ticker].get(trading_date)
+                    if bar is None:
+                        raise RuntimeError(
+                            f"Missing {ticker} bar needed to rebalance {strategy_id} on {trading_date}"
+                        )
+                    execution_prices[ticker] = _bar_execution_price(bar)
 
-            # Average log return across active positions
-            period_returns = []
-            for pos in active:
-                prev_price = _price_at_date(pos["ticker"], pos["strategy"], prev_date, reports)
-                curr_price = _price_at_date(pos["ticker"], pos["strategy"], report_date, reports)
-                if prev_price and curr_price and prev_price > 0 and curr_price > 0:
-                    period_returns.append(math.log(curr_price / prev_price))
+                nav_at_execution = cash + sum(
+                    shares * execution_prices[ticker]
+                    for ticker, shares in holdings.items()
+                )
+                if active_tickers:
+                    target_value = nav_at_execution / len(active_tickers)
+                    holdings = {
+                        ticker: target_value / execution_prices[ticker]
+                        for ticker in sorted(active_tickers)
+                    }
+                    cash = 0.0
+                else:
+                    holdings = {}
+                    cash = nav_at_execution
 
-            if period_returns:
-                avg_log_return = sum(period_returns) / len(period_returns)
-                portfolio_value *= math.exp(avg_log_return)
-
-            # SPY benchmark: same log-return compounding, only when positions are active
-            spy_prev = spy_price_on_or_before(prev_date)
-            spy_curr = spy_price_on_or_before(report_date)
-            if spy_prev and spy_curr and spy_prev > 0 and spy_curr > 0:
-                spy_value *= spy_curr / spy_prev
-
-            result[strategy_id].append({
-                "date": report_date,
-                "value": round(portfolio_value, 4),
+            missing_marks = [ticker for ticker in holdings if ticker not in last_closes]
+            if missing_marks:
+                raise RuntimeError(
+                    f"Missing close marks for {strategy_id} on {trading_date}: {missing_marks}"
+                )
+            nav = cash + sum(
+                shares * last_closes[ticker] for ticker, shares in holdings.items()
+            )
+            spy_value = float(spy_map[trading_date]["close"]) / spy_base * 100
+            series.append({
+                "date": trading_date,
+                "value": round(nav, 4),
                 "spy_value": round(spy_value, 4),
                 "rolling_3m": None,
                 "spy_rolling_3m": None,
+                "return_12m": None,
                 "spy_12m": None,
             })
-            prev_date = report_date
 
-        # Compute rolling 3M for strategy and SPY benchmark
-        series = result[strategy_id]
-        for i, point in enumerate(series):
-            dt = datetime.strptime(point["date"], "%Y-%m-%d").date()
-            lookback_str = (dt - timedelta(days=91)).strftime("%Y-%m-%d")
-            past_val = None
-            past_spy = None
-            for j in range(i - 1, -1, -1):
-                if series[j]["date"] <= lookback_str:
-                    past_val = series[j]["value"]
-                    past_spy = series[j]["spy_value"]
-                    break
-            if past_val and past_val > 0:
-                point["rolling_3m"] = round((point["value"] - past_val) / past_val * 100, 2)
-            if past_spy and past_spy > 0:
-                point["spy_rolling_3m"] = round((point["spy_value"] - past_spy) / past_spy * 100, 2)
+        _add_return_windows(series)
+        result[strategy_id] = series
 
-        # Compute spy_12m: actual SPY price % change over past 365 days (raw prices, not indexed)
-        for point in series:
-            dt = datetime.strptime(point["date"], "%Y-%m-%d").date()
-            lookback_12m = (dt - timedelta(days=365)).strftime("%Y-%m-%d")
-            spy_curr = spy_price_on_or_before(point["date"])
-            spy_year_ago = spy_price_on_or_before(lookback_12m)
-            if spy_curr and spy_year_ago and spy_year_ago > 0:
-                point["spy_12m"] = round((spy_curr - spy_year_ago) / spy_year_ago * 100, 2)
-
+    spy_series = [{
+        "date": trading_date,
+        "value": round(float(spy_map[trading_date]["close"]) / spy_base * 100, 4),
+        "spy_value": round(float(spy_map[trading_date]["close"]) / spy_base * 100, 4),
+        "rolling_3m": None,
+        "spy_rolling_3m": None,
+        "return_12m": None,
+        "spy_12m": None,
+    } for trading_date in trading_dates]
+    _add_return_windows(spy_series)
+    result["spy"] = spy_series
     return result
 
 
-def build_spy_benchmark(reports: list[dict], spy_bars: list[dict]) -> list[dict]:
-    """Normalize pre-fetched SPY bars to 100 at first report date for the chart overlay."""
-    if not reports or not spy_bars:
-        return []
-
-    first_date = reports[0]["date"]
-    price_map = {b["date"]: b["close"] for b in spy_bars}
-
-    def price_on_or_before(d):
-        if d in price_map:
-            return price_map[d]
-        dt = datetime.strptime(d, "%Y-%m-%d")
-        for i in range(1, 6):
-            prev = (dt - timedelta(days=i)).strftime("%Y-%m-%d")
-            if prev in price_map:
-                return price_map[prev]
-        return None
-
-    base_price = price_on_or_before(first_date)
-    if not base_price:
-        return []
-
-    series = []
-    for r in reports:
-        p = price_on_or_before(r["date"])
-        value = round((p / base_price) * 100, 4) if p else None
-        series.append({"date": r["date"], "value": value, "rolling_3m": None})
-
-    for i, point in enumerate(series):
-        if point["value"] is None:
-            continue
-        dt = datetime.strptime(point["date"], "%Y-%m-%d").date()
-        lookback_str = (dt - timedelta(days=91)).strftime("%Y-%m-%d")
-        for j in range(i - 1, -1, -1):
-            if series[j]["date"] <= lookback_str and series[j]["value"]:
-                past_val = series[j]["value"]
-                point["rolling_3m"] = round((point["value"] - past_val) / past_val * 100, 2)
-                break
-
-    return series
-
-
-def _sharpe_from_values(values: list[float], min_points: int) -> float | None:
-    if len(values) < min_points + 1:
-        return None
-    rfr_weekly = RISK_FREE_RATE_ANNUAL / 52
-    log_returns = [
-        math.log(values[i] / values[i - 1])
-        for i in range(1, len(values))
-        if values[i] > 0 and values[i - 1] > 0
+def _sharpe_from_series(series: list[dict], cutoff: str, min_returns: int) -> Optional[float]:
+    values = [point["value"] for point in series if point["date"] >= cutoff]
+    returns = [
+        math.log(values[index] / values[index - 1])
+        for index in range(1, len(values))
+        if values[index] > 0 and values[index - 1] > 0
     ]
-    if len(log_returns) < min_points:
+    if len(returns) < min_returns:
         return None
-    mean_r = sum(log_returns) / len(log_returns)
-    variance = sum((r - mean_r) ** 2 for r in log_returns) / (len(log_returns) - 1)
-    std_r = math.sqrt(variance)
-    if std_r == 0:
+    daily_rfr = math.log1p(RISK_FREE_RATE_ANNUAL) / 252
+    mean_return = sum(returns) / len(returns)
+    variance = sum((value - mean_return) ** 2 for value in returns) / (len(returns) - 1)
+    if variance <= 0:
         return None
-    return round((mean_r - rfr_weekly) / std_r * math.sqrt(52), 2)
+    return round((mean_return - daily_rfr) / math.sqrt(variance) * math.sqrt(252), 2)
 
 
-def compute_sharpe(strategy_returns: dict) -> dict:
-    """Compute annualized Sharpe for each strategy and SPY over 12M and 3M windows."""
-    cutoff_12m = (date.today() - timedelta(days=365)).strftime("%Y-%m-%d")
-    cutoff_3m = (date.today() - timedelta(days=91)).strftime("%Y-%m-%d")
-
-    sharpe_map = {}
-    for sid, series in strategy_returns.items():
-        if not isinstance(series, list):
-            continue
-        values_12m = [p["value"] for p in series if p.get("value") is not None and p["date"] >= cutoff_12m]
-        values_3m = [p["value"] for p in series if p.get("value") is not None and p["date"] >= cutoff_3m]
-        sharpe_map[sid] = {
-            "12m": _sharpe_from_values(values_12m, MIN_SHARPE_POINTS_12M),
-            "3m": _sharpe_from_values(values_3m, MIN_SHARPE_POINTS_3M),
+def compute_sharpe(strategy_returns: dict, as_of: str) -> dict:
+    as_of_date = _parse_date(as_of)
+    cutoff_12m = (as_of_date - timedelta(days=365)).isoformat()
+    cutoff_3m = (as_of_date - timedelta(days=91)).isoformat()
+    return {
+        strategy_id: {
+            "12m": _sharpe_from_series(series, cutoff_12m, 200),
+            "3m": _sharpe_from_series(series, cutoff_3m, 40),
         }
-    return sharpe_map
-
-
-def _price_at_date(ticker: str, strategy_id: str, report_date: str, reports: list[dict]):
-    """Look up a ticker's price in a specific report's section."""
-    section_map = {
-        "sp500_top5": "sp500", "sp500_next5": "sp500",
-        "megacap_top5": "megacap", "megacap_next5": "megacap",
-        "sp400_mcap5": "sp400", "sp400_mcap_next5": "sp400",
-        "munger": "munger",
+        for strategy_id, series in strategy_returns.items()
+        if isinstance(series, list)
     }
-    section = section_map.get(strategy_id, "sp500")
-    for r in reports:
-        if r["date"] == report_date:
-            for entry in r.get(section, []):
-                if entry["ticker"] == ticker:
-                    return entry["price"]
-    return None
 
 
-def prefetch_all_tickers(reports: list[dict]) -> None:
-    """Bulk-fetch full bar history for every ticker before processing begins,
-    so all get_execution_price() and find_munger_exit() calls are cache hits."""
-    if not reports:
-        return
-    today = date.today().strftime("%Y-%m-%d")
-    start = (datetime.strptime(reports[0]["date"], "%Y-%m-%d") - timedelta(days=30)).strftime("%Y-%m-%d")
-    spy_start = (datetime.strptime(reports[0]["date"], "%Y-%m-%d") - timedelta(days=396)).strftime("%Y-%m-%d")
+def _source_manifest(reports: list[dict], as_of: str,
+                     positions: list[dict], signals: list[dict],
+                     market_data_through: str) -> dict:
+    report_sources = []
+    included_dates = {report["date"] for report in reports}
+    for path in sorted(SCRAPED_DIR.glob("*.json")):
+        if path.stem not in included_dates:
+            continue
+        report_sources.append({
+            "date": path.stem,
+            "path": str(path.relative_to(SCRAPED_DIR.parent.parent)),
+            "sha256": hashlib.sha256(path.read_bytes()).hexdigest(),
+        })
+    return {
+        "processor_version": PROCESSOR_VERSION,
+        "price_cache_schema_version": CACHE_SCHEMA_VERSION,
+        "as_of": as_of,
+        "latest_report_date": reports[-1]["date"],
+        "market_data_through": market_data_through,
+        "entry_signal_source": "scraped_reports_only",
+        "rank_exit_signal_source": "scraped_report_membership_only",
+        "execution_price": "entry on report session; EMA exit on next session; VWAP with midpoint fallback",
+        "portfolio_policy": "equal weight, rebalanced on trade-event dates",
+        "munger": {
+            "entry": "qualifying scraped report membership while flat",
+            "exit_signal": "daily adjusted close below close-based 21-day EMA",
+            "exit_execution": "next available trading session after the signal",
+            "ema_span": MUNGER_EMA_SPAN,
+            "ema_lookback_calendar_days": MUNGER_EMA_LOOKBACK_DAYS,
+        },
+        "kelly": {
+            "formula": "0.5 * max(0, p - q / b)",
+            "p_q_denominator": "closed non-breakeven trades",
+            "b": "average winner / absolute average loser",
+            "display_percentages_denominator": "all closed trades",
+            "minimum_closed_trades": KELLY_MIN_CLOSED_TRADES,
+            "scope": "historical long-only capital-at-risk estimate",
+        },
+        "strategy_trade_stats": compute_trade_stats(positions),
+        "report_count": len(reports),
+        "signal_snapshot_count": len(signals),
+        "position_count": len(positions),
+        "positions_by_strategy": {
+            strategy_id: {
+                "open": sum(
+                    p["strategy"] == strategy_id and p["status"] == "open"
+                    for p in positions
+                ),
+                "closed": sum(
+                    p["strategy"] == strategy_id and p["status"] == "closed"
+                    for p in positions
+                ),
+            }
+            for strategy_id in STRATEGIES
+        },
+        "reports": report_sources,
+    }
 
-    tickers: set[str] = set()
-    for r in reports:
-        for section in ("sp500", "megacap", "sp400", "munger"):
-            for entry in r.get(section, []):
-                if entry.get("ticker"):
-                    tickers.add(entry["ticker"])
 
-    print(f"  Prefetching SPY bars back 13 months ({spy_start} → {today})...")
-    get_daily_bars("SPY", spy_start, today)
-    print(f"  Prefetching bars for {len(tickers)} other tickers ({start} → {today})...")
-    for ticker in sorted(tickers):
-        get_daily_bars(ticker, start, today)
-
-
-def process_all():
+def process_all(as_of: Optional[str] = None, prefetch_only: bool = False,
+                ticker_offset: int = 0,
+                ticker_limit: Optional[int] = None) -> None:
+    as_of = as_of or date.today().isoformat()
+    _parse_date(as_of)  # validate before doing network or filesystem work
     PROCESSED_DIR.mkdir(parents=True, exist_ok=True)
-    print("Loading scraped reports...")
-    reports = load_reports()
+
+    print(f"Loading scraped reports through {as_of}...")
+    reports = load_reports(as_of)
+    if not reports:
+        raise RuntimeError("No scraped reports available")
     print(f"  {len(reports)} reports loaded.")
 
-    print("Prefetching price bars for all tickers...")
-    prefetch_all_tickers(reports)
+    print("Prefetching execution and valuation bars...")
+    prefetch_all_tickers(reports, as_of, ticker_offset, ticker_limit)
+    if prefetch_only:
+        return
 
-    print("Building positions...")
-    positions = build_positions(reports)
-    print(f"  {len(positions)} positions computed.")
+    print("Building report signal snapshots...")
+    signals = build_signal_snapshots(reports)
+    print(f"  {len(signals)} signal snapshots.")
+
+    print("Building trade positions...")
+    positions = build_positions(reports, as_of)
+    validate_positions(positions, as_of, signals)
+    print(f"  {len(positions)} validated positions.")
 
     first_date = reports[0]["date"]
-    today = date.today().strftime("%Y-%m-%d")
-    spy_start = (datetime.strptime(first_date, "%Y-%m-%d") - timedelta(days=396)).strftime("%Y-%m-%d")
-    spy_bars = get_daily_bars("SPY", spy_start, today)  # cache hit after prefetch
+    spy_start = (_parse_date(first_date) - timedelta(days=396)).isoformat()
+    spy_bars = get_daily_bars("SPY", spy_start, as_of)
+    print("Building transaction-ledger portfolio series...")
+    strategy_returns = build_strategy_returns(reports, positions, spy_bars, as_of)
+    strategy_returns["_sharpe"] = compute_sharpe(strategy_returns, as_of)
 
-    print("Building strategy return time series...")
-    strategy_returns = build_strategy_returns(reports, positions, spy_bars)
-
-    print("Building SPY chart overlay...")
-    spy_series = build_spy_benchmark(reports, spy_bars)
-    strategy_returns["spy"] = spy_series
-    print(f"  SPY overlay: {len(spy_series)} data points.")
-
-    print("Computing Sharpe ratios...")
-    sharpe_map = compute_sharpe(strategy_returns)
-    strategy_returns["_sharpe"] = sharpe_map
-    for sid, vals in sharpe_map.items():
-        print(f"  {sid}: 12M={vals['12m']}, 3M={vals['3m']}")
-
-    positions_path = PROCESSED_DIR / "positions.json"
-    returns_path = PROCESSED_DIR / "strategy_returns.json"
-    positions_path.write_text(json.dumps(positions, indent=2))
-    returns_path.write_text(json.dumps(strategy_returns, indent=2))
-    print(f"  Wrote {positions_path}")
-    print(f"  Wrote {returns_path}")
+    manifest = _source_manifest(reports, as_of, positions, signals, spy_bars[-1]["date"])
+    _atomic_write_json(PROCESSED_DIR / "signals.json", signals)
+    _atomic_write_json(PROCESSED_DIR / "positions.json", positions)
+    _atomic_write_json(PROCESSED_DIR / "strategy_returns.json", strategy_returns)
+    _atomic_write_json(PROCESSED_DIR / "manifest.json", manifest)
+    print(f"  Wrote audited outputs to {PROCESSED_DIR}")
 
 
 if __name__ == "__main__":
-    process_all()
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--as-of", help="Deterministic processing cutoff (YYYY-MM-DD)")
+    parser.add_argument("--prefetch-only", action="store_true")
+    parser.add_argument("--ticker-offset", type=int, default=0)
+    parser.add_argument("--ticker-limit", type=int)
+    arguments = parser.parse_args()
+    process_all(
+        arguments.as_of,
+        prefetch_only=arguments.prefetch_only,
+        ticker_offset=arguments.ticker_offset,
+        ticker_limit=arguments.ticker_limit,
+    )

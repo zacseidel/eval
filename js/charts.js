@@ -14,9 +14,9 @@ const STRATEGY_LABELS = {
   sp500_next5:  "S&P 500 Next 5",
   megacap_top5: "Megacap Top 5",
   megacap_next5:"Megacap Next 5",
-  sp400_mcap5:      "S&P 400 Mkt Cap Top 5",
-  sp400_mcap_next5: "S&P 400 Mkt Cap Next 5",
-  munger:           "Munger",
+  sp400_mcap5:      "S&P 400 Top 5",
+  sp400_mcap_next5: "S&P 400 Next 5",
+  munger:           "Munger 21-Day EMA",
   spy:          "SPY",
 };
 
