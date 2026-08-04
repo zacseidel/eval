@@ -16,7 +16,7 @@
       <h1>Strategy Evaluator</h1>
       <a class="momentum-link" href="https://zacseidel.github.io/momentum9" target="_blank" rel="noopener">Momentum9 Report ↗</a>
     </div>
-    <p class="subtitle">Report-driven entries and momentum exits; 21-day EMA exits for Munger. <span id="last-updated"></span></p>
+    <p class="subtitle">Scraped-report entries with primary and 10-day SMA exit evaluations. <span id="last-updated"></span></p>
     <nav>
       <button class="tab-btn active" data-tab="overview">Overview</button>
       <button class="tab-btn" data-tab="positions">Positions</button>
@@ -32,7 +32,16 @@
         <button class="sort-btn" data-sort="risk">Risk</button>
         <button class="sort-btn" data-sort="size">Size</button>
       </div>
-      <div id="strategy-grid"></div>
+      <section class="strategy-section">
+        <h2 class="strategy-section-title">Primary exit rules</h2>
+        <p class="strategy-section-note">Report-rank exits for momentum strategies; 21-day EMA exit for Munger.</p>
+        <div id="strategy-grid"></div>
+      </section>
+      <section class="strategy-section">
+        <h2 class="strategy-section-title">10-day SMA exit variants</h2>
+        <p class="strategy-section-note">The same scraped-report buy signals, with an exit after a close below the trailing 10-session SMA.</p>
+        <div id="sma-strategy-grid"></div>
+      </section>
     </div>
 
     <div id="tab-positions" class="tab-panel hidden">
@@ -48,6 +57,13 @@
             <option value="sp400_mcap5">S&amp;P 400 Top 5</option>
             <option value="sp400_mcap_next5">S&amp;P 400 Next 5</option>
             <option value="munger">Munger 21-Day EMA</option>
+            <option value="sp500_top5_sma10">S&amp;P 500 Top 5 · SMA10</option>
+            <option value="sp500_next5_sma10">S&amp;P 500 Next 5 · SMA10</option>
+            <option value="megacap_top5_sma10">Megacap Top 5 · SMA10</option>
+            <option value="megacap_next5_sma10">Megacap Next 5 · SMA10</option>
+            <option value="sp400_mcap5_sma10">S&amp;P 400 Top 5 · SMA10</option>
+            <option value="sp400_mcap_next5_sma10">S&amp;P 400 Next 5 · SMA10</option>
+            <option value="munger_sma10">Munger Signals · SMA10</option>
           </select>
         </label>
         <label>
@@ -71,7 +87,7 @@
               <th data-sort="entry_price">Entry $</th>
               <th data-sort="exit_signal_date">Exit Signal</th>
               <th data-sort="exit_signal_close">Signal Close</th>
-              <th data-sort="exit_signal_ema_21">EMA 21</th>
+              <th data-sort="exit_level">Exit Level</th>
               <th data-sort="exit_date">Exit Date</th>
               <th data-sort="exit_price">Exit $</th>
               <th data-sort="hold_days">Days Held</th>

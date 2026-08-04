@@ -6,7 +6,18 @@ const STRATEGY_LABELS = {
   sp400_mcap5:      "S&P 400 Top 5",
   sp400_mcap_next5: "S&P 400 Next 5",
   munger:           "Munger 21-Day EMA",
+  sp500_top5_sma10:       "S&P 500 Top 5 · SMA10",
+  sp500_next5_sma10:      "S&P 500 Next 5 · SMA10",
+  megacap_top5_sma10:     "Megacap Top 5 · SMA10",
+  megacap_next5_sma10:    "Megacap Next 5 · SMA10",
+  sp400_mcap5_sma10:      "S&P 400 Top 5 · SMA10",
+  sp400_mcap_next5_sma10: "S&P 400 Next 5 · SMA10",
+  munger_sma10:           "Munger Signals · SMA10",
 };
+
+function exitLevel(p) {
+  return p.exit_signal_sma_10 ?? p.exit_signal_ema_21;
+}
 
 let _allPositions = [];
 let _sortKey = null;   // null = use defaultSort
@@ -75,8 +86,8 @@ function defaultSort(data) {
 function sortedData(data) {
   if (_sortKey === null) return defaultSort(data);
   return [...data].sort((a, b) => {
-    let va = a[_sortKey] ?? "";
-    let vb = b[_sortKey] ?? "";
+    let va = _sortKey === "exit_level" ? exitLevel(a) : (a[_sortKey] ?? "");
+    let vb = _sortKey === "exit_level" ? exitLevel(b) : (b[_sortKey] ?? "");
     if (typeof va === "string") va = va.toLowerCase();
     if (typeof vb === "string") vb = vb.toLowerCase();
     if (va < vb) return -1 * _sortDir;
@@ -97,7 +108,7 @@ function render() {
       <td>${fmtPrice(p.entry_price)}</td>
       <td>${p.exit_signal_date ?? "—"}</td>
       <td>${fmtPrice(p.exit_signal_close)}</td>
-      <td>${fmtPrice(p.exit_signal_ema_21)}</td>
+      <td>${fmtPrice(exitLevel(p))}</td>
       <td>${p.status === "open" ? "" : (p.exit_date ?? "—")}</td>
       <td>${fmtExitPrice(p)}</td>
       <td>${p.hold_days != null ? p.hold_days + "d" : "—"}</td>

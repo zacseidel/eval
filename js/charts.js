@@ -6,6 +6,13 @@ const STRATEGY_COLORS = {
   sp400_mcap5:      "#fb923c",
   sp400_mcap_next5: "#fbbf24",
   munger:           "#f472b6",
+  sp500_top5_sma10:       "#6c8ef7",
+  sp500_next5_sma10:      "#a78bfa",
+  megacap_top5_sma10:     "#34d399",
+  megacap_next5_sma10:    "#10b981",
+  sp400_mcap5_sma10:      "#fb923c",
+  sp400_mcap_next5_sma10: "#fbbf24",
+  munger_sma10:           "#f472b6",
   spy:          "#888888",
 };
 
@@ -17,6 +24,13 @@ const STRATEGY_LABELS = {
   sp400_mcap5:      "S&P 400 Top 5",
   sp400_mcap_next5: "S&P 400 Next 5",
   munger:           "Munger 21-Day EMA",
+  sp500_top5_sma10:       "S&P 500 Top 5 · SMA10",
+  sp500_next5_sma10:      "S&P 500 Next 5 · SMA10",
+  megacap_top5_sma10:     "Megacap Top 5 · SMA10",
+  megacap_next5_sma10:    "Megacap Next 5 · SMA10",
+  sp400_mcap5_sma10:      "S&P 400 Top 5 · SMA10",
+  sp400_mcap_next5_sma10: "S&P 400 Next 5 · SMA10",
+  munger_sma10:           "Munger Signals · SMA10",
   spy:          "SPY",
 };
 
@@ -47,7 +61,13 @@ function buildCumulativeChart(range) {
   const allDates = new Set();
   const datasets = [];
 
-  const strategyOrder = ["sp500_top5", "sp500_next5", "megacap_top5", "megacap_next5", "sp400_mcap5", "munger"];
+  const strategyOrder = [
+    "sp500_top5", "sp500_next5", "megacap_top5", "megacap_next5",
+    "sp400_mcap5", "sp400_mcap_next5", "munger",
+    "sp500_top5_sma10", "sp500_next5_sma10", "megacap_top5_sma10",
+    "megacap_next5_sma10", "sp400_mcap5_sma10", "sp400_mcap_next5_sma10",
+    "munger_sma10", "spy",
+  ];
   const orderedEntries = [
     ...strategyOrder.filter(sid => _strategyReturns[sid]).map(sid => [sid, _strategyReturns[sid]]),
     ...Object.entries(_strategyReturns).filter(([sid, v]) => !strategyOrder.includes(sid) && Array.isArray(v)),
@@ -66,7 +86,7 @@ function buildCumulativeChart(range) {
       tension: 0.3,
       pointRadius: isSpy ? 0 : 2,
       borderWidth: isSpy ? 1.5 : 2,
-      borderDash: isSpy ? [6, 3] : [],
+      borderDash: isSpy ? [6, 3] : sid.endsWith("_sma10") ? [3, 3] : [],
       order: isSpy ? 99 : 1,
     });
   }
@@ -238,7 +258,7 @@ export function renderScatterCharts(positions) {
   cutoff.setFullYear(cutoff.getFullYear() - 1);
   const recent = closed.filter(p => new Date(p.exit_date) >= cutoff);
 
-  for (const sid of Object.keys(STRATEGY_LABELS).filter(s => s !== "spy")) {
+  for (const sid of Object.keys(STRATEGY_LABELS).filter(s => s !== "spy" && !s.endsWith("_sma10"))) {
     buildScatterChart(sid, recent.filter(p => p.strategy === sid));
   }
 }

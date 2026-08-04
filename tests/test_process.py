@@ -176,7 +176,7 @@ class SmaVariantLifecycleTests(unittest.TestCase):
             current += timedelta(days=1)
         return bars
 
-    def test_sma10_exit_executes_next_session_and_later_report_reenters(self):
+    def test_sma10_exit_executes_next_session_and_same_day_report_reenters(self):
         bars = self._bars()
         positions = process._build_price_exit_ticker_positions(
             "sp500_top5_sma10",
@@ -186,14 +186,18 @@ class SmaVariantLifecycleTests(unittest.TestCase):
             "2026-01-08",
             process._sma_by_date(bars),
             "exit_signal_sma_10",
+            reenter_on_exit_session=True,
         )
 
-        self.assertEqual(2, len(positions))
-        closed = next(p for p in positions if p["status"] == "closed")
+        self.assertEqual(3, len(positions))
+        closed = [p for p in positions if p["status"] == "closed"]
         opened = next(p for p in positions if p["status"] == "open")
-        self.assertEqual("2026-01-06", closed["exit_signal_date"])
-        self.assertEqual("2026-01-07", closed["exit_date"])
-        self.assertLess(closed["exit_signal_close"], closed["exit_signal_sma_10"])
+        self.assertEqual("2026-01-06", closed[0]["exit_signal_date"])
+        self.assertEqual("2026-01-07", closed[0]["exit_date"])
+        self.assertLess(closed[0]["exit_signal_close"], closed[0]["exit_signal_sma_10"])
+        self.assertEqual("2026-01-07", closed[1]["signal_date"])
+        self.assertEqual("2026-01-07", closed[1]["entry_date"])
+        self.assertEqual("2026-01-08", closed[1]["exit_date"])
         self.assertEqual("2026-01-08", opened["signal_date"])
 
     def test_report_disappearance_does_not_close_sma10_variant(self):

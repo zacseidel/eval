@@ -1,7 +1,7 @@
 """Build auditable trade ledgers and portfolio returns from scraped reports.
 
 Reports are the only source of entries and security selection. Rank-model exits
-also come from report membership; market data supplies the Munger EMA exit,
+also come from report membership; market data supplies technical exit signals,
 execution prices, and daily valuation.
 """
 import argparse
@@ -239,7 +239,8 @@ def _sma_by_date(bars: list[dict], window: int = SMA_EXIT_WINDOW) -> dict[str, f
 def _build_price_exit_ticker_positions(strategy_id: str, ticker: str,
                                        signal_dates: list[str], bars: list[dict],
                                        as_of: str, exit_levels: dict[str, float],
-                                       exit_level_field: str) -> list[dict]:
+                                       exit_level_field: str,
+                                       reenter_on_exit_session: bool = False) -> list[dict]:
     """Simulate report entries and next-session price-indicator exits."""
     positions = []
     open_position = None
@@ -253,11 +254,15 @@ def _build_price_exit_ticker_positions(strategy_id: str, ticker: str,
         if event_date > as_of:
             break
 
-        # Reports are available before the trading session. Only a ticker that
-        # is flat at signal time can queue an entry. A pending technical exit
-        # still counts as open and cannot create a same-session round trip.
+        # Reports are available before the trading session. SMA variants may
+        # queue a fresh entry when the prior close already mandated an exit. In
+        # that case the required sale executes first, then the newly signaled
+        # trade opens at the same session's execution price.
         if event_date in signals_by_date:
-            if open_position is None and pending_exit is None and queued_signal is None:
+            can_enter = open_position is None or (
+                reenter_on_exit_session and pending_exit is not None
+            )
+            if can_enter and queued_signal is None:
                 queued_signal = event_date
 
         bar = bars_by_date.get(event_date)
@@ -351,6 +356,7 @@ def _build_sma10_positions(reports: list[dict], strategy_id: str,
             as_of,
             _sma_by_date(bars),
             "exit_signal_sma_10",
+            reenter_on_exit_session=True,
         ))
     return positions
 

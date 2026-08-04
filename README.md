@@ -1,6 +1,6 @@
 # Momentum Strategy Evaluator
 
-A GitHub Pages site that evaluates portfolio strategies derived from [momentum9](https://zacseidel.github.io/momentum9/) reports. Scraped reports are the sole source of entries and security selection. Polygon market data supplies execution prices, daily valuation, and the Munger model's 21-day EMA exit signal.
+A GitHub Pages site that evaluates portfolio strategies derived from [momentum9](https://zacseidel.github.io/momentum9/) reports. Scraped reports are the sole source of entries and security selection. Polygon market data supplies execution prices, daily valuation, and the price-based EMA/SMA exit signals.
 
 **Live site:** https://zacseidel.github.io/eval/
 
@@ -45,6 +45,14 @@ GitHub Actions runs the pipeline every **Tuesday and Friday at 7 PM MDT**, after
 | `munger` | Buy a qualifying report signal while flat; exit after a daily close below its 21-day EMA |
 
 All entries use the first trading session on or after the report signal (VWAP when available, else midpoint of open/close). Rank-based positions close when a later report drops the ticker from the selected slot. For Munger, each completed daily adjusted close is compared with its close-based 21-day EMA; a close below the EMA signals an exit for the next available trading session. This one-session delay prevents look-ahead. Portfolios are equal-weighted and rebalanced on trade-event dates, then marked daily at adjusted closes.
+
+### Parallel 10-day SMA evaluations
+
+Every base strategy also has a parallel evaluation whose ID adds `_sma10` (for example, `sp500_top5_sma10` and `munger_sma10`). These variants use exactly the same scraped-report selections as their corresponding base strategies. A ticker is bought on the first available session after a qualifying report signal while the strategy is flat. Disappearing from a later report does not close an SMA10 trade.
+
+After entry, each completed adjusted close is compared with the arithmetic mean of that session and the prior nine trading-session closes. A close below that trailing 10-session SMA signals a mandatory sale on the next available trading session. If a new report recommendation is available on that exit session, the sale executes first and the recommendation opens a new trade at that session's execution price. This keeps both the technical exit and the scraped buy signal auditable without using future data. The calculation follows [NIST's definition of a simple moving average](https://www.itl.nist.gov/div898/handbook/pmc/section4/pmc421.htm).
+
+The overview keeps the original seven cards under **Primary exit rules** and displays the seven `_sma10` cards separately under **10-day SMA exit variants**. Each card has its own returns, Sharpe ratios, open/closed counts, pending exits, and half-Kelly estimate.
 
 ### Half-Kelly sizing
 
@@ -129,8 +137,9 @@ python -m unittest discover -s tests -v
 
 - **Rate limit:** 5 requests/minute on the free tier — the client enforces a 12.5-second delay between calls.
 - **Disk cache:** Every bar range is stored in `data/price_cache/{TICKER}.json`. The cache tracks `_fetched_from` and `_fetched_through` metadata so only genuinely new date ranges hit the API on subsequent runs.
-- **Execution price:** Report entries and rank exits use the first session on or after the report signal. Munger EMA exits execute on the first session after the triggering close. VWAP is used when available, with midpoint fallback.
+- **Execution price:** Report entries and rank exits use the first session on or after the report signal. Munger EMA and SMA10 exits execute on the first session after the triggering close. VWAP is used when available, with midpoint fallback.
 - **EMA history:** Munger tickers receive 120 calendar days of pre-report history so the 21-day EMA is warm before any trade can exit.
+- **SMA history:** All signal tickers receive at least 30 calendar days of pre-report history so the trailing 10-session SMA is warm before any trade can exit.
 - **Bar dates:** Polygon timestamps are converted in UTC. Cache schema versions prevent legacy timezone-shifted bars from mixing with corrected data.
 - **Failure handling:** Failed API requests do not advance cache coverage; missing execution data fails processing instead of fabricating a flat return.
 

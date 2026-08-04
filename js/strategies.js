@@ -6,6 +6,13 @@ const STRATEGY_META = {
   sp400_mcap5:      { label: "S&P 400 Top 5",  color: "#fb923c" },
   sp400_mcap_next5: { label: "S&P 400 Next 5", color: "#fbbf24" },
   munger:           { label: "Munger 21-Day EMA", color: "#f472b6" },
+  sp500_top5_sma10:       { label: "S&P 500 Top 5 · SMA10", color: "#6c8ef7" },
+  sp500_next5_sma10:      { label: "S&P 500 Next 5 · SMA10", color: "#a78bfa" },
+  megacap_top5_sma10:     { label: "Megacap Top 5 · SMA10", color: "#34d399" },
+  megacap_next5_sma10:    { label: "Megacap Next 5 · SMA10", color: "#10b981" },
+  sp400_mcap5_sma10:      { label: "S&P 400 Top 5 · SMA10", color: "#fb923c" },
+  sp400_mcap_next5_sma10: { label: "S&P 400 Next 5 · SMA10", color: "#fbbf24" },
+  munger_sma10:           { label: "Munger Signals · SMA10", color: "#f472b6" },
 };
 
 const SIZE_ORDER = {
@@ -13,6 +20,14 @@ const SIZE_ORDER = {
   sp500_top5: 3, sp500_next5: 4,
   sp400_mcap5: 5, sp400_mcap_next5: 6,
 };
+
+function isSma10(sid) {
+  return sid.endsWith("_sma10");
+}
+
+function isMungerFamily(sid) {
+  return sid === "munger" || sid === "munger_sma10";
+}
 
 function formatPct(val) {
   if (val == null) return "—";
@@ -126,11 +141,11 @@ function buildCard(item) {
     <div class="card-footer">
       <span>${openCount} open</span>
       <span>${closedCount} closed</span>
-      ${sid === "munger" ? `<span>${pendingExitCount} exit pending</span>` : ""}
-      ${sid === "munger" ? `<span>${signalTickers.length} current signals</span>` : ""}
+      ${sid === "munger" || isSma10(sid) ? `<span>${pendingExitCount} exit pending</span>` : ""}
+      ${isMungerFamily(sid) ? `<span>${signalTickers.length} current signals</span>` : ""}
     </div>
     ${openTickers.length ? `<div class="ticker-tags">${openTickers.map(t => `<span class="ticker-tag">${t}</span>`).join("")}</div>` : ""}
-    ${sid === "munger" && signalTickers.length ? `<div class="signal-note">Latest report buy signals: ${signalTickers.join(", ")}</div>` : ""}
+    ${isMungerFamily(sid) && signalTickers.length ? `<div class="signal-note">Latest report buy signals: ${signalTickers.join(", ")}</div>` : ""}
     <div class="kelly-panel" title="Half Kelly = 0.5 × max(0, win probability − loss probability ÷ payoff ratio)">
       <div class="kelly-heading">
         <span>Half-Kelly position</span>
@@ -159,7 +174,6 @@ function buildCard(item) {
 }
 
 function renderCards(sortKey) {
-  const grid = document.getElementById("strategy-grid");
   const sorted = [..._cardData].sort((a, b) => {
     if (sortKey === "return") {
       const av = a.ret12m ?? -Infinity;
@@ -171,11 +185,19 @@ function renderCards(sortKey) {
       const bv = b.stratSharpe12m ?? -Infinity;
       return bv - av;
     }
-    return (SIZE_ORDER[a.sid] ?? 99) - (SIZE_ORDER[b.sid] ?? 99);
+    const aBase = a.sid.replace(/_sma10$/, "");
+    const bBase = b.sid.replace(/_sma10$/, "");
+    return (SIZE_ORDER[aBase] ?? 99) - (SIZE_ORDER[bBase] ?? 99);
   });
 
-  grid.innerHTML = "";
-  sorted.forEach(item => grid.appendChild(buildCard(item)));
+  const primaryGrid = document.getElementById("strategy-grid");
+  const smaGrid = document.getElementById("sma-strategy-grid");
+  primaryGrid.innerHTML = "";
+  smaGrid.innerHTML = "";
+  sorted.forEach(item => {
+    const grid = isSma10(item.sid) ? smaGrid : primaryGrid;
+    grid.appendChild(buildCard(item));
+  });
 }
 
 export function renderStrategies(
