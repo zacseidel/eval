@@ -90,8 +90,12 @@ class MungerLifecycleTests(unittest.TestCase):
         snapshots = process.build_signal_snapshots(reports)
         top = [s for s in snapshots if s["strategy"] == "sp500_top5"]
         next_five = [s for s in snapshots if s["strategy"] == "sp500_next5"]
+        top_sma = [s for s in snapshots if s["strategy"] == "sp500_top5_sma10"]
+        next_sma = [s for s in snapshots if s["strategy"] == "sp500_next5_sma10"]
         self.assertEqual(["AAA"], [s["ticker"] for s in top])
         self.assertEqual(["BBB"], [s["ticker"] for s in next_five])
+        self.assertEqual(["AAA"], [s["ticker"] for s in top_sma])
+        self.assertEqual(["BBB"], [s["ticker"] for s in next_sma])
 
     def test_rank_membership_alone_opens_and_closes_trade(self):
         reports = [
@@ -146,6 +150,81 @@ class MungerLifecycleTests(unittest.TestCase):
         self.assertEqual(11, len(reports[-1]["munger"]))
         self.assertEqual(36, len(positions))
         self.assertTrue(all(p["status"] == "open" for p in positions))
+
+
+class SmaVariantLifecycleTests(unittest.TestCase):
+    @staticmethod
+    def _bars():
+        bars = []
+        current = date(2025, 12, 15)
+        closes = {
+            "2026-01-05": 105.0,
+            "2026-01-06": 80.0,
+            "2026-01-07": 79.0,
+            "2026-01-08": 120.0,
+        }
+        while current <= date(2026, 1, 8):
+            if current.weekday() < 5:
+                day = current.isoformat()
+                close = closes.get(day, 100.0)
+                bars.append({
+                    "date": day,
+                    "open": close,
+                    "close": close,
+                    "vwap": 90.0 if day == "2026-01-07" else close,
+                })
+            current += timedelta(days=1)
+        return bars
+
+    def test_sma10_exit_executes_next_session_and_later_report_reenters(self):
+        bars = self._bars()
+        positions = process._build_price_exit_ticker_positions(
+            "sp500_top5_sma10",
+            "AAA",
+            ["2026-01-05", "2026-01-07", "2026-01-08"],
+            bars,
+            "2026-01-08",
+            process._sma_by_date(bars),
+            "exit_signal_sma_10",
+        )
+
+        self.assertEqual(2, len(positions))
+        closed = next(p for p in positions if p["status"] == "closed")
+        opened = next(p for p in positions if p["status"] == "open")
+        self.assertEqual("2026-01-06", closed["exit_signal_date"])
+        self.assertEqual("2026-01-07", closed["exit_date"])
+        self.assertLess(closed["exit_signal_close"], closed["exit_signal_sma_10"])
+        self.assertEqual("2026-01-08", opened["signal_date"])
+
+    def test_report_disappearance_does_not_close_sma10_variant(self):
+        bars = [
+            {**bar, "open": 100.0, "close": 100.0, "vwap": 100.0}
+            for bar in self._bars()
+        ]
+        positions = process._build_price_exit_ticker_positions(
+            "sp500_top5_sma10",
+            "AAA",
+            ["2026-01-05"],
+            bars,
+            "2026-01-08",
+            process._sma_by_date(bars),
+            "exit_signal_sma_10",
+        )
+
+        self.assertEqual(1, len(positions))
+        self.assertEqual("open", positions[0]["status"])
+        self.assertIsNone(positions[0]["exit_signal_date"])
+
+    def test_sma_is_trailing_mean_of_ten_closes(self):
+        bars = [
+            {"date": f"2026-01-{index:02d}", "close": float(index)}
+            for index in range(1, 12)
+        ]
+        values = process._sma_by_date(bars)
+
+        self.assertNotIn("2026-01-09", values)
+        self.assertEqual(5.5, values["2026-01-10"])
+        self.assertEqual(6.5, values["2026-01-11"])
 
 
 class PortfolioLedgerTests(unittest.TestCase):

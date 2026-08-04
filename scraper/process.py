@@ -23,13 +23,16 @@ load_dotenv(Path(__file__).parent.parent / ".env")
 
 MUNGER_EMA_SPAN = 21
 MUNGER_EMA_LOOKBACK_DAYS = 120
+SMA_EXIT_WINDOW = 10
+SMA_EXIT_LOOKBACK_DAYS = 30
+SMA10_SUFFIX = "_sma10"
 KELLY_MIN_CLOSED_TRADES = 20
 RISK_FREE_RATE_ANNUAL = 0.05
-PROCESSOR_VERSION = 4
+PROCESSOR_VERSION = 5
 
 # Every selection below is made only from ranks or membership in a scraped
 # report. The legacy IDs are retained so existing links keep working.
-STRATEGIES = {
+BASE_STRATEGIES = {
     "sp500_top5":       {"section": "sp500",   "ranks": range(1, 6)},
     "sp500_next5":      {"section": "sp500",   "ranks": range(6, 11)},
     "megacap_top5":     {"section": "megacap", "ranks": range(1, 6)},
@@ -38,6 +41,15 @@ STRATEGIES = {
     "sp400_mcap_next5": {"section": "sp400",   "ranks": range(6, 11)},
     "munger":           {"section": "munger",  "ranks": None},
 }
+STRATEGIES = dict(BASE_STRATEGIES)
+STRATEGIES.update({
+    f"{strategy_id}{SMA10_SUFFIX}": {
+        **config,
+        "variant_of": strategy_id,
+        "exit_model": "sma10",
+    }
+    for strategy_id, config in BASE_STRATEGIES.items()
+})
 
 
 def _parse_date(value: str) -> date:
@@ -127,6 +139,7 @@ def _new_position(strategy_id: str, ticker: str, signal_date: str,
         "exit_signal_date": None,
         "exit_signal_close": None,
         "exit_signal_ema_21": None,
+        "exit_signal_sma_10": None,
         "exit_date": None,
         "exit_price": None,
         "current_date": None,
@@ -210,16 +223,30 @@ def _ema_by_date(bars: list[dict], span: int = MUNGER_EMA_SPAN) -> dict[str, flo
     return values
 
 
-def _build_munger_ticker_positions(ticker: str, signal_dates: list[str],
-                                    bars: list[dict], as_of: str) -> list[dict]:
-    """Simulate report entries and next-session EMA exits for one ticker."""
+def _sma_by_date(bars: list[dict], window: int = SMA_EXIT_WINDOW) -> dict[str, float]:
+    """Return a trailing close-based simple moving average."""
+    closes = []
+    values = {}
+    for bar in bars:
+        closes.append(float(bar["close"]))
+        if len(closes) > window:
+            closes.pop(0)
+        if len(closes) == window:
+            values[bar["date"]] = sum(closes) / window
+    return values
+
+
+def _build_price_exit_ticker_positions(strategy_id: str, ticker: str,
+                                       signal_dates: list[str], bars: list[dict],
+                                       as_of: str, exit_levels: dict[str, float],
+                                       exit_level_field: str) -> list[dict]:
+    """Simulate report entries and next-session price-indicator exits."""
     positions = []
     open_position = None
     queued_signal = None
     pending_exit = None
     signals_by_date = set(signal_dates)
     bars_by_date = {bar["date"]: bar for bar in bars}
-    ema_by_date = _ema_by_date(bars)
     timeline = sorted(signals_by_date | set(bars_by_date))
 
     for event_date in timeline:
@@ -227,8 +254,8 @@ def _build_munger_ticker_positions(ticker: str, signal_dates: list[str],
             break
 
         # Reports are available before the trading session. Only a ticker that
-        # is flat at signal time can queue an entry. A pending EMA exit still
-        # counts as open and cannot create a same-session sell/rebuy round trip.
+        # is flat at signal time can queue an entry. A pending technical exit
+        # still counts as open and cannot create a same-session round trip.
         if event_date in signals_by_date:
             if open_position is None and pending_exit is None and queued_signal is None:
                 queued_signal = event_date
@@ -250,16 +277,16 @@ def _build_munger_ticker_positions(ticker: str, signal_dates: list[str],
 
         if queued_signal is not None and open_position is None:
             open_position = _new_position(
-                "munger", ticker, queued_signal, event_date, _bar_execution_price(bar)
+                strategy_id, ticker, queued_signal, event_date, _bar_execution_price(bar)
             )
             queued_signal = None
 
-        ema = ema_by_date.get(event_date)
+        exit_level = exit_levels.get(event_date)
         close = float(bar["close"])
-        if open_position is not None and ema is not None and close < ema:
+        if open_position is not None and exit_level is not None and close < exit_level:
             open_position["exit_signal_date"] = event_date
             open_position["exit_signal_close"] = round(close, 4)
-            open_position["exit_signal_ema_21"] = round(ema, 4)
+            open_position[exit_level_field] = round(exit_level, 4)
             pending_exit = {"date": event_date}
 
     if open_position is not None:
@@ -269,6 +296,20 @@ def _build_munger_ticker_positions(ticker: str, signal_dates: list[str],
         )
         positions.append(_mark_open_position_from_bar(open_position, current_bar))
     return positions
+
+
+def _build_munger_ticker_positions(ticker: str, signal_dates: list[str],
+                                    bars: list[dict], as_of: str) -> list[dict]:
+    """Simulate report entries and next-session EMA exits for one ticker."""
+    return _build_price_exit_ticker_positions(
+        "munger",
+        ticker,
+        signal_dates,
+        bars,
+        as_of,
+        _ema_by_date(bars),
+        "exit_signal_ema_21",
+    )
 
 
 def _build_munger_positions(reports: list[dict], as_of: str) -> list[dict]:
@@ -289,10 +330,37 @@ def _build_munger_positions(reports: list[dict], as_of: str) -> list[dict]:
     return positions
 
 
+def _build_sma10_positions(reports: list[dict], strategy_id: str,
+                           as_of: str) -> list[dict]:
+    """Buy from the base report signal; exit after a close below SMA10."""
+    first_date = _parse_date(reports[0]["date"])
+    sma_start = (first_date - timedelta(days=SMA_EXIT_LOOKBACK_DAYS)).isoformat()
+    signal_dates_by_ticker = defaultdict(list)
+    for report in reports:
+        for entry in _selected_entries(report, strategy_id):
+            signal_dates_by_ticker[entry["ticker"]].append(report["date"])
+
+    positions = []
+    for ticker in sorted(signal_dates_by_ticker):
+        bars = get_daily_bars(ticker, sma_start, as_of)
+        positions.extend(_build_price_exit_ticker_positions(
+            strategy_id,
+            ticker,
+            signal_dates_by_ticker[ticker],
+            bars,
+            as_of,
+            _sma_by_date(bars),
+            "exit_signal_sma_10",
+        ))
+    return positions
+
+
 def build_positions(reports: list[dict], as_of: str) -> list[dict]:
     positions = []
     for strategy_id in STRATEGIES:
-        if strategy_id == "munger":
+        if strategy_id.endswith(SMA10_SUFFIX):
+            positions.extend(_build_sma10_positions(reports, strategy_id, as_of))
+        elif strategy_id == "munger":
             positions.extend(_build_munger_positions(reports, as_of))
         else:
             positions.extend(_build_rank_positions(reports, strategy_id, as_of))
@@ -324,6 +392,11 @@ def validate_positions(positions: list[dict], as_of: str,
             raise ValueError(f"Weekend entry date: {trade_id} {position['entry_date']}")
         if position["entry_date"] > as_of:
             raise ValueError(f"Future entry date: {trade_id}")
+        technical_level_field = None
+        if position["strategy"] == "munger":
+            technical_level_field = "exit_signal_ema_21"
+        elif position["strategy"].endswith(SMA10_SUFFIX):
+            technical_level_field = "exit_signal_sma_10"
         if position["status"] == "closed":
             if position["exit_price"] is None or position["exit_price"] <= 0:
                 raise ValueError(f"Invalid exit price: {trade_id}")
@@ -331,18 +404,18 @@ def validate_positions(positions: list[dict], as_of: str,
                 raise ValueError(f"Weekend exit date: {trade_id} {position['exit_date']}")
             if position["exit_date"] < position["entry_date"]:
                 raise ValueError(f"Exit precedes entry: {trade_id}")
-            if position["strategy"] == "munger":
+            if technical_level_field:
                 if not position["exit_signal_date"]:
-                    raise ValueError(f"Munger exit has no EMA signal: {trade_id}")
+                    raise ValueError(f"Technical exit has no signal: {trade_id}")
                 if position["exit_signal_date"] >= position["exit_date"]:
-                    raise ValueError(f"Munger exit is not after its EMA signal: {trade_id}")
-                if not position["exit_signal_close"] < position["exit_signal_ema_21"]:
-                    raise ValueError(f"Invalid Munger EMA exit signal: {trade_id}")
-        elif position["strategy"] == "munger" and position["exit_signal_date"]:
-            if not position["exit_signal_close"] < position["exit_signal_ema_21"]:
-                raise ValueError(f"Invalid pending Munger EMA exit signal: {trade_id}")
+                    raise ValueError(f"Technical exit is not after its signal: {trade_id}")
+                if not position["exit_signal_close"] < position[technical_level_field]:
+                    raise ValueError(f"Invalid technical exit signal: {trade_id}")
+        elif technical_level_field and position["exit_signal_date"]:
+            if not position["exit_signal_close"] < position[technical_level_field]:
+                raise ValueError(f"Invalid pending technical exit signal: {trade_id}")
             if position["exit_signal_date"] > position["current_date"]:
-                raise ValueError(f"Future pending Munger exit signal: {trade_id}")
+                raise ValueError(f"Future pending technical exit signal: {trade_id}")
 
     for key, ticker_positions in by_ticker.items():
         ordered = sorted(ticker_positions, key=lambda p: p["entry_date"])
@@ -652,7 +725,7 @@ def _source_manifest(reports: list[dict], as_of: str,
         "market_data_through": market_data_through,
         "entry_signal_source": "scraped_reports_only",
         "rank_exit_signal_source": "scraped_report_membership_only",
-        "execution_price": "entry on report session; EMA exit on next session; VWAP with midpoint fallback",
+        "execution_price": "report entries on first available session; technical exits on next session; VWAP with midpoint fallback",
         "portfolio_policy": "equal weight, rebalanced on trade-event dates",
         "munger": {
             "entry": "qualifying scraped report membership while flat",
@@ -660,6 +733,20 @@ def _source_manifest(reports: list[dict], as_of: str,
             "exit_execution": "next available trading session after the signal",
             "ema_span": MUNGER_EMA_SPAN,
             "ema_lookback_calendar_days": MUNGER_EMA_LOOKBACK_DAYS,
+        },
+        "sma10_variants": {
+            "strategy_suffix": SMA10_SUFFIX,
+            "entry": "same scraped report membership as the corresponding base strategy while flat",
+            "report_disappearance_exit": False,
+            "exit_signal": "daily adjusted close below trailing close-based 10-session SMA",
+            "exit_execution": "next available trading session after the signal",
+            "sma_window": SMA_EXIT_WINDOW,
+            "lookback_calendar_days": SMA_EXIT_LOOKBACK_DAYS,
+            "reentry": "a later qualifying report while flat opens a new trade",
+        },
+        "strategy_families": {
+            "base": list(BASE_STRATEGIES),
+            "sma10": [f"{strategy_id}{SMA10_SUFFIX}" for strategy_id in BASE_STRATEGIES],
         },
         "kelly": {
             "formula": "0.5 * max(0, p - q / b)",
