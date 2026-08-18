@@ -101,6 +101,150 @@ def _adjusted_prices_changed(cached: dict, refreshed: dict) -> bool:
     return False
 
 
+def _load_valid_cache(ticker: str) -> Optional[dict]:
+    cache_file = CACHE_DIR / f"{ticker}.json"
+    if not cache_file.exists():
+        return None
+    raw = json.loads(cache_file.read_text())
+    if (
+        raw.get("_schema_version") != CACHE_SCHEMA_VERSION
+        or not raw.get("_fetched_from")
+        or not raw.get("_fetched_through")
+    ):
+        return None
+    return raw
+
+
+def _write_cache(ticker: str, raw: dict) -> None:
+    cache_file = CACHE_DIR / f"{ticker}.json"
+    temp_file = cache_file.with_suffix(".json.tmp")
+    metadata = {
+        key: raw[key]
+        for key in ("_schema_version", "_date_timezone", "_fetched_from", "_fetched_through")
+        if key in raw
+    }
+    bars = {key: raw[key] for key in sorted(raw) if not key.startswith("_")}
+    temp_file.write_text(json.dumps({**metadata, **bars}, indent=2))
+    temp_file.replace(cache_file)
+
+
+def _grouped_bar(row: dict) -> dict:
+    return {
+        "open": row.get("o"),
+        "high": row.get("h"),
+        "low": row.get("l"),
+        "close": row.get("c"),
+        "volume": row.get("v"),
+        "vwap": row.get("vw"),
+    }
+
+
+def _split_tickers(from_date: str, to_date: str, tracked: set[str]) -> set[str]:
+    data = _get("/v3/reference/splits", {
+        "execution_date.gte": from_date,
+        "execution_date.lte": to_date,
+        "limit": 1000,
+        "sort": "execution_date",
+    })
+    if data.get("status") == "ERROR" or data.get("error"):
+        raise RuntimeError(data.get("error") or "Polygon returned a split-query error")
+    return {
+        split["ticker"]
+        for split in data.get("results", [])
+        if split.get("ticker") in tracked
+    }
+
+
+def update_grouped_daily_bars(tickers, through_date: str) -> dict:
+    """Extend existing caches with one market-wide request per missing weekday.
+
+    Scraped reports remain the source of signals. This only fills daily OHLCV
+    marks. Newly encountered tickers still use ``get_daily_bars`` once for their
+    required history. A single split-reference query identifies the rare caches
+    that need a targeted adjusted-history refresh.
+    """
+    CACHE_DIR.mkdir(parents=True, exist_ok=True)
+    tracked = set(tickers)
+    caches = {
+        ticker: raw
+        for ticker in sorted(tracked)
+        if (raw := _load_valid_cache(ticker)) is not None
+    }
+    if not caches:
+        return {"grouped_calls": 0, "split_refreshes": 0, "through": None}
+
+    earliest_edge = min(raw["_fetched_through"] for raw in caches.values())
+    next_date = datetime.strptime(earliest_edge, "%Y-%m-%d").date() + timedelta(days=1)
+    requested_through = datetime.strptime(through_date, "%Y-%m-%d").date()
+    weekdays = []
+    current = next_date
+    while current <= requested_through:
+        if current.weekday() < 5:
+            weekdays.append(current.isoformat())
+        current += timedelta(days=1)
+
+    if not weekdays:
+        _refreshed_tickers.update(caches)
+        return {
+            "grouped_calls": 0,
+            "split_refreshes": 0,
+            "through": earliest_edge,
+        }
+
+    split_tickers = _split_tickers(weekdays[0], weekdays[-1], tracked)
+    grouped_rows = {}
+    for bar_date in weekdays:
+        print(f"    Fetching grouped stock bars for {bar_date}...")
+        data = _get(
+            f"/v2/aggs/grouped/locale/us/market/stocks/{bar_date}",
+            {"adjusted": "true", "include_otc": "true"},
+        )
+        if data.get("status") == "ERROR" or data.get("error"):
+            raise RuntimeError(data.get("error") or "Polygon returned a grouped-bars error")
+        rows = {
+            row["T"]: _grouped_bar(row)
+            for row in data.get("results", [])
+            if row.get("T") in tracked
+        }
+        if rows:
+            grouped_rows[bar_date] = rows
+
+    # An empty latest response commonly means the provider has not published
+    # that session yet. Only advance through the latest date that returned any
+    # tracked market data; earlier empty weekdays are holidays.
+    coverage_through = max(grouped_rows, default=None)
+    if coverage_through is None:
+        _refreshed_tickers.update(caches)
+        return {
+            "grouped_calls": len(weekdays),
+            "split_refreshes": 0,
+            "through": earliest_edge,
+        }
+
+    for ticker, raw in caches.items():
+        for bar_date, rows in grouped_rows.items():
+            if bar_date > raw["_fetched_through"] and ticker in rows:
+                raw[bar_date] = rows[ticker]
+        raw["_fetched_through"] = max(raw["_fetched_through"], coverage_through)
+        _write_cache(ticker, raw)
+
+    _refreshed_tickers.update(caches)
+    for ticker in sorted(split_tickers & caches.keys()):
+        raw = caches[ticker]
+        _refreshed_tickers.discard(ticker)
+        get_daily_bars(
+            ticker,
+            raw["_fetched_from"],
+            coverage_through,
+        )
+
+    return {
+        "grouped_calls": len(weekdays),
+        "split_refreshes": len(split_tickers & caches.keys()),
+        "through": coverage_through,
+    }
+
+
 def get_daily_bars(ticker: str, from_date: str, to_date: str) -> list[dict]:
     """
     Returns list of daily OHLCV bars for ticker between from_date and to_date (YYYY-MM-DD).

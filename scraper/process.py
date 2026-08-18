@@ -20,6 +20,7 @@ from polygon_client import (
     _durable_coverage_end,
     get_daily_bars,
     get_execution_price,
+    update_grouped_daily_bars,
 )
 
 SCRAPED_DIR = Path(__file__).parent.parent / "data" / "scraped"
@@ -535,9 +536,9 @@ def compute_trade_stats(positions: list[dict]) -> dict:
 
 def prefetch_all_tickers(reports: list[dict], as_of: str,
                          ticker_offset: int = 0,
-                         ticker_limit: Optional[int] = None) -> None:
+                         ticker_limit: Optional[int] = None) -> Optional[str]:
     if not reports:
-        return
+        return None
     first_date = reports[0]["date"]
     ticker_start = (_parse_date(first_date) - timedelta(days=30)).isoformat()
     ema21_start = (
@@ -564,8 +565,6 @@ def prefetch_all_tickers(reports: list[dict], as_of: str,
         if entry.get("ticker")
     }
 
-    print(f"  Prefetching SPY bars {spy_start} → {as_of}...")
-    get_daily_bars("SPY", spy_start, as_of)
     selected_tickers = tickers[ticker_offset:]
     if ticker_limit is not None:
         selected_tickers = selected_tickers[:ticker_limit]
@@ -573,9 +572,20 @@ def prefetch_all_tickers(reports: list[dict], as_of: str,
         f"  Prefetching bars for {len(selected_tickers)} of {len(tickers)} signal tickers "
         f"through {as_of}..."
     )
+    grouped = update_grouped_daily_bars(
+        set(selected_tickers) | {"SPY"}, as_of
+    )
+    print(
+        f"    Grouped daily calls: {grouped['grouped_calls']}; "
+        f"targeted split refreshes: {grouped['split_refreshes']}."
+    )
+    available_through = grouped["through"] or as_of
+    print(f"  Ensuring SPY history {spy_start} → {available_through}...")
+    get_daily_bars("SPY", spy_start, available_through)
     for ticker in selected_tickers:
         start = ema21_start if ticker in ema21_tickers else ticker_start
-        get_daily_bars(ticker, start, as_of)
+        get_daily_bars(ticker, start, available_through)
+    return available_through
 
 
 def _bar_execution_price(bar: dict) -> float:
@@ -905,7 +915,7 @@ def process_all(as_of: Optional[str] = None, prefetch_only: bool = False,
 
     market_fetch_through = _durable_coverage_end(as_of)
     print("Prefetching execution and valuation bars...")
-    prefetch_all_tickers(
+    prefetched_through = prefetch_all_tickers(
         reports, market_fetch_through, ticker_offset, ticker_limit
     )
     if prefetch_only:
@@ -913,7 +923,9 @@ def process_all(as_of: Optional[str] = None, prefetch_only: bool = False,
 
     first_date = reports[0]["date"]
     spy_start = (_parse_date(first_date) - timedelta(days=396)).isoformat()
-    spy_bars = get_daily_bars("SPY", spy_start, market_fetch_through)
+    spy_bars = get_daily_bars(
+        "SPY", spy_start, prefetched_through or market_fetch_through
+    )
     if not spy_bars:
         raise RuntimeError(f"Missing SPY bars through {as_of}")
     market_data_through = spy_bars[-1]["date"]

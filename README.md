@@ -141,7 +141,7 @@ npm test
 ## Polygon API usage
 
 - **Rate limit:** 5 requests/minute on the free tier — the client enforces a 12.5-second delay between calls.
-- **Disk cache:** Every bar range is stored in `data/price_cache/{TICKER}.json`. The cache tracks `_fetched_from` and `_fetched_through` metadata. Once per ticker per processing run, a short overlap is refreshed; if split-adjusted historical prices changed, the full cached range is refreshed to prevent mixed pre- and post-split scales.
+- **Disk cache:** Every bar range is stored in `data/price_cache/{TICKER}.json`. The cache tracks `_fetched_from` and `_fetched_through` metadata. Routine updates use one grouped daily aggregate request per missing weekday plus one split-reference request. Per-ticker requests are reserved for newly encountered tickers, missing historical coverage, and tickers with a reported split.
 - **Execution price:** Report entries and rank exits use the first session on or after the report signal. Munger EMA and SMA10 exits execute on the first session after the triggering close. VWAP is used when available, with midpoint fallback.
 - **EMA history:** Munger tickers receive 120 calendar days of pre-report history so the 21-day EMA is warm before any trade can exit.
 - **SMA history:** All signal tickers receive at least 30 calendar days of pre-report history so the trailing 10-session SMA is warm before any trade can exit.

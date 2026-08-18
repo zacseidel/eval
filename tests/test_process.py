@@ -241,6 +241,24 @@ class MungerLifecycleTests(unittest.TestCase):
         self.assertEqual(36, len(positions))
         self.assertTrue(all(p["status"] == "open" for p in positions))
 
+    def test_prefetch_uses_last_published_grouped_date_for_targeted_reads(self):
+        reports = [report("2026-03-10", sp500=[munger_entry("AAA")])]
+
+        with patch.object(
+            process,
+            "update_grouped_daily_bars",
+            return_value={
+                "grouped_calls": 1,
+                "split_refreshes": 0,
+                "through": "2026-03-09",
+            },
+        ), patch.object(process, "get_daily_bars", return_value=[]) as get:
+            through = process.prefetch_all_tickers(reports, "2026-03-10")
+
+        self.assertEqual("2026-03-09", through)
+        self.assertTrue(get.call_args_list)
+        self.assertTrue(all(call.args[2] == "2026-03-09" for call in get.call_args_list))
+
 
 class SmaVariantLifecycleTests(unittest.TestCase):
     @staticmethod

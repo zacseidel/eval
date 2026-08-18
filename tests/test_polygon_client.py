@@ -215,6 +215,80 @@ class PolygonCacheTests(unittest.TestCase):
 
         self.assertEqual(original, raw)
 
+    def test_grouped_update_extends_all_tickers_with_two_market_calls(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            for ticker in ("AAA", "BBB"):
+                (Path(temp_dir) / f"{ticker}.json").write_text(json.dumps({
+                    "_schema_version": polygon_client.CACHE_SCHEMA_VERSION,
+                    "_date_timezone": "UTC",
+                    "_fetched_from": "2026-03-01",
+                    "_fetched_through": "2026-03-06",
+                    "2026-03-06": {
+                        "open": 100.0, "high": 100.0, "low": 100.0,
+                        "close": 100.0, "volume": 1000, "vwap": 100.0,
+                    },
+                }))
+            monday = {
+                "status": "OK",
+                "results": [
+                    {**self._aggregate("2026-03-09", 101.0), "T": "AAA"},
+                    {**self._aggregate("2026-03-09", 201.0), "T": "BBB"},
+                ],
+            }
+            tuesday = {
+                "status": "OK",
+                "results": [
+                    {**self._aggregate("2026-03-10", 102.0), "T": "AAA"},
+                    {**self._aggregate("2026-03-10", 202.0), "T": "BBB"},
+                ],
+            }
+
+            with patch.object(polygon_client, "CACHE_DIR", Path(temp_dir)), \
+                 patch.object(
+                     polygon_client,
+                     "_get",
+                     side_effect=[{"status": "OK", "results": []}, monday, tuesday],
+                 ) as get:
+                summary = polygon_client.update_grouped_daily_bars(
+                    {"AAA", "BBB"}, "2026-03-10"
+                )
+
+            aaa = json.loads((Path(temp_dir) / "AAA.json").read_text())
+            bbb = json.loads((Path(temp_dir) / "BBB.json").read_text())
+
+        self.assertEqual(3, get.call_count)  # one split query + two grouped days
+        self.assertEqual(2, summary["grouped_calls"])
+        self.assertEqual("2026-03-10", summary["through"])
+        self.assertEqual(102.0, aaa["2026-03-10"]["close"])
+        self.assertEqual(202.0, bbb["2026-03-10"]["close"])
+        self.assertEqual("2026-03-10", aaa["_fetched_through"])
+
+    def test_grouped_update_does_not_advance_on_unpublished_latest_day(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            cache_path = Path(temp_dir) / "AAA.json"
+            cache_path.write_text(json.dumps({
+                "_schema_version": polygon_client.CACHE_SCHEMA_VERSION,
+                "_date_timezone": "UTC",
+                "_fetched_from": "2026-03-01",
+                "_fetched_through": "2026-03-09",
+                "2026-03-09": {
+                    "open": 100.0, "high": 100.0, "low": 100.0,
+                    "close": 100.0, "volume": 1000, "vwap": 100.0,
+                },
+            }))
+            with patch.object(polygon_client, "CACHE_DIR", Path(temp_dir)), \
+                 patch.object(polygon_client, "_get", side_effect=[
+                     {"status": "OK", "results": []},
+                     {"status": "OK", "results": []},
+                 ]):
+                summary = polygon_client.update_grouped_daily_bars(
+                    {"AAA"}, "2026-03-10"
+                )
+            raw = json.loads(cache_path.read_text())
+
+        self.assertEqual("2026-03-09", summary["through"])
+        self.assertEqual("2026-03-09", raw["_fetched_through"])
+
 
 if __name__ == "__main__":
     unittest.main()
