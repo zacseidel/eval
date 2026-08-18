@@ -6,6 +6,8 @@ const STRATEGY_COLORS = {
   sp400_mcap5:      "#fb923c",
   sp400_mcap_next5: "#fbbf24",
   munger:           "#f472b6",
+  munger400l:       "#22d3ee",
+  munger400r:       "#f59e0b",
   sp500_top5_sma10:       "#6c8ef7",
   sp500_next5_sma10:      "#a78bfa",
   megacap_top5_sma10:     "#34d399",
@@ -13,6 +15,8 @@ const STRATEGY_COLORS = {
   sp400_mcap5_sma10:      "#fb923c",
   sp400_mcap_next5_sma10: "#fbbf24",
   munger_sma10:           "#f472b6",
+  munger400l_sma10:       "#22d3ee",
+  munger400r_sma10:       "#f59e0b",
   spy:          "#888888",
 };
 
@@ -24,6 +28,8 @@ const STRATEGY_LABELS = {
   sp400_mcap5:      "S&P 400 Top 5",
   sp400_mcap_next5: "S&P 400 Next 5",
   munger:           "Munger 21-Day EMA",
+  munger400l:       "Munger400L EMA21",
+  munger400r:       "Munger400R EMA21",
   sp500_top5_sma10:       "S&P 500 Top 5 · SMA10",
   sp500_next5_sma10:      "S&P 500 Next 5 · SMA10",
   megacap_top5_sma10:     "Megacap Top 5 · SMA10",
@@ -31,6 +37,8 @@ const STRATEGY_LABELS = {
   sp400_mcap5_sma10:      "S&P 400 Top 5 · SMA10",
   sp400_mcap_next5_sma10: "S&P 400 Next 5 · SMA10",
   munger_sma10:           "Munger Signals · SMA10",
+  munger400l_sma10:       "Munger400L SMA10",
+  munger400r_sma10:       "Munger400R SMA10",
   spy:          "SPY",
 };
 
@@ -50,8 +58,9 @@ function filterByRange(series, range) {
   return series.filter(p => new Date(p.date) >= cutoff);
 }
 
-function normalizeToFirst(series) {
+export function normalizeForRange(series, range) {
   if (!series || series.length === 0) return series;
+  if (range === "all") return series;
   const first = series[0].value;
   if (!first) return series;
   return series.map(p => ({ ...p, value: (p.value / first) * 100 }));
@@ -63,10 +72,10 @@ function buildCumulativeChart(range) {
 
   const strategyOrder = [
     "sp500_top5", "sp500_next5", "megacap_top5", "megacap_next5",
-    "sp400_mcap5", "sp400_mcap_next5", "munger",
+    "sp400_mcap5", "sp400_mcap_next5", "munger", "munger400l", "munger400r",
     "sp500_top5_sma10", "sp500_next5_sma10", "megacap_top5_sma10",
     "megacap_next5_sma10", "sp400_mcap5_sma10", "sp400_mcap_next5_sma10",
-    "munger_sma10", "spy",
+    "munger_sma10", "munger400l_sma10", "munger400r_sma10", "spy",
   ];
   const orderedEntries = [
     ...strategyOrder.filter(sid => _strategyReturns[sid]).map(sid => [sid, _strategyReturns[sid]]),
@@ -75,7 +84,7 @@ function buildCumulativeChart(range) {
 
   for (const [sid, series] of orderedEntries) {
     const filtered = filterByRange(series, range);
-    const normalized = normalizeToFirst(filtered);
+    const normalized = normalizeForRange(filtered, range);
     normalized.forEach(p => allDates.add(p.date));
     const isSpy = sid === "spy";
     datasets.push({
@@ -155,7 +164,7 @@ function buildRolling3mChart() {
     data: {
       labels,
       datasets: [{
-        label: "Rolling 3M Return",
+        label: "Rolling 3M Price Return",
         data: values,
         backgroundColor: colors.map(c => c + "cc"),
         borderColor: colors,
@@ -265,6 +274,10 @@ export function renderScatterCharts(positions) {
 
 export function renderCharts(strategyReturns) {
   _strategyReturns = strategyReturns;
+  for (const sid of ["munger400l", "munger400r"]) {
+    const scatter = document.getElementById(`scatter-container-${sid}`);
+    if (scatter) scatter.classList.toggle("hidden", !Array.isArray(strategyReturns[sid]));
+  }
 
   // Wait until Chart.js time adapter is available (CDN async)
   buildCumulativeChart(_currentRange);

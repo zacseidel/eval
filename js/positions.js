@@ -6,6 +6,8 @@ const STRATEGY_LABELS = {
   sp400_mcap5:      "S&P 400 Top 5",
   sp400_mcap_next5: "S&P 400 Next 5",
   munger:           "Munger 21-Day EMA",
+  munger400l:       "Munger400L EMA21",
+  munger400r:       "Munger400R EMA21",
   sp500_top5_sma10:       "S&P 500 Top 5 · SMA10",
   sp500_next5_sma10:      "S&P 500 Next 5 · SMA10",
   megacap_top5_sma10:     "Megacap Top 5 · SMA10",
@@ -13,6 +15,8 @@ const STRATEGY_LABELS = {
   sp400_mcap5_sma10:      "S&P 400 Top 5 · SMA10",
   sp400_mcap_next5_sma10: "S&P 400 Next 5 · SMA10",
   munger_sma10:           "Munger Signals · SMA10",
+  munger400l_sma10:       "Munger400L SMA10",
+  munger400r_sma10:       "Munger400R SMA10",
 };
 
 function exitLevel(p) {

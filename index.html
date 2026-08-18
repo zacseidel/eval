@@ -14,7 +14,7 @@
   <header>
     <div class="header-top">
       <h1>Strategy Evaluator</h1>
-      <a class="momentum-link" href="https://zacseidel.github.io/momentum9" target="_blank" rel="noopener">Momentum9 Report ↗</a>
+      <a class="momentum-link" href="https://zacseidel.github.io/momentum" target="_blank" rel="noopener">Momentum Report ↗</a>
     </div>
     <p class="subtitle">Scraped-report entries with primary and 10-day SMA exit evaluations. <span id="last-updated"></span></p>
     <nav>
@@ -29,12 +29,12 @@
       <div class="sort-bar">
         <span class="sort-label">Sort by</span>
         <button class="sort-btn active" data-sort="return">Return</button>
-        <button class="sort-btn" data-sort="risk">Risk</button>
+        <button class="sort-btn" data-sort="sharpe">Sharpe</button>
         <button class="sort-btn" data-sort="size">Size</button>
       </div>
       <section class="strategy-section">
         <h2 class="strategy-section-title">Primary exit rules</h2>
-        <p class="strategy-section-note">Report-rank exits for momentum strategies; 21-day EMA exit for Munger.</p>
+        <p class="strategy-section-note">Report-rank exits for momentum strategies; 21-day EMA exits for Munger strategies.</p>
         <div id="strategy-grid"></div>
       </section>
       <section class="strategy-section">
@@ -57,6 +57,8 @@
             <option value="sp400_mcap5">S&amp;P 400 Top 5</option>
             <option value="sp400_mcap_next5">S&amp;P 400 Next 5</option>
             <option value="munger">Munger 21-Day EMA</option>
+            <option value="munger400l">Munger400L EMA21</option>
+            <option value="munger400r">Munger400R EMA21</option>
             <option value="sp500_top5_sma10">S&amp;P 500 Top 5 · SMA10</option>
             <option value="sp500_next5_sma10">S&amp;P 500 Next 5 · SMA10</option>
             <option value="megacap_top5_sma10">Megacap Top 5 · SMA10</option>
@@ -64,6 +66,8 @@
             <option value="sp400_mcap5_sma10">S&amp;P 400 Top 5 · SMA10</option>
             <option value="sp400_mcap_next5_sma10">S&amp;P 400 Next 5 · SMA10</option>
             <option value="munger_sma10">Munger Signals · SMA10</option>
+            <option value="munger400l_sma10">Munger400L SMA10</option>
+            <option value="munger400r_sma10">Munger400R SMA10</option>
           </select>
         </label>
         <label>
@@ -109,15 +113,15 @@
         <button class="range-btn" data-range="3m">3M</button>
       </div>
       <div class="chart-container">
-        <h2>Cumulative Portfolio Returns</h2>
+        <h2>Cumulative Portfolio Price Returns</h2>
         <canvas id="cumulative-chart"></canvas>
       </div>
       <div class="chart-container">
-        <h2>Rolling 3-Month Returns</h2>
+        <h2>Rolling 3-Month Price Returns</h2>
         <canvas id="rolling3m-chart"></canvas>
       </div>
       <div class="scatter-section">
-        <h2 class="section-heading">Trade Returns — Last 12 Months</h2>
+        <h2 class="section-heading">Trade Price Returns — Last 12 Months</h2>
         <div class="scatter-grid">
           <div class="chart-container">
             <h3>Megacap Top 5</h3>
@@ -130,6 +134,14 @@
           <div class="chart-container">
             <h3>Munger 21-Day EMA</h3>
             <canvas id="scatter-munger"></canvas>
+          </div>
+          <div id="scatter-container-munger400l" class="chart-container hidden">
+            <h3>Munger400L EMA21</h3>
+            <canvas id="scatter-munger400l"></canvas>
+          </div>
+          <div id="scatter-container-munger400r" class="chart-container hidden">
+            <h3>Munger400R EMA21</h3>
+            <canvas id="scatter-munger400r"></canvas>
           </div>
           <div class="chart-container">
             <h3>S&amp;P 500 Top 5</h3>

@@ -1,5 +1,6 @@
 """Polygon.io API client with disk caching and rate limiting."""
 import json
+import math
 import os
 import time
 from datetime import date, datetime, timedelta, timezone
@@ -12,9 +13,13 @@ import requests
 CACHE_DIR = Path(__file__).parent.parent / "data" / "price_cache"
 API_BASE = "https://api.polygon.io"
 CALL_INTERVAL = 12.5  # seconds between calls to stay under 5/min on free tier
-CACHE_SCHEMA_VERSION = 2
+CACHE_REFRESH_OVERLAP_DAYS = 30
+# Version 3 forces one complete refresh of caches that may predate the
+# retroactive-adjustment guard introduced below.
+CACHE_SCHEMA_VERSION = 3
 
 _last_call_time: float = 0.0
+_refreshed_tickers: set[str] = set()
 
 
 def _throttle():
@@ -56,11 +61,52 @@ def _durable_coverage_end(fetch_to: str, market_now: Optional[datetime] = None) 
     return fetch_to
 
 
+def _response_bars(data: dict, durable_through: str) -> dict[str, dict]:
+    """Convert an aggregate response into validated UTC-dated cache rows."""
+    bars = {}
+    for bar in data.get("results", []):
+        bar_date = datetime.fromtimestamp(
+            bar["t"] / 1000, tz=timezone.utc
+        ).date().isoformat()
+        if bar_date > durable_through:
+            continue
+        if datetime.strptime(bar_date, "%Y-%m-%d").weekday() >= 5:
+            raise ValueError(f"Polygon returned an equity bar on weekend date {bar_date}")
+        bars[bar_date] = {
+            "open": bar.get("o"),
+            "high": bar.get("h"),
+            "low": bar.get("l"),
+            "close": bar.get("c"),
+            "volume": bar.get("v"),
+            "vwap": bar.get("vw"),
+        }
+    return bars
+
+
+def _adjusted_prices_changed(cached: dict, refreshed: dict) -> bool:
+    """Detect retroactive price adjustments, most importantly stock splits."""
+    price_fields = ("open", "high", "low", "close", "vwap")
+    for bar_date in cached.keys() & refreshed.keys():
+        old = cached[bar_date]
+        new = refreshed[bar_date]
+        for field in price_fields:
+            old_value = old.get(field)
+            new_value = new.get(field)
+            if old_value is None or new_value is None:
+                if old_value != new_value:
+                    return True
+                continue
+            if not math.isclose(float(old_value), float(new_value), rel_tol=1e-9, abs_tol=1e-9):
+                return True
+    return False
+
+
 def get_daily_bars(ticker: str, from_date: str, to_date: str) -> list[dict]:
     """
     Returns list of daily OHLCV bars for ticker between from_date and to_date (YYYY-MM-DD).
     Caches to data/price_cache/{ticker}.json. Tracks _fetched_from/_fetched_through metadata
-    so only genuinely new date ranges hit the API — weekends/holidays never re-trigger fetches.
+    and refreshes a short overlap once per process. If adjusted prices in that overlap changed,
+    the complete cached range is fetched again so pre- and post-split scales cannot be mixed.
     """
     CACHE_DIR.mkdir(parents=True, exist_ok=True)
     cache_file = CACHE_DIR / f"{ticker}.json"
@@ -83,20 +129,43 @@ def get_daily_bars(ticker: str, from_date: str, to_date: str) -> list[dict]:
         cached = {}
     else:
         cached = raw
+    cached_before_fetch = {bar_date: dict(bar) for bar_date, bar in cached.items()}
 
     # Determine which ranges (if any) still need to be fetched.
     # If no metadata exists (legacy cache or first fetch), fetch the full requested
     # range in one call — avoids splitting into multiple calls around sparse cached windows.
     ranges_to_fetch = []
+    refresh_ranges = set()
     if fetched_from is None or fetched_through is None:
-        ranges_to_fetch.append((from_date, to_date))
+        fetch_range = (from_date, to_date)
+        ranges_to_fetch.append(fetch_range)
+        refresh_ranges.add(fetch_range)
     else:
         if from_date < fetched_from:
             day_before = (datetime.strptime(fetched_from, "%Y-%m-%d") - timedelta(days=1)).strftime("%Y-%m-%d")
             ranges_to_fetch.append((from_date, day_before))
+        refresh_right_edge = ticker not in _refreshed_tickers and to_date >= fetched_through
         if to_date > fetched_through:
             day_after = (datetime.strptime(fetched_through, "%Y-%m-%d") + timedelta(days=1)).strftime("%Y-%m-%d")
-            ranges_to_fetch.append((day_after, to_date))
+            fetch_from = day_after
+            if refresh_right_edge:
+                overlap_start = (
+                    datetime.strptime(fetched_through, "%Y-%m-%d")
+                    - timedelta(days=CACHE_REFRESH_OVERLAP_DAYS)
+                ).strftime("%Y-%m-%d")
+                fetch_from = max(fetched_from, overlap_start)
+            fetch_range = (fetch_from, to_date)
+            ranges_to_fetch.append(fetch_range)
+            if refresh_right_edge:
+                refresh_ranges.add(fetch_range)
+        elif refresh_right_edge:
+            overlap_start = (
+                datetime.strptime(fetched_through, "%Y-%m-%d")
+                - timedelta(days=CACHE_REFRESH_OVERLAP_DAYS)
+            ).strftime("%Y-%m-%d")
+            fetch_range = (max(fetched_from, overlap_start), to_date)
+            ranges_to_fetch.append(fetch_range)
+            refresh_ranges.add(fetch_range)
 
     successful_ranges = []
     for fetch_from, fetch_to in ranges_to_fetch:
@@ -107,27 +176,41 @@ def get_daily_bars(ticker: str, from_date: str, to_date: str) -> list[dict]:
             if data.get("status") == "ERROR" or data.get("error"):
                 raise RuntimeError(data.get("error") or "Polygon returned an error response")
             durable_through = _durable_coverage_end(fetch_to)
-            for bar in data.get("results", []):
-                bar_date = datetime.fromtimestamp(
-                    bar["t"] / 1000, tz=timezone.utc
-                ).date().isoformat()
-                if bar_date > durable_through:
-                    continue
-                if datetime.strptime(bar_date, "%Y-%m-%d").weekday() >= 5:
-                    raise ValueError(f"Polygon returned an equity bar on weekend date {bar_date}")
-                cached[bar_date] = {
-                    "open": bar.get("o"),
-                    "high": bar.get("h"),
-                    "low": bar.get("l"),
-                    "close": bar.get("c"),
-                    "volume": bar.get("v"),
-                    "vwap": bar.get("vw"),
-                }
+            refreshed_bars = _response_bars(data, durable_through)
+            is_refresh = (fetch_from, fetch_to) in refresh_ranges
+            if is_refresh and _adjusted_prices_changed(cached, refreshed_bars):
+                full_from = min(fetched_from, from_date)
+                print(
+                    f"    Adjusted {ticker} history changed; refreshing "
+                    f"{full_from} → {fetch_to}..."
+                )
+                full_path = f"/v2/aggs/ticker/{ticker}/range/1/day/{full_from}/{fetch_to}"
+                try:
+                    full_data = _get(
+                        full_path,
+                        {"adjusted": "true", "sort": "asc", "limit": 5000},
+                    )
+                    if full_data.get("status") == "ERROR" or full_data.get("error"):
+                        raise RuntimeError(
+                            full_data.get("error") or "Polygon returned an error response"
+                        )
+                    cached = _response_bars(full_data, durable_through)
+                except Exception:
+                    # Never retain a successful extension in a potentially new
+                    # adjustment scale when the full consistency refresh failed.
+                    cached = cached_before_fetch
+                    successful_ranges = []
+                    raise
+                successful_ranges = [(full_from, durable_through)]
+            else:
+                cached.update(refreshed_bars)
             # Do not claim durable coverage for the current calendar day. A
             # pre-close run may receive no daily aggregate (or an incomplete
             # one); the next run must be allowed to request that date again.
             if durable_through >= fetch_from:
                 successful_ranges.append((fetch_from, durable_through))
+                if is_refresh:
+                    _refreshed_tickers.add(ticker)
         except Exception as e:
             print(f"    WARNING: could not fetch bars for {ticker}: {e}")
 

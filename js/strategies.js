@@ -1,4 +1,4 @@
-const STRATEGY_META = {
+export const STRATEGY_META = {
   sp500_top5:   { label: "S&P 500 Top 5",        color: "#6c8ef7" },
   sp500_next5:  { label: "S&P 500 Next 5",        color: "#a78bfa" },
   megacap_top5: { label: "Megacap Top 5",          color: "#34d399" },
@@ -6,6 +6,8 @@ const STRATEGY_META = {
   sp400_mcap5:      { label: "S&P 400 Top 5",  color: "#fb923c" },
   sp400_mcap_next5: { label: "S&P 400 Next 5", color: "#fbbf24" },
   munger:           { label: "Munger 21-Day EMA", color: "#f472b6" },
+  munger400l:       { label: "Munger400L EMA21", color: "#22d3ee" },
+  munger400r:       { label: "Munger400R EMA21", color: "#f59e0b" },
   sp500_top5_sma10:       { label: "S&P 500 Top 5 · SMA10", color: "#6c8ef7" },
   sp500_next5_sma10:      { label: "S&P 500 Next 5 · SMA10", color: "#a78bfa" },
   megacap_top5_sma10:     { label: "Megacap Top 5 · SMA10", color: "#34d399" },
@@ -13,12 +15,8 @@ const STRATEGY_META = {
   sp400_mcap5_sma10:      { label: "S&P 400 Top 5 · SMA10", color: "#fb923c" },
   sp400_mcap_next5_sma10: { label: "S&P 400 Next 5 · SMA10", color: "#fbbf24" },
   munger_sma10:           { label: "Munger Signals · SMA10", color: "#f472b6" },
-};
-
-const SIZE_ORDER = {
-  megacap_top5: 0, megacap_next5: 1, munger: 2,
-  sp500_top5: 3, sp500_next5: 4,
-  sp400_mcap5: 5, sp400_mcap_next5: 6,
+  munger400l_sma10:       { label: "Munger400L SMA10", color: "#22d3ee" },
+  munger400r_sma10:       { label: "Munger400R SMA10", color: "#f59e0b" },
 };
 
 function isSma10(sid) {
@@ -26,7 +24,9 @@ function isSma10(sid) {
 }
 
 function isMungerFamily(sid) {
-  return sid === "munger" || sid === "munger_sma10";
+  return sid === "munger" || sid === "munger_sma10" ||
+    sid === "munger400l" || sid === "munger400l_sma10" ||
+    sid === "munger400r" || sid === "munger400r_sma10";
 }
 
 function formatPct(val) {
@@ -58,19 +58,18 @@ function formatStatPct(value, signed = false) {
   return `${sign}${value.toFixed(1)}%`;
 }
 
-function getReturnSummary(series, field = "value") {
+export function getReturnSummary(series, field = "value") {
   if (!series || series.length < 2) return null;
   const first = series[0];
   const last = series[series.length - 1];
   if (last[field] == null) return null;
   if (field === "value" && last.return_12m != null)
-    return { value: last.return_12m, label: "12M Return" };
+    return { value: last.return_12m, label: "12M Price Return" };
   if (field === "spy_value" && last.spy_12m != null)
-    return { value: last.spy_12m, label: "12M Return" };
-  if (first[field] == null || first[field] === 0) return null;
+    return { value: last.spy_12m, label: "12M Price Return" };
   return {
-    value: (last[field] - first[field]) / first[field] * 100,
-    label: `Since ${first.date}`,
+    value: (last[field] / 100 - 1) * 100,
+    label: `Price return since ${first.date}`,
   };
 }
 
@@ -81,6 +80,11 @@ function getLatest3mReturn(series, field = "rolling_3m") {
 }
 
 let _cardData = [];
+
+export function getAvailableStrategyEntries(strategyReturns) {
+  return Object.entries(STRATEGY_META)
+    .filter(([sid]) => Array.isArray(strategyReturns[sid]));
+}
 
 function buildCard(item) {
   const { sid, meta, returnLabel, ret12m, ret3m, spy12m, spy3m,
@@ -127,7 +131,7 @@ function buildCard(item) {
       </div>
       <div class="metric-group">
         <div class="metric">
-          <span class="label">Rolling 3M</span>
+          <span class="label">Rolling 3M Price</span>
           ${formatPct(ret3m)}
           ${formatBenchmark(spy3m)}
         </div>
@@ -141,14 +145,14 @@ function buildCard(item) {
     <div class="card-footer">
       <span>${openCount} open</span>
       <span>${closedCount} closed</span>
-      ${sid === "munger" || isSma10(sid) ? `<span>${pendingExitCount} exit pending</span>` : ""}
+      ${isMungerFamily(sid) || isSma10(sid) ? `<span>${pendingExitCount} exit pending</span>` : ""}
       ${isMungerFamily(sid) ? `<span>${signalTickers.length} current signals</span>` : ""}
     </div>
     ${openTickers.length ? `<div class="ticker-tags">${openTickers.map(t => `<span class="ticker-tag">${t}</span>`).join("")}</div>` : ""}
     ${isMungerFamily(sid) && signalTickers.length ? `<div class="signal-note">Latest report buy signals: ${signalTickers.join(", ")}</div>` : ""}
     <div class="kelly-panel" title="Half Kelly = 0.5 × max(0, win probability − loss probability ÷ payoff ratio)">
       <div class="kelly-heading">
-        <span>Half-Kelly position</span>
+        <span>Half-Kelly risk budget</span>
         <strong>${kellyValue}</strong>
       </div>
       <div class="kelly-stats">
@@ -173,22 +177,35 @@ function buildCard(item) {
   return card;
 }
 
+function descendingNullable(a, b) {
+  if (a == null && b == null) return 0;
+  if (a == null) return 1;
+  if (b == null) return -1;
+  return b - a;
+}
+
+export function compareCards(a, b, sortKey) {
+  let comparison;
+  if (sortKey === "return") {
+    comparison = descendingNullable(a.ret12m, b.ret12m);
+  } else if (sortKey === "sharpe") {
+    comparison = descendingNullable(
+      a.stratSharpe12m ?? a.stratSharpe3m,
+      b.stratSharpe12m ?? b.stratSharpe3m,
+    );
+  } else if (sortKey === "size") {
+    comparison = descendingNullable(
+      a.tradeStats?.half_kelly_pct,
+      b.tradeStats?.half_kelly_pct,
+    );
+  } else {
+    comparison = 0;
+  }
+  return comparison || a.sid.localeCompare(b.sid);
+}
+
 function renderCards(sortKey) {
-  const sorted = [..._cardData].sort((a, b) => {
-    if (sortKey === "return") {
-      const av = a.ret12m ?? -Infinity;
-      const bv = b.ret12m ?? -Infinity;
-      return bv - av;
-    }
-    if (sortKey === "risk") {
-      const av = a.stratSharpe12m ?? -Infinity;
-      const bv = b.stratSharpe12m ?? -Infinity;
-      return bv - av;
-    }
-    const aBase = a.sid.replace(/_sma10$/, "");
-    const bBase = b.sid.replace(/_sma10$/, "");
-    return (SIZE_ORDER[aBase] ?? 99) - (SIZE_ORDER[bBase] ?? 99);
-  });
+  const sorted = [..._cardData].sort((a, b) => compareCards(a, b, sortKey));
 
   const primaryGrid = document.getElementById("strategy-grid");
   const smaGrid = document.getElementById("sma-strategy-grid");
@@ -209,35 +226,36 @@ export function renderStrategies(
 ) {
   const sharpeMap = strategyReturns["_sharpe"] || {};
 
-  _cardData = Object.entries(STRATEGY_META).map(([sid, meta]) => {
-    const series = strategyReturns[sid] || [];
-    const stratPositions = positions.filter(p => p.strategy === sid);
-    const openPositions = stratPositions.filter(p => p.status === "open");
-    const pendingExitPositions = openPositions.filter(p => p.exit_signal_date != null);
-    const returnSummary = getReturnSummary(series);
-    const spySummary = getReturnSummary(series, "spy_value");
-    const signalTickers = signals
-      .filter(s => s.strategy === sid && s.report_date === latestReportDate)
-      .map(s => s.ticker);
-    return {
-      sid, meta,
-      returnLabel:   returnSummary?.label ?? "Return",
-      ret12m:        returnSummary?.value ?? null,
-      ret3m:         getLatest3mReturn(series),
-      spy12m:        spySummary?.value ?? null,
-      spy3m:         getLatest3mReturn(series, "spy_rolling_3m"),
-      stratSharpe12m: sharpeMap[sid]?.["12m"] ?? null,
-      stratSharpe3m:  sharpeMap[sid]?.["3m"]  ?? null,
-      spySharpe12m:   sharpeMap["spy"]?.["12m"] ?? null,
-      spySharpe3m:    sharpeMap["spy"]?.["3m"]  ?? null,
-      openCount:  openPositions.length,
-      closedCount: stratPositions.filter(p => p.status === "closed").length,
-      pendingExitCount: pendingExitPositions.length,
-      openTickers: openPositions.map(p => p.ticker),
-      signalTickers,
-      tradeStats: strategyTradeStats[sid] || null,
-    };
-  });
+  _cardData = getAvailableStrategyEntries(strategyReturns)
+    .map(([sid, meta]) => {
+      const series = strategyReturns[sid] || [];
+      const stratPositions = positions.filter(p => p.strategy === sid);
+      const openPositions = stratPositions.filter(p => p.status === "open");
+      const pendingExitPositions = openPositions.filter(p => p.exit_signal_date != null);
+      const returnSummary = getReturnSummary(series);
+      const spySummary = getReturnSummary(series, "spy_value");
+      const signalTickers = signals
+        .filter(s => s.strategy === sid && s.report_date === latestReportDate)
+        .map(s => s.ticker);
+      return {
+        sid, meta,
+        returnLabel:   returnSummary?.label ?? "Price Return",
+        ret12m:        returnSummary?.value ?? null,
+        ret3m:         getLatest3mReturn(series),
+        spy12m:        spySummary?.value ?? null,
+        spy3m:         getLatest3mReturn(series, "spy_rolling_3m"),
+        stratSharpe12m: sharpeMap[sid]?.["12m"] ?? null,
+        stratSharpe3m:  sharpeMap[sid]?.["3m"]  ?? null,
+        spySharpe12m:   sharpeMap["spy"]?.["12m"] ?? null,
+        spySharpe3m:    sharpeMap["spy"]?.["3m"]  ?? null,
+        openCount:  openPositions.length,
+        closedCount: stratPositions.filter(p => p.status === "closed").length,
+        pendingExitCount: pendingExitPositions.length,
+        openTickers: openPositions.map(p => p.ticker),
+        signalTickers,
+        tradeStats: strategyTradeStats[sid] || null,
+      };
+    });
 
   renderCards("return");
 

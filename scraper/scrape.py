@@ -1,4 +1,4 @@
-"""Scrapes momentum9 weekly reports and saves raw data as JSON."""
+"""Scrapes Momentum weekly reports and saves raw data as JSON."""
 import json
 import re
 import time
@@ -7,16 +7,26 @@ from pathlib import Path
 import requests
 from bs4 import BeautifulSoup
 
-BASE_URL = "https://zacseidel.github.io/momentum9"
+BASE_URL = "https://zacseidel.github.io/momentum"
 INDEX_URL = f"{BASE_URL}/"
 SCRAPED_DIR = Path(__file__).parent.parent / "data" / "scraped"
-
 SECTION_IDS = {
     "munger":  "summary-munger",
+    "munger400l": "summary-munger400l",
+    "munger400r": "summary-munger400r",
     "megacap": "summary-megacap",
     "sp500":   "summary-sp500",
     "sp400":   "summary-sp400",
 }
+
+SECTION_TITLE_PREFIXES = {
+    "munger400l": "munger400l",
+    "munger400r": "munger400r",
+}
+
+
+def report_url(report_date):
+    return f"{BASE_URL}/reports/momentum_{report_date}.html"
 
 
 def fetch(url):
@@ -131,14 +141,34 @@ def parse_universe_updates(soup):
     return updates
 
 
-def parse_report(date, soup):
-    result = {"date": date, "sp500": [], "megacap": [], "sp400": [], "munger": []}
+def parse_report(date, soup, source_url=None):
+    result = {
+        "date": date,
+        "source_url": source_url or report_url(date),
+        "sections_present": [],
+        "sp500": [],
+        "megacap": [],
+        "sp400": [],
+        "munger": [],
+        "munger400l": [],
+        "munger400r": [],
+    }
 
     for section, h2_id in SECTION_IDS.items():
         h2 = soup.find("h2", id=h2_id)
+        if not h2 and section in SECTION_TITLE_PREFIXES:
+            expected_prefix = SECTION_TITLE_PREFIXES[section]
+            h2 = next(
+                (
+                    heading for heading in soup.find_all("h2")
+                    if heading.get_text(" ", strip=True).casefold().startswith(expected_prefix)
+                ),
+                None,
+            )
         if not h2:
             continue
-        if section == "munger":
+        result["sections_present"].append(section)
+        if section in {"munger", "munger400l", "munger400r"}:
             result[section] = parse_munger_section(h2, date)
         else:
             result[section] = parse_leaders_section(h2, date)
@@ -153,24 +183,29 @@ def scrape_all(force=False):
     dates = get_report_dates(soup)
     print(f"Found {len(dates)} reports on index page.")
 
-    new_dates = []
+    updated_dates = []
     for date in dates:
         out_path = SCRAPED_DIR / f"{date}.json"
+        url = report_url(date)
         if out_path.exists() and not force:
-            continue
-        url = f"{BASE_URL}/reports/momentum_{date}.html"
+            try:
+                existing = json.loads(out_path.read_text())
+                if existing.get("source_url") == url:
+                    continue
+            except (OSError, json.JSONDecodeError):
+                pass
         print(f"  Scraping {date}...")
         try:
             report_soup = fetch(url)
-            data = parse_report(date, report_soup)
+            data = parse_report(date, report_soup, source_url=url)
             out_path.write_text(json.dumps(data, indent=2))
-            new_dates.append(date)
+            updated_dates.append(date)
             time.sleep(0.3)
         except Exception as e:
             print(f"  ERROR scraping {date}: {e}")
-    return new_dates
+    return updated_dates
 
 
 if __name__ == "__main__":
-    new = scrape_all()
-    print(f"Scraped {len(new)} new reports.")
+    updated = scrape_all()
+    print(f"Scraped or refreshed {len(updated)} reports.")

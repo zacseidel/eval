@@ -1,5 +1,12 @@
 {
   "date": "2026-07-28",
+  "source_url": "https://zacseidel.github.io/momentum/reports/momentum_2026-07-28.html",
+  "sections_present": [
+    "munger",
+    "megacap",
+    "sp500",
+    "sp400"
+  ],
   "sp500": [
     {
       "rank": 1,
@@ -311,55 +318,55 @@
       "rank": 1,
       "ticker": "MSFT",
       "price": 389.1,
-      "sma_200": 443.97,
+      "sma_200": 444.94,
       "entry_date": "2026-07-28",
       "status": "\u2728",
       "new_entrant": true
     },
     {
       "rank": 2,
-      "ticker": "MA",
-      "price": 551.71,
-      "sma_200": 536.05,
-      "entry_date": "2026-06-30",
-      "status": "\ud83d\udd25",
-      "new_entrant": false
+      "ticker": "BRK.B",
+      "price": 497.18,
+      "sma_200": 490.2,
+      "entry_date": "2026-07-28",
+      "status": "\u2728",
+      "new_entrant": true
     },
     {
       "rank": 3,
-      "ticker": "COST",
-      "price": 951.58,
-      "sma_200": 953.7,
+      "ticker": "MA",
+      "price": 551.71,
+      "sma_200": 528.49,
       "entry_date": "2026-07-28",
       "status": "\u2728",
       "new_entrant": true
     },
     {
       "rank": 4,
-      "ticker": "CVX",
-      "price": 190.0,
-      "sma_200": 171.3,
-      "entry_date": "2026-07-14",
-      "status": "\ud83d\udd25",
-      "new_entrant": false
+      "ticker": "COST",
+      "price": 951.58,
+      "sma_200": 957.01,
+      "entry_date": "2026-07-28",
+      "status": "\u2728",
+      "new_entrant": true
     },
     {
       "rank": 5,
-      "ticker": "PLTR",
-      "price": 131.53,
-      "sma_200": 157.72,
+      "ticker": "PG",
+      "price": 148.63,
+      "sma_200": 148.18,
       "entry_date": "2026-07-28",
       "status": "\u2728",
       "new_entrant": true
     },
     {
       "rank": 6,
-      "ticker": "WFC",
-      "price": 87.27,
-      "sma_200": 84.68,
-      "entry_date": "2026-06-02",
-      "status": "\ud83d\udd25",
-      "new_entrant": false
+      "ticker": "PLTR",
+      "price": 131.53,
+      "sma_200": 157.85,
+      "entry_date": "2026-07-28",
+      "status": "\u2728",
+      "new_entrant": true
     },
     {
       "rank": 7,
@@ -371,6 +378,8 @@
       "new_entrant": false
     }
   ],
+  "munger400l": [],
+  "munger400r": [],
   "universe_updates": [
     {
       "cohort": "sp400",
@@ -394,12 +403,12 @@
     },
     {
       "cohort": "munger",
-      "ticker": "IBM",
+      "ticker": "AMGN",
       "action": "add"
     },
     {
       "cohort": "munger",
-      "ticker": "AMGN",
+      "ticker": "IBM",
       "action": "add"
     },
     {

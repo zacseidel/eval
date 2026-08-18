@@ -1,5 +1,12 @@
 {
   "date": "2026-07-31",
+  "source_url": "https://zacseidel.github.io/momentum/reports/momentum_2026-07-31.html",
+  "sections_present": [
+    "munger",
+    "megacap",
+    "sp500",
+    "sp400"
+  ],
   "sp500": [
     {
       "rank": 1,
@@ -311,7 +318,7 @@
       "rank": 1,
       "ticker": "MSFT",
       "price": 451.1,
-      "sma_200": 442.93,
+      "sma_200": 443.97,
       "entry_date": "2026-07-28",
       "status": "\ud83d\udd25",
       "new_entrant": false
@@ -320,17 +327,17 @@
       "rank": 2,
       "ticker": "BRK.B",
       "price": 509.68,
-      "sma_200": 491.19,
-      "entry_date": "2026-07-31",
-      "status": "\u2728",
-      "new_entrant": true
+      "sma_200": 490.26,
+      "entry_date": "2026-07-28",
+      "status": "\ud83d\udd25",
+      "new_entrant": false
     },
     {
       "rank": 3,
       "ticker": "MA",
       "price": 577.35,
-      "sma_200": 535.61,
-      "entry_date": "2026-06-30",
+      "sma_200": 528.48,
+      "entry_date": "2026-07-28",
       "status": "\ud83d\udd25",
       "new_entrant": false
     },
@@ -338,31 +345,22 @@
       "rank": 4,
       "ticker": "COST",
       "price": 954.17,
-      "sma_200": 953.55,
+      "sma_200": 957.2,
       "entry_date": "2026-07-28",
       "status": "\ud83d\udd25",
       "new_entrant": false
     },
     {
       "rank": 5,
-      "ticker": "CVX",
-      "price": 192.31,
-      "sma_200": 171.54,
-      "entry_date": "2026-07-14",
-      "status": "\ud83d\udd25",
-      "new_entrant": false
-    },
-    {
-      "rank": 6,
       "ticker": "NFLX",
       "price": 73.17,
-      "sma_200": 95.04,
+      "sma_200": 95.25,
       "entry_date": "2026-07-31",
       "status": "\u2728",
       "new_entrant": true
     },
     {
-      "rank": 7,
+      "rank": 6,
       "ticker": "TMO",
       "price": 576.77,
       "sma_200": 530.0,
@@ -371,6 +369,8 @@
       "new_entrant": false
     }
   ],
+  "munger400l": [],
+  "munger400r": [],
   "universe_updates": [
     {
       "cohort": "megacap",

@@ -1,5 +1,12 @@
 {
   "date": "2026-07-24",
+  "source_url": "https://zacseidel.github.io/momentum/reports/momentum_2026-07-24.html",
+  "sections_present": [
+    "munger",
+    "megacap",
+    "sp500",
+    "sp400"
+  ],
   "sp500": [
     {
       "rank": 1,
@@ -261,7 +268,7 @@
       "price": 291.27,
       "return_12m": 199.8,
       "return_1w": 3.4,
-      "entry_date": "2026-05-29",
+      "entry_date": "2026-06-02",
       "status": "\ud83d\udd25",
       "new_entrant": false
     },
@@ -309,51 +316,6 @@
   "munger": [
     {
       "rank": 1,
-      "ticker": "META",
-      "price": 606.1,
-      "sma_200": 655.07,
-      "entry_date": "2026-07-03",
-      "status": "\ud83d\udd25",
-      "new_entrant": false
-    },
-    {
-      "rank": 2,
-      "ticker": "V",
-      "price": 351.6,
-      "sma_200": 330.48,
-      "entry_date": "2026-06-19",
-      "status": "\ud83d\udd25",
-      "new_entrant": false
-    },
-    {
-      "rank": 3,
-      "ticker": "MA",
-      "price": 530.29,
-      "sma_200": 536.72,
-      "entry_date": "2026-06-30",
-      "status": "\ud83d\udd25",
-      "new_entrant": false
-    },
-    {
-      "rank": 4,
-      "ticker": "CVX",
-      "price": 194.42,
-      "sma_200": 171.1,
-      "entry_date": "2026-07-14",
-      "status": "\ud83d\udd25",
-      "new_entrant": false
-    },
-    {
-      "rank": 5,
-      "ticker": "WFC",
-      "price": 86.19,
-      "sma_200": 84.64,
-      "entry_date": "2026-06-02",
-      "status": "\ud83d\udd25",
-      "new_entrant": false
-    },
-    {
-      "rank": 6,
       "ticker": "TMO",
       "price": 572.32,
       "sma_200": 529.05,
@@ -362,15 +324,17 @@
       "new_entrant": true
     }
   ],
+  "munger400l": [],
+  "munger400r": [],
   "universe_updates": [
     {
       "cohort": "sp400",
-      "ticker": "MOH",
+      "ticker": "BTSG",
       "action": "add"
     },
     {
       "cohort": "sp400",
-      "ticker": "BTSG",
+      "ticker": "MOH",
       "action": "add"
     },
     {
@@ -390,12 +354,12 @@
     },
     {
       "cohort": "munger",
-      "ticker": "TMO",
+      "ticker": "STX",
       "action": "add"
     },
     {
       "cohort": "munger",
-      "ticker": "STX",
+      "ticker": "TMO",
       "action": "add"
     },
     {

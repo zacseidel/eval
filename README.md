@@ -1,6 +1,6 @@
 # Momentum Strategy Evaluator
 
-A GitHub Pages site that evaluates portfolio strategies derived from [momentum9](https://zacseidel.github.io/momentum9/) reports. Scraped reports are the sole source of entries and security selection. Polygon market data supplies execution prices, daily valuation, and the price-based EMA/SMA exit signals.
+A GitHub Pages site that evaluates portfolio strategies derived from [Momentum](https://zacseidel.github.io/momentum/) reports. Scraped reports are the sole source of entries and security selection. Polygon market data supplies execution prices, daily valuation, and the price-based EMA/SMA exit signals.
 
 **Live site:** https://zacseidel.github.io/eval/
 
@@ -11,7 +11,7 @@ A GitHub Pages site that evaluates portfolio strategies derived from [momentum9]
 ### Data pipeline
 
 ```
-momentum9 weekly reports
+Momentum weekly reports
         │
         ▼
   scraper/scrape.py   ← parses HTML, saves data/scraped/YYYY-MM-DD.json
@@ -43,20 +43,24 @@ GitHub Actions runs the pipeline every **Tuesday and Friday at 7 PM MDT**, after
 | `sp400_mcap5` | Ranks 1–5 in the scraped S&P 400 Leaders table (legacy ID retained) |
 | `sp400_mcap_next5` | Ranks 6–10 in the scraped S&P 400 Leaders table (legacy ID retained) |
 | `munger` | Buy a qualifying report signal while flat; exit after a daily close below its 21-day EMA |
+| `munger400l` | Buy a qualifying Munger400L large-midcap report signal while flat; exit after a daily close below its 21-day EMA |
+| `munger400r` | Buy a qualifying Munger400R former-return-leader report signal while flat; exit after a daily close below its 21-day EMA |
 
-All entries use the first trading session on or after the report signal (VWAP when available, else midpoint of open/close). Rank-based positions close when a later report drops the ticker from the selected slot. For Munger, each completed daily adjusted close is compared with its close-based 21-day EMA; a close below the EMA signals an exit for the next available trading session. This one-session delay prevents look-ahead. Portfolios are equal-weighted and rebalanced on trade-event dates, then marked daily at adjusted closes.
+All entries use the first trading session on or after the report signal (VWAP when available, else midpoint of open/close). Rank-based positions close when a later report drops the ticker from the selected slot. For Munger and both Munger400 EMA21 models, each completed daily split-adjusted close is compared with its close-based 21-day EMA; a close below the EMA signals an exit for the next available trading session. This one-session delay prevents look-ahead. An entry session is eligible to create an EMA exit signal at that session's close, and continuing report membership can open a later trade once the prior trade has exited. Portfolios are equal-weighted and rebalanced on trade-event dates, then marked daily at split-adjusted closes.
+
+Returns throughout the site are **price returns**. Cash dividends, fees, and slippage are not included. The same price-return basis is used for SPY so the comparison is internally consistent, but neither series should be interpreted as total return.
 
 ### Parallel 10-day SMA evaluations
 
-Every base strategy also has a parallel evaluation whose ID adds `_sma10` (for example, `sp500_top5_sma10` and `munger_sma10`). These variants use exactly the same scraped-report selections as their corresponding base strategies. A ticker is bought on the first available session after a qualifying report signal while the strategy is flat. Disappearing from a later report does not close an SMA10 trade.
+Every base strategy also has a parallel evaluation whose ID adds `_sma10` (for example, `sp500_top5_sma10`, `munger_sma10`, `munger400l_sma10`, and `munger400r_sma10`). These variants use exactly the same scraped-report selections as their corresponding base strategies. A ticker is bought on the first available session after a qualifying report signal while the strategy is flat. Disappearing from a later report does not close an SMA10 trade.
 
 After entry, each completed adjusted close is compared with the arithmetic mean of that session and the prior nine trading-session closes. A close below that trailing 10-session SMA signals a mandatory sale on the next available trading session. If a new report recommendation is available on that exit session, the sale executes first and the recommendation opens a new trade at that session's execution price. This keeps both the technical exit and the scraped buy signal auditable without using future data. The calculation follows [NIST's definition of a simple moving average](https://www.itl.nist.gov/div898/handbook/pmc/section4/pmc421.htm).
 
-The overview keeps the original seven cards under **Primary exit rules** and displays the seven `_sma10` cards separately under **10-day SMA exit variants**. Each card has its own returns, Sharpe ratios, open/closed counts, pending exits, and half-Kelly estimate.
+The overview displays the nine base-strategy cards under **Primary exit rules** and the nine `_sma10` cards under **10-day SMA exit variants**. Each Munger400 model therefore has two cards. Every card has its own returns, Sharpe ratios, open/closed counts, pending exits, and half-Kelly estimate.
 
 ### Half-Kelly sizing
 
-Each strategy card estimates a historical half-Kelly risk fraction from closed trades. Winners have positive realized returns, losers have negative realized returns, and break-even trades are reported but excluded from the Kelly odds. With `p` as the non-break-even win probability, `q` as the loss probability, and `b` as average winner divided by the absolute average loser, the displayed value is `0.5 × max(0, p − q/b)`. At least 20 closed trades are required. This is a descriptive estimate based on historical outcomes, not a guarantee or individualized investment recommendation. The criterion originates with [J. L. Kelly Jr.'s 1956 paper](https://www.nokia.com/bell-labs/publications-and-media/publications/a-new-interpretation-of-information-rate/).
+Each strategy card estimates a historical half-Kelly risk budget from closed trades. Winners have positive realized returns, losers have negative realized returns, and break-even trades are reported but excluded from the Kelly odds. With `p` as the non-break-even win probability, `q` as the loss probability, and `b` as average winner divided by the absolute average loser, the displayed value is `0.5 × max(0, p − q/b)`. At least 20 closed trades are required. The value is a capital-at-risk heuristic, not necessarily the notional percentage allocated to a position. It is a descriptive estimate based on historical outcomes, not a guarantee or individualized investment recommendation. The criterion originates with [J. L. Kelly Jr.'s 1956 paper](https://www.nokia.com/bell-labs/publications-and-media/publications/a-new-interpretation-of-information-rate/).
 
 ---
 
@@ -73,7 +77,7 @@ eval/
 │   └── charts.js               # Chart.js portfolio value + rolling 3M charts
 ├── scraper/
 │   ├── main.py                 # Entry point: runs scrape → process
-│   ├── scrape.py               # HTML scraper for momentum9 reports
+│   ├── scrape.py               # HTML scraper for Momentum reports
 │   ├── process.py              # Position builder + return series calculator
 │   ├── polygon_client.py       # Polygon API client (cached, rate-limited)
 │   └── requirements.txt
@@ -93,7 +97,7 @@ eval/
 
 ## Local setup
 
-**Prerequisites:** Python 3.9+, a [Polygon.io](https://polygon.io) free-tier API key.
+**Prerequisites:** Python 3.9+, Node.js 20+ for frontend tests, and a [Polygon.io](https://polygon.io) free-tier API key.
 
 ```bash
 # Clone and install dependencies
@@ -118,7 +122,7 @@ python -m http.server 8080
 ### Running steps individually
 
 ```bash
-# Scrape only (skips reports already in data/scraped/)
+# Scrape only (skips reports already cached from the current source)
 python scraper/scrape.py
 
 # Process only (rebuild positions + returns from cached scrapes)
@@ -129,6 +133,7 @@ python scraper/process.py --as-of 2026-07-31
 
 # Regression suite (no network required)
 python -m unittest discover -s tests -v
+npm test
 ```
 
 ---
@@ -136,7 +141,7 @@ python -m unittest discover -s tests -v
 ## Polygon API usage
 
 - **Rate limit:** 5 requests/minute on the free tier — the client enforces a 12.5-second delay between calls.
-- **Disk cache:** Every bar range is stored in `data/price_cache/{TICKER}.json`. The cache tracks `_fetched_from` and `_fetched_through` metadata so only genuinely new date ranges hit the API on subsequent runs.
+- **Disk cache:** Every bar range is stored in `data/price_cache/{TICKER}.json`. The cache tracks `_fetched_from` and `_fetched_through` metadata. Once per ticker per processing run, a short overlap is refreshed; if split-adjusted historical prices changed, the full cached range is refreshed to prevent mixed pre- and post-split scales.
 - **Execution price:** Report entries and rank exits use the first session on or after the report signal. Munger EMA and SMA10 exits execute on the first session after the triggering close. VWAP is used when available, with midpoint fallback.
 - **EMA history:** Munger tickers receive 120 calendar days of pre-report history so the 21-day EMA is warm before any trade can exit.
 - **SMA history:** All signal tickers receive at least 30 calendar days of pre-report history so the trailing 10-session SMA is warm before any trade can exit.
@@ -163,12 +168,12 @@ The workflow (`.github/workflows/update-data.yml`) runs on a schedule and can al
 
 No build step. The frontend is three ES modules loaded directly by `index.html`:
 
-- **Strategies tab** — one card per strategy showing 12M return when a full year exists (otherwise since inception), rolling 3M return, open/closed position counts, current holdings, closed-trade win/loss statistics, and the historical half-Kelly estimate. Munger separately shows latest report buy signals and currently open positions.
+- **Strategies tab** — one card per available strategy showing 12M price return when a full year exists (otherwise since inception), rolling 3M price return, open/closed position counts, current holdings, closed-trade win/loss statistics, and the historical half-Kelly risk budget. Cards can be sorted by return, available Sharpe ratio, or half-Kelly size. Munger, Munger400L, and Munger400R separately show latest report buy signals and currently open positions. A strategy first appears when its source section first appears in a report.
 - **Positions tab** — sortable, filterable table of all trades with entry/exit dates, prices, Munger EMA trigger values, hold duration, and return %.
-- **Charts tab** — Chart.js line charts of portfolio value (normalized to 100 at first report) and rolling 3-month return, both overlaid with an SPY benchmark.
+- **Charts tab** — Chart.js line charts of portfolio NAV on its original 100 baseline for all-history views (range-relative views rebase to 100) and rolling 3-month price return, both overlaid with an SPY benchmark.
 
 ---
 
 ## Source reports
 
-Reports are scraped from [zacseidel.github.io/momentum9](https://zacseidel.github.io/momentum9/) at paths like `/reports/momentum_YYYY-MM-DD.html`. Each report contains four sections: **SP500 Leaders**, **Megacap Leaders**, **SP400 Leaders**, and **Munger Strategy**.
+Reports are scraped from [zacseidel.github.io/momentum](https://zacseidel.github.io/momentum/) at paths like `/reports/momentum_YYYY-MM-DD.html`. Each raw snapshot records its `source_url`; snapshots without the current source URL are refreshed on the next scrape. The evaluator recognizes **SP500 Leaders**, **Megacap Leaders**, **SP400 Leaders**, **Munger Strategy**, **Munger400L** (`summary-munger400l`), and **Munger400R** (`summary-munger400r`). Each Munger400 evaluation begins with the first report containing its source section.

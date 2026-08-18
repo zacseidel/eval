@@ -15,7 +15,12 @@ from typing import Optional
 
 from dotenv import load_dotenv
 
-from polygon_client import CACHE_SCHEMA_VERSION, get_daily_bars, get_execution_price
+from polygon_client import (
+    CACHE_SCHEMA_VERSION,
+    _durable_coverage_end,
+    get_daily_bars,
+    get_execution_price,
+)
 
 SCRAPED_DIR = Path(__file__).parent.parent / "data" / "scraped"
 PROCESSED_DIR = Path(__file__).parent.parent / "data" / "processed"
@@ -28,7 +33,7 @@ SMA_EXIT_LOOKBACK_DAYS = 30
 SMA10_SUFFIX = "_sma10"
 KELLY_MIN_CLOSED_TRADES = 20
 RISK_FREE_RATE_ANNUAL = 0.05
-PROCESSOR_VERSION = 5
+PROCESSOR_VERSION = 8
 
 # Every selection below is made only from ranks or membership in a scraped
 # report. The legacy IDs are retained so existing links keep working.
@@ -39,7 +44,9 @@ BASE_STRATEGIES = {
     "megacap_next5":    {"section": "megacap", "ranks": range(6, 11)},
     "sp400_mcap5":      {"section": "sp400",   "ranks": range(1, 6)},
     "sp400_mcap_next5": {"section": "sp400",   "ranks": range(6, 11)},
-    "munger":           {"section": "munger",  "ranks": None},
+    "munger":           {"section": "munger",    "ranks": None, "exit_model": "ema21"},
+    "munger400l":       {"section": "munger400l", "ranks": None, "exit_model": "ema21"},
+    "munger400r":       {"section": "munger400r", "ranks": None, "exit_model": "ema21"},
 }
 STRATEGIES = dict(BASE_STRATEGIES)
 STRATEGIES.update({
@@ -86,12 +93,26 @@ def _selected_entries(report: dict, strategy_id: str) -> list[dict]:
     )
 
 
+def _report_has_section(report: dict, section: str) -> bool:
+    """Distinguish an empty section from one not yet present in the report."""
+    if "sections_present" in report:
+        return section in report["sections_present"]
+    return section in report
+
+
+def _strategy_reports(reports: list[dict], strategy_id: str) -> list[dict]:
+    section = STRATEGIES[strategy_id]["section"]
+    return [report for report in reports if _report_has_section(report, section)]
+
+
 def build_signal_snapshots(reports: list[dict]) -> list[dict]:
     """Persist every selected report row so positions can be audited to inputs."""
     snapshots = []
     previous = {strategy_id: set() for strategy_id in STRATEGIES}
     for report in reports:
         for strategy_id in STRATEGIES:
+            if not _report_has_section(report, STRATEGIES[strategy_id]["section"]):
+                continue
             entries = _selected_entries(report, strategy_id)
             current = {entry["ticker"] for entry in entries}
             for entry in entries:
@@ -303,11 +324,12 @@ def _build_price_exit_ticker_positions(strategy_id: str, ticker: str,
     return positions
 
 
-def _build_munger_ticker_positions(ticker: str, signal_dates: list[str],
-                                    bars: list[dict], as_of: str) -> list[dict]:
-    """Simulate report entries and next-session EMA exits for one ticker."""
+def _build_ema21_ticker_positions(strategy_id: str, ticker: str,
+                                  signal_dates: list[str], bars: list[dict],
+                                  as_of: str) -> list[dict]:
+    """Simulate report entries and next-session EMA21 exits for one ticker."""
     return _build_price_exit_ticker_positions(
-        "munger",
+        strategy_id,
         ticker,
         signal_dates,
         bars,
@@ -317,31 +339,49 @@ def _build_munger_ticker_positions(ticker: str, signal_dates: list[str],
     )
 
 
-def _build_munger_positions(reports: list[dict], as_of: str) -> list[dict]:
+def _build_munger_ticker_positions(ticker: str, signal_dates: list[str],
+                                    bars: list[dict], as_of: str) -> list[dict]:
+    """Compatibility wrapper for the original Munger strategy."""
+    return _build_ema21_ticker_positions("munger", ticker, signal_dates, bars, as_of)
+
+
+def _build_ema21_positions(reports: list[dict], strategy_id: str,
+                           as_of: str) -> list[dict]:
     """Buy from report membership; exit after a close below the 21-day EMA."""
-    first_date = _parse_date(reports[0]["date"])
+    eligible_reports = _strategy_reports(reports, strategy_id)
+    if not eligible_reports:
+        return []
+    first_date = _parse_date(eligible_reports[0]["date"])
     ema_start = (first_date - timedelta(days=MUNGER_EMA_LOOKBACK_DAYS)).isoformat()
     signal_dates_by_ticker = defaultdict(list)
-    for report in reports:
-        for entry in _selected_entries(report, "munger"):
+    for report in eligible_reports:
+        for entry in _selected_entries(report, strategy_id):
             signal_dates_by_ticker[entry["ticker"]].append(report["date"])
 
     positions = []
     for ticker in sorted(signal_dates_by_ticker):
         bars = get_daily_bars(ticker, ema_start, as_of)
-        positions.extend(_build_munger_ticker_positions(
-            ticker, signal_dates_by_ticker[ticker], bars, as_of
+        positions.extend(_build_ema21_ticker_positions(
+            strategy_id, ticker, signal_dates_by_ticker[ticker], bars, as_of
         ))
     return positions
+
+
+def _build_munger_positions(reports: list[dict], as_of: str) -> list[dict]:
+    """Compatibility wrapper for the original Munger strategy."""
+    return _build_ema21_positions(reports, "munger", as_of)
 
 
 def _build_sma10_positions(reports: list[dict], strategy_id: str,
                            as_of: str) -> list[dict]:
     """Buy from the base report signal; exit after a close below SMA10."""
-    first_date = _parse_date(reports[0]["date"])
+    eligible_reports = _strategy_reports(reports, strategy_id)
+    if not eligible_reports:
+        return []
+    first_date = _parse_date(eligible_reports[0]["date"])
     sma_start = (first_date - timedelta(days=SMA_EXIT_LOOKBACK_DAYS)).isoformat()
     signal_dates_by_ticker = defaultdict(list)
-    for report in reports:
+    for report in eligible_reports:
         for entry in _selected_entries(report, strategy_id):
             signal_dates_by_ticker[entry["ticker"]].append(report["date"])
 
@@ -364,10 +404,11 @@ def _build_sma10_positions(reports: list[dict], strategy_id: str,
 def build_positions(reports: list[dict], as_of: str) -> list[dict]:
     positions = []
     for strategy_id in STRATEGIES:
-        if strategy_id.endswith(SMA10_SUFFIX):
+        exit_model = STRATEGIES[strategy_id].get("exit_model")
+        if exit_model == "sma10":
             positions.extend(_build_sma10_positions(reports, strategy_id, as_of))
-        elif strategy_id == "munger":
-            positions.extend(_build_munger_positions(reports, as_of))
+        elif exit_model == "ema21":
+            positions.extend(_build_ema21_positions(reports, strategy_id, as_of))
         else:
             positions.extend(_build_rank_positions(reports, strategy_id, as_of))
     positions.sort(key=lambda p: (p["strategy"], p["entry_date"], p["ticker"]))
@@ -399,9 +440,10 @@ def validate_positions(positions: list[dict], as_of: str,
         if position["entry_date"] > as_of:
             raise ValueError(f"Future entry date: {trade_id}")
         technical_level_field = None
-        if position["strategy"] == "munger":
+        exit_model = STRATEGIES[position["strategy"]].get("exit_model")
+        if exit_model == "ema21":
             technical_level_field = "exit_signal_ema_21"
-        elif position["strategy"].endswith(SMA10_SUFFIX):
+        elif exit_model == "sma10":
             technical_level_field = "exit_signal_sma_10"
         if position["status"] == "closed":
             if position["exit_price"] is None or position["exit_price"] <= 0:
@@ -498,21 +540,27 @@ def prefetch_all_tickers(reports: list[dict], as_of: str,
         return
     first_date = reports[0]["date"]
     ticker_start = (_parse_date(first_date) - timedelta(days=30)).isoformat()
-    munger_start = (
+    ema21_start = (
         _parse_date(first_date) - timedelta(days=MUNGER_EMA_LOOKBACK_DAYS)
     ).isoformat()
     spy_start = (_parse_date(first_date) - timedelta(days=396)).isoformat()
+    report_sections = {config["section"] for config in BASE_STRATEGIES.values()}
     tickers = sorted({
         entry["ticker"]
         for report in reports
-        for section in ("sp500", "megacap", "sp400", "munger")
+        for section in report_sections
         for entry in report.get(section, [])
         if entry.get("ticker")
     })
-    munger_tickers = {
+    ema21_sections = {
+        config["section"] for config in BASE_STRATEGIES.values()
+        if config.get("exit_model") == "ema21"
+    }
+    ema21_tickers = {
         entry["ticker"]
         for report in reports
-        for entry in report.get("munger", [])
+        for section in ema21_sections
+        for entry in report.get(section, [])
         if entry.get("ticker")
     }
 
@@ -526,7 +574,7 @@ def prefetch_all_tickers(reports: list[dict], as_of: str,
         f"through {as_of}..."
     )
     for ticker in selected_tickers:
-        start = munger_start if ticker in munger_tickers else ticker_start
+        start = ema21_start if ticker in ema21_tickers else ticker_start
         get_daily_bars(ticker, start, as_of)
 
 
@@ -568,11 +616,11 @@ def build_strategy_returns(reports: list[dict], positions: list[dict],
     if not reports or not spy_bars:
         return {}
     first_report_date = reports[0]["date"]
-    trading_dates = [
+    all_trading_dates = [
         bar["date"] for bar in spy_bars
         if first_report_date <= bar["date"] <= as_of
     ]
-    if not trading_dates:
+    if not all_trading_dates:
         return {}
 
     all_tickers = sorted({position["ticker"] for position in positions})
@@ -584,10 +632,21 @@ def build_strategy_returns(reports: list[dict], positions: list[dict],
         for ticker in all_tickers
     }
     spy_map = {bar["date"]: bar for bar in spy_bars}
-    spy_base = float(spy_map[trading_dates[0]]["close"])
     result = {}
 
     for strategy_id in STRATEGIES:
+        eligible_reports = _strategy_reports(reports, strategy_id)
+        if not eligible_reports:
+            continue
+        strategy_start = eligible_reports[0]["date"]
+        trading_dates = [day for day in all_trading_dates if day >= strategy_start]
+        if not trading_dates:
+            # Keep newly introduced strategies discoverable before their first
+            # completed execution session. The frontend can render an empty
+            # card with the latest scraped signals while returns remain blank.
+            result[strategy_id] = []
+            continue
+        spy_base = float(spy_map[trading_dates[0]]["close"])
         strategy_positions = [p for p in positions if p["strategy"] == strategy_id]
         entries_by_date = defaultdict(list)
         exits_by_date = defaultdict(list)
@@ -665,6 +724,7 @@ def build_strategy_returns(reports: list[dict], positions: list[dict],
         _add_return_windows(series)
         result[strategy_id] = series
 
+    spy_base = float(spy_map[all_trading_dates[0]]["close"])
     spy_series = [{
         "date": trading_date,
         "value": round(float(spy_map[trading_date]["close"]) / spy_base * 100, 4),
@@ -673,7 +733,7 @@ def build_strategy_returns(reports: list[dict], positions: list[dict],
         "spy_rolling_3m": None,
         "return_12m": None,
         "spy_12m": None,
-    } for trading_date in trading_dates]
+    } for trading_date in all_trading_dates]
     _add_return_windows(spy_series)
     result["spy"] = spy_series
     return result
@@ -713,6 +773,39 @@ def compute_sharpe(strategy_returns: dict, as_of: str) -> dict:
 def _source_manifest(reports: list[dict], as_of: str,
                      positions: list[dict], signals: list[dict],
                      market_data_through: str) -> dict:
+    munger_positions = [
+        position for position in positions if position["strategy"] == "munger"
+    ]
+    entry_session_exit_signal_count = sum(
+        position["exit_signal_date"] == position["entry_date"]
+        for position in munger_positions
+    )
+    ema21_strategy_ids = [
+        strategy_id for strategy_id, config in BASE_STRATEGIES.items()
+        if config.get("exit_model") == "ema21"
+    ]
+    ema21_strategy_audit = {}
+    for strategy_id in ema21_strategy_ids:
+        strategy_positions = [
+            position for position in positions
+            if position["strategy"] == strategy_id
+        ]
+        same_session_count = sum(
+            position["exit_signal_date"] == position["entry_date"]
+            for position in strategy_positions
+        )
+        eligible_reports = _strategy_reports(reports, strategy_id)
+        ema21_strategy_audit[strategy_id] = {
+            "source_section": BASE_STRATEGIES[strategy_id]["section"],
+            "first_report_date": (
+                eligible_reports[0]["date"] if eligible_reports else None
+            ),
+            "position_count": len(strategy_positions),
+            "entry_session_exit_signal_count": same_session_count,
+            "entry_session_exit_signal_pct": round(
+                same_session_count / len(strategy_positions) * 100, 2
+            ) if strategy_positions else None,
+        }
     report_sources = []
     included_dates = {report["date"] for report in reports}
     for path in sorted(SCRAPED_DIR.glob("*.json")):
@@ -733,18 +826,32 @@ def _source_manifest(reports: list[dict], as_of: str,
         "rank_exit_signal_source": "scraped_report_membership_only",
         "execution_price": "report entries on first available session; technical exits on next session; VWAP with midpoint fallback",
         "portfolio_policy": "equal weight, rebalanced on trade-event dates",
+        "return_basis": "split-adjusted price return; cash dividends, fees, and slippage excluded",
         "munger": {
             "entry": "qualifying scraped report membership while flat",
-            "exit_signal": "daily adjusted close below close-based 21-day EMA",
+            "exit_signal": "daily split-adjusted close below close-based 21-day EMA",
             "exit_execution": "next available trading session after the signal",
             "ema_span": MUNGER_EMA_SPAN,
             "ema_lookback_calendar_days": MUNGER_EMA_LOOKBACK_DAYS,
+            "entry_session_exit_signal_count": entry_session_exit_signal_count,
+            "entry_session_exit_signal_pct": round(
+                entry_session_exit_signal_count / len(munger_positions) * 100, 2
+            ) if munger_positions else None,
+        },
+        "ema21_strategies": {
+            "strategy_ids": ema21_strategy_ids,
+            "entry": "qualifying scraped report membership while flat",
+            "exit_signal": "daily split-adjusted close below close-based 21-day EMA",
+            "exit_execution": "next available trading session after the signal",
+            "ema_span": MUNGER_EMA_SPAN,
+            "ema_lookback_calendar_days": MUNGER_EMA_LOOKBACK_DAYS,
+            "by_strategy": ema21_strategy_audit,
         },
         "sma10_variants": {
             "strategy_suffix": SMA10_SUFFIX,
             "entry": "same scraped report membership as the corresponding base strategy while flat",
             "report_disappearance_exit": False,
-            "exit_signal": "daily adjusted close below trailing close-based 10-session SMA",
+            "exit_signal": "daily split-adjusted close below trailing close-based 10-session SMA",
             "exit_execution": "next available trading session after the signal",
             "sma_window": SMA_EXIT_WINDOW,
             "lookback_calendar_days": SMA_EXIT_LOOKBACK_DAYS,
@@ -796,28 +903,49 @@ def process_all(as_of: Optional[str] = None, prefetch_only: bool = False,
         raise RuntimeError("No scraped reports available")
     print(f"  {len(reports)} reports loaded.")
 
+    market_fetch_through = _durable_coverage_end(as_of)
     print("Prefetching execution and valuation bars...")
-    prefetch_all_tickers(reports, as_of, ticker_offset, ticker_limit)
+    prefetch_all_tickers(
+        reports, market_fetch_through, ticker_offset, ticker_limit
+    )
     if prefetch_only:
         return
+
+    first_date = reports[0]["date"]
+    spy_start = (_parse_date(first_date) - timedelta(days=396)).isoformat()
+    spy_bars = get_daily_bars("SPY", spy_start, market_fetch_through)
+    if not spy_bars:
+        raise RuntimeError(f"Missing SPY bars through {as_of}")
+    market_data_through = spy_bars[-1]["date"]
+    market_reports = [
+        report for report in reports if report["date"] <= market_data_through
+    ]
+    if market_data_through < as_of:
+        print(
+            f"  Market data is complete through {market_data_through}; "
+            "later report signals will remain pending."
+        )
 
     print("Building report signal snapshots...")
     signals = build_signal_snapshots(reports)
     print(f"  {len(signals)} signal snapshots.")
 
     print("Building trade positions...")
-    positions = build_positions(reports, as_of)
-    validate_positions(positions, as_of, signals)
+    positions = build_positions(market_reports, market_data_through)
+    validate_positions(positions, market_data_through, signals)
     print(f"  {len(positions)} validated positions.")
 
-    first_date = reports[0]["date"]
-    spy_start = (_parse_date(first_date) - timedelta(days=396)).isoformat()
-    spy_bars = get_daily_bars("SPY", spy_start, as_of)
     print("Building transaction-ledger portfolio series...")
-    strategy_returns = build_strategy_returns(reports, positions, spy_bars, as_of)
-    strategy_returns["_sharpe"] = compute_sharpe(strategy_returns, as_of)
+    strategy_returns = build_strategy_returns(
+        reports, positions, spy_bars, market_data_through
+    )
+    strategy_returns["_sharpe"] = compute_sharpe(
+        strategy_returns, market_data_through
+    )
 
-    manifest = _source_manifest(reports, as_of, positions, signals, spy_bars[-1]["date"])
+    manifest = _source_manifest(
+        reports, as_of, positions, signals, market_data_through
+    )
     _atomic_write_json(PROCESSED_DIR / "signals.json", signals)
     _atomic_write_json(PROCESSED_DIR / "positions.json", positions)
     _atomic_write_json(PROCESSED_DIR / "strategy_returns.json", strategy_returns)

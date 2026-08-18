@@ -1,5 +1,12 @@
 {
   "date": "2026-06-19",
+  "source_url": "https://zacseidel.github.io/momentum/reports/momentum_2026-06-19.html",
+  "sections_present": [
+    "munger",
+    "megacap",
+    "sp500",
+    "sp400"
+  ],
   "sp500": [
     {
       "rank": 1,
@@ -67,7 +74,7 @@
       "price": 617.11,
       "return_12m": 257.0,
       "return_1w": 11.7,
-      "entry_date": "2026-05-22",
+      "entry_date": "2026-06-02",
       "status": "\ud83d\udd25",
       "new_entrant": false
     },
@@ -77,7 +84,7 @@
       "price": 409.5,
       "return_12m": 251.3,
       "return_1w": 4.6,
-      "entry_date": "2026-05-26",
+      "entry_date": "2026-06-02",
       "status": "\ud83d\udd25",
       "new_entrant": false
     },
@@ -261,7 +268,7 @@
       "price": 333.76,
       "return_12m": 244.2,
       "return_1w": 10.0,
-      "entry_date": "2026-05-29",
+      "entry_date": "2026-06-02",
       "status": "\ud83d\udd25",
       "new_entrant": false
     },
@@ -281,7 +288,7 @@
       "price": 153.72,
       "return_12m": 201.5,
       "return_1w": 7.6,
-      "entry_date": "2026-05-29",
+      "entry_date": "2026-06-02",
       "status": "\ud83d\udd25",
       "new_entrant": false
     },
@@ -311,8 +318,8 @@
       "rank": 1,
       "ticker": "BRK.B",
       "price": 489.46,
-      "sma_200": 490.46,
-      "entry_date": "2026-06-09",
+      "sma_200": 490.28,
+      "entry_date": "2026-06-05",
       "status": "\ud83d\udd25",
       "new_entrant": false
     },
@@ -320,7 +327,7 @@
       "rank": 2,
       "ticker": "JPM",
       "price": 325.22,
-      "sma_200": 306.48,
+      "sma_200": 306.41,
       "entry_date": "2026-06-05",
       "status": "\ud83d\udd25",
       "new_entrant": false
@@ -329,7 +336,7 @@
       "rank": 3,
       "ticker": "V",
       "price": 327.24,
-      "sma_200": 330.83,
+      "sma_200": 331.18,
       "entry_date": "2026-06-19",
       "status": "\u2728",
       "new_entrant": true
@@ -338,8 +345,8 @@
       "rank": 4,
       "ticker": "BAC",
       "price": 56.2,
-      "sma_200": 51.85,
-      "entry_date": "2026-06-02",
+      "sma_200": 51.82,
+      "entry_date": "2026-06-05",
       "status": "\ud83d\udd25",
       "new_entrant": false
     },
@@ -347,7 +354,7 @@
       "rank": 5,
       "ticker": "PG",
       "price": 150.38,
-      "sma_200": 149.92,
+      "sma_200": 149.99,
       "entry_date": "2026-06-09",
       "status": "\ud83d\udd25",
       "new_entrant": false
@@ -356,7 +363,7 @@
       "rank": 6,
       "ticker": "HD",
       "price": 334.28,
-      "sma_200": 366.31,
+      "sma_200": 367.18,
       "entry_date": "2026-06-12",
       "status": "\ud83d\udd25",
       "new_entrant": false
@@ -365,8 +372,8 @@
       "rank": 7,
       "ticker": "WFC",
       "price": 82.2,
-      "sma_200": 84.19,
-      "entry_date": "2026-06-02",
+      "sma_200": 84.17,
+      "entry_date": "2026-06-05",
       "status": "\ud83d\udd25",
       "new_entrant": false
     },
@@ -374,12 +381,14 @@
       "rank": 8,
       "ticker": "RTX",
       "price": 185.6,
-      "sma_200": 180.46,
+      "sma_200": 180.18,
       "entry_date": "2026-06-05",
       "status": "\ud83d\udd25",
       "new_entrant": false
     }
   ],
+  "munger400l": [],
+  "munger400r": [],
   "universe_updates": [
     {
       "cohort": "sp400",
@@ -398,12 +407,12 @@
     },
     {
       "cohort": "munger",
-      "ticker": "PANW",
+      "ticker": "QCOM",
       "action": "drop"
     },
     {
       "cohort": "munger",
-      "ticker": "QCOM",
+      "ticker": "PANW",
       "action": "drop"
     }
   ]

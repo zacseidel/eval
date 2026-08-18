@@ -10,14 +10,19 @@ sys.path.insert(0, str(SCRAPER_DIR))
 import process
 
 
-def report(report_date, munger=None, sp500=None):
-    return {
+def report(report_date, munger=None, sp500=None, munger400l=None, munger400r=None):
+    result = {
         "date": report_date,
         "munger": munger or [],
         "sp500": sp500 or [],
         "megacap": [],
         "sp400": [],
     }
+    if munger400l is not None:
+        result["munger400l"] = munger400l
+    if munger400r is not None:
+        result["munger400r"] = munger400r
+    return result
 
 
 def munger_entry(ticker, rank=1, new=True):
@@ -82,6 +87,54 @@ class MungerLifecycleTests(unittest.TestCase):
         self.assertIsNone(positions[0]["exit_date"])
         process.validate_positions(positions, "2026-01-06")
 
+    def test_munger400_models_use_the_same_ema21_lifecycle(self):
+        positions = process._build_ema21_ticker_positions(
+            "munger400r",
+            "AAA",
+            ["2026-01-05"],
+            self._ema_exit_bars(),
+            "2026-01-07",
+        )
+
+        self.assertEqual(1, len(positions))
+        self.assertEqual("munger400r", positions[0]["strategy"])
+        self.assertEqual("2026-01-06", positions[0]["exit_signal_date"])
+        self.assertEqual("2026-01-07", positions[0]["exit_date"])
+        process.validate_positions(positions, "2026-01-07")
+
+    def test_close_can_be_above_sma10_and_below_ema21_on_entry_session(self):
+        bars = []
+        current = date(2025, 11, 3)
+        while current <= date(2025, 12, 29):
+            if current.weekday() < 5:
+                bars.append({
+                    "date": current.isoformat(),
+                    "open": 110.0,
+                    "close": 110.0,
+                    "vwap": 110.0,
+                })
+            current += timedelta(days=1)
+        for bar in bars[-9:]:
+            bar.update({"open": 90.0, "close": 90.0, "vwap": 90.0})
+        bars.append({
+            "date": "2025-12-30",
+            "open": 95.0,
+            "close": 95.0,
+            "vwap": 95.0,
+        })
+
+        sma10 = process._sma_by_date(bars)["2025-12-30"]
+        ema21 = process._ema_by_date(bars)["2025-12-30"]
+        positions = process._build_munger_ticker_positions(
+            "AAA", ["2025-12-30"], bars, "2025-12-30"
+        )
+
+        self.assertGreater(95.0, sma10)
+        self.assertLess(95.0, ema21)
+        self.assertEqual("2025-12-30", positions[0]["entry_date"])
+        self.assertEqual("2025-12-30", positions[0]["exit_signal_date"])
+        self.assertIsNone(positions[0]["exit_date"])
+
     def test_signal_snapshots_use_report_ranks_not_market_data(self):
         reports = [report("2026-01-02", sp500=[
             {"ticker": "AAA", "rank": 1, "entry_date": "2026-01-02", "new_entrant": True},
@@ -96,6 +149,43 @@ class MungerLifecycleTests(unittest.TestCase):
         self.assertEqual(["BBB"], [s["ticker"] for s in next_five])
         self.assertEqual(["AAA"], [s["ticker"] for s in top_sma])
         self.assertEqual(["BBB"], [s["ticker"] for s in next_sma])
+
+    def test_munger400_signals_begin_only_when_each_section_appears(self):
+        reports = [
+            report("2026-08-18"),
+            report("2026-08-21", munger400l=[munger_entry("MID")]),
+            report("2026-08-25", munger400r=[munger_entry("RET")]),
+        ]
+
+        snapshots = process.build_signal_snapshots(reports)
+        l_ema = [s for s in snapshots if s["strategy"] == "munger400l"]
+        l_sma = [s for s in snapshots if s["strategy"] == "munger400l_sma10"]
+        r_ema = [s for s in snapshots if s["strategy"] == "munger400r"]
+        r_sma = [s for s in snapshots if s["strategy"] == "munger400r_sma10"]
+
+        self.assertEqual(["2026-08-21"], [s["report_date"] for s in l_ema])
+        self.assertEqual(["MID"], [s["ticker"] for s in l_ema])
+        self.assertEqual(["2026-08-21"], [s["report_date"] for s in l_sma])
+        self.assertEqual(["2026-08-25"], [s["report_date"] for s in r_ema])
+        self.assertEqual(["RET"], [s["ticker"] for s in r_ema])
+        self.assertEqual(["2026-08-25"], [s["report_date"] for s in r_sma])
+
+    def test_build_positions_routes_both_munger400_models_to_both_exit_models(self):
+        reports = [report(
+            "2026-01-05",
+            munger400l=[munger_entry("AAA")],
+            munger400r=[munger_entry("BBB")],
+        )]
+
+        with patch.object(process, "get_daily_bars", return_value=self._ema_exit_bars()):
+            positions = process.build_positions(reports, "2026-01-07")
+        signals = process.build_signal_snapshots(reports)
+
+        self.assertEqual(
+            {"munger400l", "munger400l_sma10", "munger400r", "munger400r_sma10"},
+            {position["strategy"] for position in positions},
+        )
+        process.validate_positions(positions, "2026-01-07", signals)
 
     def test_rank_membership_alone_opens_and_closes_trade(self):
         reports = [
@@ -129,7 +219,7 @@ class MungerLifecycleTests(unittest.TestCase):
         self.assertEqual("2026-01-09", aaa["exit_signal_date"])
         self.assertEqual("open", bbb["status"])
 
-    def test_august_4_report_fixture_has_11_signals_and_36_open_trades(self):
+    def test_august_4_report_fixture_has_9_signals_and_36_open_trades(self):
         reports = process.load_reports("2026-08-04")
         flat_bars = []
         current = date(2025, 9, 1)
@@ -147,7 +237,7 @@ class MungerLifecycleTests(unittest.TestCase):
             positions = process._build_munger_positions(reports, "2026-08-04")
 
         self.assertEqual(65, len(reports))
-        self.assertEqual(11, len(reports[-1]["munger"]))
+        self.assertEqual(9, len(reports[-1]["munger"]))
         self.assertEqual(36, len(positions))
         self.assertTrue(all(p["status"] == "open" for p in positions))
 
@@ -230,6 +320,23 @@ class SmaVariantLifecycleTests(unittest.TestCase):
         self.assertEqual(5.5, values["2026-01-10"])
         self.assertEqual(6.5, values["2026-01-11"])
 
+    def test_munger400l_uses_the_same_sma10_lifecycle(self):
+        reports = [report(
+            "2026-01-05",
+            munger400l=[munger_entry("AAA")],
+        )]
+
+        with patch.object(process, "get_daily_bars", return_value=self._bars()):
+            positions = process._build_sma10_positions(
+                reports, "munger400l_sma10", "2026-01-07"
+            )
+
+        self.assertEqual(1, len(positions))
+        self.assertEqual("munger400l_sma10", positions[0]["strategy"])
+        self.assertEqual("2026-01-06", positions[0]["exit_signal_date"])
+        self.assertEqual("2026-01-07", positions[0]["exit_date"])
+        process.validate_positions(positions, "2026-01-07")
+
 
 class PortfolioLedgerTests(unittest.TestCase):
     def setUp(self):
@@ -276,6 +383,43 @@ class PortfolioLedgerTests(unittest.TestCase):
             )
 
         self.assertEqual(90.0, result["munger"][-1]["value"])
+
+    def test_munger400r_return_series_starts_at_first_section_report(self):
+        reports = [
+            report("2026-02-27"),
+            report("2026-03-02", munger400r=[munger_entry("NFLX")]),
+        ]
+        position = process._new_position(
+            "munger400r", "NFLX", "2026-03-02", "2026-03-02", 100.0
+        )
+        position.update({
+            "current_date": "2026-03-03",
+            "current_price": 97.0,
+            "hold_days": 1,
+            "return_pct": -3.0,
+        })
+
+        with patch.object(process, "get_daily_bars", return_value=self.ticker_bars):
+            result = process.build_strategy_returns(
+                reports, [position], self.spy_bars, "2026-03-03"
+            )
+
+        self.assertEqual("2026-03-02", result["munger400r"][0]["date"])
+        self.assertEqual(2, len(result["munger400r"]))
+        self.assertEqual(97.0, result["munger400r"][-1]["value"])
+
+    def test_new_strategy_has_empty_series_before_first_completed_session(self):
+        reports = [
+            report("2026-02-27"),
+            report("2026-03-02", munger400l=[munger_entry("NFLX")]),
+        ]
+
+        result = process.build_strategy_returns(
+            reports, [], self.spy_bars[:1], "2026-02-27"
+        )
+
+        self.assertIn("munger400l", result)
+        self.assertEqual([], result["munger400l"])
 
 
 class KellySizingTests(unittest.TestCase):

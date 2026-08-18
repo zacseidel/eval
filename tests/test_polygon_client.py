@@ -13,6 +13,24 @@ import polygon_client
 
 
 class PolygonCacheTests(unittest.TestCase):
+    def setUp(self):
+        polygon_client._refreshed_tickers.clear()
+
+    @staticmethod
+    def _aggregate(day, price):
+        timestamp = datetime.strptime(day, "%Y-%m-%d").replace(
+            tzinfo=timezone.utc
+        ).timestamp() * 1000
+        return {
+            "t": timestamp,
+            "o": price,
+            "h": price,
+            "l": price,
+            "c": price,
+            "v": 1000,
+            "vw": price,
+        }
+
     def test_current_market_day_is_not_durable_before_close(self):
         before_close = datetime(2026, 8, 4, 14, 0, tzinfo=timezone.utc)
         after_close = datetime(2026, 8, 4, 23, 0, tzinfo=timezone.utc)
@@ -84,6 +102,118 @@ class PolygonCacheTests(unittest.TestCase):
 
         self.assertEqual("2026-03-01", raw["_fetched_from"])
         self.assertEqual("2026-03-10", raw["_fetched_through"])
+
+    def test_changed_adjusted_overlap_refreshes_the_complete_cache(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            cache_path = Path(temp_dir) / "AAA.json"
+            cache_path.write_text(json.dumps({
+                "_schema_version": polygon_client.CACHE_SCHEMA_VERSION,
+                "_date_timezone": "UTC",
+                "_fetched_from": "2026-01-02",
+                "_fetched_through": "2026-01-06",
+                "2026-01-02": {
+                    "open": 100.0, "high": 100.0, "low": 100.0,
+                    "close": 100.0, "volume": 1000, "vwap": 100.0,
+                },
+                "2026-01-05": {
+                    "open": 110.0, "high": 110.0, "low": 110.0,
+                    "close": 110.0, "volume": 1000, "vwap": 110.0,
+                },
+                "2026-01-06": {
+                    "open": 120.0, "high": 120.0, "low": 120.0,
+                    "close": 120.0, "volume": 1000, "vwap": 120.0,
+                },
+            }))
+            overlap = {
+                "status": "OK",
+                "results": [
+                    self._aggregate("2026-01-05", 55.0),
+                    self._aggregate("2026-01-06", 60.0),
+                    self._aggregate("2026-01-07", 61.0),
+                ],
+            }
+            complete = {
+                "status": "OK",
+                "results": [
+                    self._aggregate("2026-01-02", 50.0),
+                    self._aggregate("2026-01-05", 55.0),
+                    self._aggregate("2026-01-06", 60.0),
+                    self._aggregate("2026-01-07", 61.0),
+                ],
+            }
+
+            with patch.object(polygon_client, "CACHE_DIR", Path(temp_dir)), \
+                 patch.object(polygon_client, "_get", side_effect=[overlap, complete]) as get:
+                bars = polygon_client.get_daily_bars("AAA", "2026-01-02", "2026-01-07")
+            raw = json.loads(cache_path.read_text())
+
+        self.assertEqual(2, get.call_count)
+        self.assertEqual(50.0, raw["2026-01-02"]["close"])
+        self.assertEqual(61.0, raw["2026-01-07"]["close"])
+        self.assertEqual([50.0, 55.0, 60.0, 61.0], [bar["close"] for bar in bars])
+
+    def test_unchanged_overlap_is_checked_only_once_per_process(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            cache_path = Path(temp_dir) / "AAA.json"
+            cache_path.write_text(json.dumps({
+                "_schema_version": polygon_client.CACHE_SCHEMA_VERSION,
+                "_date_timezone": "UTC",
+                "_fetched_from": "2026-01-05",
+                "_fetched_through": "2026-01-05",
+                "2026-01-05": {
+                    "open": 100.0, "high": 100.0, "low": 100.0,
+                    "close": 100.0, "volume": 1000, "vwap": 100.0,
+                },
+            }))
+            unchanged = {
+                "status": "OK",
+                "results": [self._aggregate("2026-01-05", 100.0)],
+            }
+
+            with patch.object(polygon_client, "CACHE_DIR", Path(temp_dir)), \
+                 patch.object(polygon_client, "_get", return_value=unchanged) as get:
+                polygon_client.get_daily_bars("AAA", "2026-01-05", "2026-01-05")
+                polygon_client.get_daily_bars("AAA", "2026-01-05", "2026-01-05")
+
+        self.assertEqual(1, get.call_count)
+
+    def test_failed_full_refresh_keeps_the_original_cache_scale(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            cache_path = Path(temp_dir) / "AAA.json"
+            original = {
+                "_schema_version": polygon_client.CACHE_SCHEMA_VERSION,
+                "_date_timezone": "UTC",
+                "_fetched_from": "2026-01-05",
+                "_fetched_through": "2026-01-06",
+                "2026-01-05": {
+                    "open": 100.0, "high": 100.0, "low": 100.0,
+                    "close": 100.0, "volume": 1000, "vwap": 100.0,
+                },
+                "2026-01-06": {
+                    "open": 110.0, "high": 110.0, "low": 110.0,
+                    "close": 110.0, "volume": 1000, "vwap": 110.0,
+                },
+            }
+            cache_path.write_text(json.dumps(original))
+            changed_overlap = {
+                "status": "OK",
+                "results": [
+                    self._aggregate("2026-01-05", 50.0),
+                    self._aggregate("2026-01-06", 55.0),
+                    self._aggregate("2026-01-07", 56.0),
+                ],
+            }
+
+            with patch.object(polygon_client, "CACHE_DIR", Path(temp_dir)), \
+                 patch.object(
+                     polygon_client,
+                     "_get",
+                     side_effect=[changed_overlap, RuntimeError("full refresh failed")],
+                 ):
+                polygon_client.get_daily_bars("AAA", "2026-01-05", "2026-01-07")
+            raw = json.loads(cache_path.read_text())
+
+        self.assertEqual(original, raw)
 
 
 if __name__ == "__main__":

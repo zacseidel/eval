@@ -12,9 +12,9 @@ from scrape import scrape_all
 from process import process_all
 
 if __name__ == "__main__":
-    print("=== Step 1: Scraping momentum9 reports ===")
-    new_reports = scrape_all()
-    print(f"New reports scraped: {len(new_reports)}\n")
+    print("=== Step 1: Scraping Momentum reports ===")
+    updated_reports = scrape_all()
+    print(f"Reports scraped or refreshed: {len(updated_reports)}\n")
 
     print("=== Step 2: Processing portfolio positions ===")
     process_all()

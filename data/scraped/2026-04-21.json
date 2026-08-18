@@ -1,5 +1,12 @@
 {
   "date": "2026-04-21",
+  "source_url": "https://zacseidel.github.io/momentum/reports/momentum_2026-04-21.html",
+  "sections_present": [
+    "munger",
+    "megacap",
+    "sp500",
+    "sp400"
+  ],
   "sp500": [
     {
       "rank": 1,
@@ -488,6 +495,8 @@
       "new_entrant": false
     }
   ],
+  "munger400l": [],
+  "munger400r": [],
   "universe_updates": [
     {
       "cohort": "sp400",
