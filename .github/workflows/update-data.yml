@@ -2,8 +2,8 @@ name: Update Portfolio Data
 
 on:
   schedule:
-    # Run after the US close: 7pm MDT Tue/Fri (6pm MST in winter).
-    - cron: '0 1 * * 3,6'
+    # Run at 7am MDT Tue/Fri (6am MST in winter), two hours after Momentum.
+    - cron: '0 13 * * 2,5'
   workflow_dispatch: # allow manual runs from the GitHub UI
 
 jobs:
