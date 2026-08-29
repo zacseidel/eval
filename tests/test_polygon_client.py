@@ -6,6 +6,8 @@ from datetime import datetime, timezone
 from pathlib import Path
 from unittest.mock import patch
 
+import requests
+
 SCRAPER_DIR = Path(__file__).resolve().parents[1] / "scraper"
 sys.path.insert(0, str(SCRAPER_DIR))
 
@@ -288,6 +290,147 @@ class PolygonCacheTests(unittest.TestCase):
 
         self.assertEqual("2026-03-09", summary["through"])
         self.assertEqual("2026-03-09", raw["_fetched_through"])
+
+    @staticmethod
+    def _http_error(status, reason="Forbidden"):
+        response = requests.Response()
+        response.status_code = status
+        response.reason = reason
+        return requests.HTTPError(f"{status} {reason}", response=response)
+
+    def test_grouped_update_keeps_published_days_when_latest_is_forbidden(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            cache_path = Path(temp_dir) / "AAA.json"
+            cache_path.write_text(json.dumps({
+                "_schema_version": polygon_client.CACHE_SCHEMA_VERSION,
+                "_date_timezone": "UTC",
+                "_fetched_from": "2026-03-01",
+                "_fetched_through": "2026-03-06",
+                "2026-03-06": {
+                    "open": 100.0, "high": 100.0, "low": 100.0,
+                    "close": 100.0, "volume": 1000, "vwap": 100.0,
+                },
+            }))
+            monday = {
+                "status": "OK",
+                "results": [{**self._aggregate("2026-03-09", 101.0), "T": "AAA"}],
+            }
+            with patch.object(polygon_client, "CACHE_DIR", Path(temp_dir)), \
+                 patch.object(polygon_client, "_get", side_effect=[
+                     {"status": "OK", "results": []},
+                     monday,
+                     self._http_error(403),
+                     RuntimeError("should not request later dates"),
+                 ]) as get:
+                summary = polygon_client.update_grouped_daily_bars(
+                    {"AAA"}, "2026-03-11"
+                )
+            raw = json.loads(cache_path.read_text())
+
+        self.assertEqual(3, get.call_count)
+        self.assertEqual(2, summary["grouped_calls"])
+        self.assertEqual("2026-03-09", summary["through"])
+        self.assertEqual(101.0, raw["2026-03-09"]["close"])
+        self.assertEqual("2026-03-09", raw["_fetched_through"])
+
+    def test_grouped_update_does_not_advance_when_first_day_is_forbidden(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            cache_path = Path(temp_dir) / "AAA.json"
+            cache_path.write_text(json.dumps({
+                "_schema_version": polygon_client.CACHE_SCHEMA_VERSION,
+                "_date_timezone": "UTC",
+                "_fetched_from": "2026-03-01",
+                "_fetched_through": "2026-03-09",
+                "2026-03-09": {
+                    "open": 100.0, "high": 100.0, "low": 100.0,
+                    "close": 100.0, "volume": 1000, "vwap": 100.0,
+                },
+            }))
+            with patch.object(polygon_client, "CACHE_DIR", Path(temp_dir)), \
+                 patch.object(polygon_client, "_get", side_effect=[
+                     {"status": "OK", "results": []},
+                     self._http_error(403),
+                 ]):
+                summary = polygon_client.update_grouped_daily_bars(
+                    {"AAA"}, "2026-03-10"
+                )
+            raw = json.loads(cache_path.read_text())
+
+        self.assertEqual("2026-03-09", summary["through"])
+        self.assertEqual(1, summary["grouped_calls"])
+        self.assertEqual("2026-03-09", raw["_fetched_through"])
+
+    def test_grouped_update_seeds_tickers_that_have_no_cache(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            (Path(temp_dir) / "AAA.json").write_text(json.dumps({
+                "_schema_version": polygon_client.CACHE_SCHEMA_VERSION,
+                "_date_timezone": "UTC",
+                "_fetched_from": "2026-03-01",
+                "_fetched_through": "2026-03-06",
+                "2026-03-06": {
+                    "open": 100.0, "high": 100.0, "low": 100.0,
+                    "close": 100.0, "volume": 1000, "vwap": 100.0,
+                },
+            }))
+            monday = {
+                "status": "OK",
+                "results": [
+                    {**self._aggregate("2026-03-09", 101.0), "T": "AAA"},
+                    {**self._aggregate("2026-03-09", 201.0), "T": "CCC"},
+                ],
+            }
+            with patch.object(polygon_client, "CACHE_DIR", Path(temp_dir)), \
+                 patch.object(
+                     polygon_client,
+                     "_get",
+                     side_effect=[{"status": "OK", "results": []}, monday],
+                 ) as get:
+                summary = polygon_client.update_grouped_daily_bars(
+                    {"AAA", "CCC"}, "2026-03-09"
+                )
+                bars = polygon_client.get_daily_bars("CCC", "2025-09-09", "2026-03-09")
+            ccc = json.loads((Path(temp_dir) / "CCC.json").read_text())
+
+        self.assertEqual(2, get.call_count)  # split query + one grouped day
+        self.assertEqual("2026-03-09", summary["through"])
+        self.assertEqual("2026-03-09", ccc["_fetched_from"])
+        self.assertEqual("2026-03-09", ccc["_fetched_through"])
+        self.assertEqual(201.0, ccc["2026-03-09"]["close"])
+        self.assertEqual([201.0], [bar["close"] for bar in bars])
+
+    def test_grouped_update_rereads_latest_day_to_seed_new_tickers(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            (Path(temp_dir) / "AAA.json").write_text(json.dumps({
+                "_schema_version": polygon_client.CACHE_SCHEMA_VERSION,
+                "_date_timezone": "UTC",
+                "_fetched_from": "2026-03-01",
+                "_fetched_through": "2026-03-10",
+                "2026-03-10": {
+                    "open": 102.0, "high": 102.0, "low": 102.0,
+                    "close": 102.0, "volume": 1000, "vwap": 102.0,
+                },
+            }))
+            latest = {
+                "status": "OK",
+                "results": [
+                    {**self._aggregate("2026-03-10", 102.0), "T": "AAA"},
+                    {**self._aggregate("2026-03-10", 202.0), "T": "CCC"},
+                ],
+            }
+            with patch.object(polygon_client, "CACHE_DIR", Path(temp_dir)), \
+                 patch.object(polygon_client, "_get", return_value=latest) as get:
+                summary = polygon_client.update_grouped_daily_bars(
+                    {"AAA", "CCC"}, "2026-03-10"
+                )
+            ccc = json.loads((Path(temp_dir) / "CCC.json").read_text())
+            aaa = json.loads((Path(temp_dir) / "AAA.json").read_text())
+
+        self.assertEqual(1, get.call_count)  # no split query; one grouped re-read
+        self.assertEqual(1, summary["grouped_calls"])
+        self.assertEqual(0, summary["split_refreshes"])
+        self.assertEqual("2026-03-10", summary["through"])
+        self.assertEqual(202.0, ccc["2026-03-10"]["close"])
+        self.assertEqual("2026-03-10", aaa["_fetched_through"])
 
 
 if __name__ == "__main__":

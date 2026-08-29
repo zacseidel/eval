@@ -97,7 +97,7 @@ eval/
 
 ## Local setup
 
-**Prerequisites:** Python 3.9+, Node.js 20+ for frontend tests, and a [Polygon.io](https://polygon.io) free-tier API key.
+**Prerequisites:** Python 3.9+, Node.js 22+ for frontend tests, and a [Polygon.io](https://polygon.io) free-tier API key.
 
 ```bash
 # Clone and install dependencies
@@ -141,12 +141,12 @@ npm test
 ## Polygon API usage
 
 - **Rate limit:** 5 requests/minute on the free tier — the client enforces a 12.5-second delay between calls.
-- **Disk cache:** Every bar range is stored in `data/price_cache/{TICKER}.json`. The cache tracks `_fetched_from` and `_fetched_through` metadata. Routine updates use one grouped daily aggregate request per missing weekday plus one split-reference request. Per-ticker requests are reserved for newly encountered tickers, missing historical coverage, and tickers with a reported split.
+- **Disk cache:** Every bar range is stored in `data/price_cache/{TICKER}.json`. The cache tracks `_fetched_from` and `_fetched_through` metadata. Routine updates use one grouped daily aggregate request per missing weekday plus one split-reference request. New signal tickers are seeded from those same grouped sessions. Per-ticker requests are reserved for split-adjusted history refreshes and for tickers that never appear in the grouped responses.
 - **Execution price:** Report entries and rank exits use the first session on or after the report signal. Munger EMA and SMA10 exits execute on the first session after the triggering close. VWAP is used when available, with midpoint fallback.
-- **EMA history:** Munger tickers receive 120 calendar days of pre-report history so the 21-day EMA is warm before any trade can exit.
-- **SMA history:** All signal tickers receive at least 30 calendar days of pre-report history so the trailing 10-session SMA is warm before any trade can exit.
+- **EMA history:** A close-based 21-day EMA is published only after 21 cached sessions. Existing Munger caches keep their pre-report history; new names warm up from grouped daily sessions going forward.
+- **SMA history:** A trailing 10-session SMA is published only after 10 cached sessions. The same grouped daily path supplies those closes.
 - **Bar dates:** Polygon timestamps are converted in UTC. Cache schema versions prevent legacy timezone-shifted bars from mixing with corrected data.
-- **Failure handling:** Failed API requests do not advance cache coverage; missing execution data fails processing instead of fabricating a flat return.
+- **Failure handling:** Failed API requests do not advance cache coverage; missing execution data fails processing instead of fabricating a flat return. Grouped daily 403/404 (or a not-entitled body) on a session the plan has not published yet is treated as unpublished: earlier successful days are kept and later dates are retried on the next run.
 
 ---
 

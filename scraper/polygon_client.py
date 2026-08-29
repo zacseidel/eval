@@ -43,8 +43,42 @@ def _get(path: str, params: dict = None) -> dict:
     params = params or {}
     params["apiKey"] = key
     resp = requests.get(f"{API_BASE}{path}", params=params, timeout=30)
-    resp.raise_for_status()
+    if not resp.ok:
+        detail = ""
+        try:
+            payload = resp.json()
+            detail = payload.get("error") or payload.get("message") or ""
+        except ValueError:
+            detail = (resp.text or "")[:300]
+        raise requests.HTTPError(
+            f"{resp.status_code} {resp.reason} for {path}"
+            + (f": {detail}" if detail else ""),
+            response=resp,
+        )
     return resp.json()
+
+
+def _grouped_session_unavailable(
+    exc: Optional[BaseException] = None, data: Optional[dict] = None
+) -> bool:
+    """True when Polygon has not published (or will not serve) that session yet.
+
+    Stocks Basic is end-of-day. Requesting the current trading day's grouped
+    daily bars commonly returns HTTP 403 rather than an empty 200.
+    """
+    if exc is not None:
+        response = getattr(exc, "response", None)
+        status = getattr(response, "status_code", None)
+        if status in (403, 404):
+            return True
+        return False
+    if not data:
+        return False
+    status = data.get("status")
+    if status in ("NOT_AUTHORIZED", "NOT_FOUND"):
+        return True
+    error = str(data.get("error") or data.get("message") or "").lower()
+    return "not entitled" in error or "doesn't include this data timeframe" in error
 
 
 def _durable_coverage_end(fetch_to: str, market_now: Optional[datetime] = None) -> str:
@@ -156,12 +190,12 @@ def _split_tickers(from_date: str, to_date: str, tracked: set[str]) -> set[str]:
 
 
 def update_grouped_daily_bars(tickers, through_date: str) -> dict:
-    """Extend existing caches with one market-wide request per missing weekday.
+    """Extend caches with one market-wide request per missing weekday.
 
-    Scraped reports remain the source of signals. This only fills daily OHLCV
-    marks. Newly encountered tickers still use ``get_daily_bars`` once for their
-    required history. A single split-reference query identifies the rare caches
-    that need a targeted adjusted-history refresh.
+    Scraped reports remain the source of signals. This fills daily OHLCV marks
+    for every tracked ticker that appears in those sessions, including names
+    that have no cache yet. Per-ticker requests are reserved for split
+    refreshes and for tickers that never appear in the grouped responses.
     """
     CACHE_DIR.mkdir(parents=True, exist_ok=True)
     tracked = set(tickers)
@@ -184,21 +218,51 @@ def update_grouped_daily_bars(tickers, through_date: str) -> dict:
         current += timedelta(days=1)
 
     if not weekdays:
-        _refreshed_tickers.update(caches)
-        return {
-            "grouped_calls": 0,
-            "split_refreshes": 0,
-            "through": earliest_edge,
-        }
+        uncached = tracked - caches.keys()
+        if uncached:
+            # Caches are already current, but new names still need a market-wide
+            # session to seed from. Re-read the latest published weekday rather
+            # than issuing one history request per ticker.
+            weekdays = [earliest_edge]
+        else:
+            _refreshed_tickers.update(caches)
+            return {
+                "grouped_calls": 0,
+                "split_refreshes": 0,
+                "through": earliest_edge,
+            }
 
-    split_tickers = _split_tickers(weekdays[0], weekdays[-1], tracked)
+    reseeding_latest = weekdays == [earliest_edge]
+    split_tickers = (
+        set()
+        if reseeding_latest
+        else _split_tickers(weekdays[0], weekdays[-1], tracked)
+    )
     grouped_rows = {}
+    grouped_calls = 0
     for bar_date in weekdays:
         print(f"    Fetching grouped stock bars for {bar_date}...")
-        data = _get(
-            f"/v2/aggs/grouped/locale/us/market/stocks/{bar_date}",
-            {"adjusted": "true", "include_otc": "true"},
-        )
+        grouped_calls += 1
+        try:
+            data = _get(
+                f"/v2/aggs/grouped/locale/us/market/stocks/{bar_date}",
+                {"adjusted": "true", "include_otc": "true"},
+            )
+        except requests.HTTPError as exc:
+            if _grouped_session_unavailable(exc=exc):
+                print(
+                    f"    Grouped bars for {bar_date} not available yet "
+                    f"(HTTP {exc.response.status_code}); "
+                    "keeping the last published session."
+                )
+                break
+            raise
+        if _grouped_session_unavailable(data=data):
+            print(
+                f"    Grouped bars for {bar_date} not available yet; "
+                "keeping the last published session."
+            )
+            break
         if data.get("status") == "ERROR" or data.get("error"):
             raise RuntimeError(data.get("error") or "Polygon returned a grouped-bars error")
         rows = {
@@ -210,23 +274,48 @@ def update_grouped_daily_bars(tickers, through_date: str) -> dict:
             grouped_rows[bar_date] = rows
 
     # An empty latest response commonly means the provider has not published
-    # that session yet. Only advance through the latest date that returned any
+    # that session yet. HTTP 403/404 on a later weekday is the same case for
+    # end-of-day plans. Only advance through the latest date that returned any
     # tracked market data; earlier empty weekdays are holidays.
     coverage_through = max(grouped_rows, default=None)
     if coverage_through is None:
         _refreshed_tickers.update(caches)
         return {
-            "grouped_calls": len(weekdays),
+            "grouped_calls": grouped_calls,
             "split_refreshes": 0,
             "through": earliest_edge,
         }
 
     for ticker, raw in caches.items():
+        changed = False
         for bar_date, rows in grouped_rows.items():
             if bar_date > raw["_fetched_through"] and ticker in rows:
                 raw[bar_date] = rows[ticker]
-        raw["_fetched_through"] = max(raw["_fetched_through"], coverage_through)
+                changed = True
+        new_through = max(raw["_fetched_through"], coverage_through)
+        if new_through != raw["_fetched_through"]:
+            raw["_fetched_through"] = new_through
+            changed = True
+        if changed:
+            _write_cache(ticker, raw)
+
+    for ticker in sorted(tracked - caches.keys()):
+        dates_with_bars = [
+            bar_date for bar_date, rows in grouped_rows.items() if ticker in rows
+        ]
+        if not dates_with_bars:
+            continue
+        raw = {
+            "_schema_version": CACHE_SCHEMA_VERSION,
+            "_date_timezone": "UTC",
+            "_fetched_from": min(dates_with_bars),
+            "_fetched_through": coverage_through,
+        }
+        for bar_date, rows in grouped_rows.items():
+            if ticker in rows:
+                raw[bar_date] = rows[ticker]
         _write_cache(ticker, raw)
+        caches[ticker] = raw
 
     _refreshed_tickers.update(caches)
     for ticker in sorted(split_tickers & caches.keys()):
@@ -239,7 +328,7 @@ def update_grouped_daily_bars(tickers, through_date: str) -> dict:
         )
 
     return {
-        "grouped_calls": len(weekdays),
+        "grouped_calls": grouped_calls,
         "split_refreshes": len(split_tickers & caches.keys()),
         "through": coverage_through,
     }
@@ -285,11 +374,12 @@ def get_daily_bars(ticker: str, from_date: str, to_date: str) -> list[dict]:
         ranges_to_fetch.append(fetch_range)
         refresh_ranges.add(fetch_range)
     else:
-        if from_date < fetched_from:
+        grouped_fresh = ticker in _refreshed_tickers
+        if from_date < fetched_from and not grouped_fresh:
             day_before = (datetime.strptime(fetched_from, "%Y-%m-%d") - timedelta(days=1)).strftime("%Y-%m-%d")
             ranges_to_fetch.append((from_date, day_before))
-        refresh_right_edge = ticker not in _refreshed_tickers and to_date >= fetched_through
-        if to_date > fetched_through:
+        refresh_right_edge = not grouped_fresh and to_date >= fetched_through
+        if to_date > fetched_through and not grouped_fresh:
             day_after = (datetime.strptime(fetched_through, "%Y-%m-%d") + timedelta(days=1)).strftime("%Y-%m-%d")
             fetch_from = day_after
             if refresh_right_edge:
