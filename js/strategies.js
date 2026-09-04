@@ -64,12 +64,12 @@ export function getReturnSummary(series, field = "value") {
   const last = series[series.length - 1];
   if (last[field] == null) return null;
   if (field === "value" && last.return_12m != null)
-    return { value: last.return_12m, label: "12M Price Return" };
+    return { value: last.return_12m, label: "12M Price" };
   if (field === "spy_value" && last.spy_12m != null)
-    return { value: last.spy_12m, label: "12M Price Return" };
+    return { value: last.spy_12m, label: "12M Price" };
   return {
     value: (last[field] / 100 - 1) * 100,
-    label: `Price return since ${first.date}`,
+    label: `Since ${first.date}`,
   };
 }
 
@@ -112,44 +112,46 @@ function buildCard(item) {
   card.className = "strategy-card";
   card.dataset.strategy = sid;
   card.innerHTML = `
-    <div class="card-header">
-      <div class="dot" style="background:${meta.color}"></div>
-      <h3>${meta.label}</h3>
-    </div>
-    <div class="card-metrics">
-      <div class="metric-group">
-        <div class="metric">
-          <span class="label">${returnLabel}</span>
-          ${formatPct(ret12m)}
-          ${formatBenchmark(spy12m)}
+    <div class="card-body">
+      <div class="card-header">
+        <div class="dot" style="background:${meta.color}"></div>
+        <h3>${meta.label}</h3>
+      </div>
+      <div class="card-metrics">
+        <div class="metric-group">
+          <div class="metric">
+            <span class="label">${returnLabel}</span>
+            ${formatPct(ret12m)}
+            ${formatBenchmark(spy12m)}
+          </div>
+          <div class="metric">
+            <span class="label">Sharpe 12M</span>
+            ${formatSharpe(stratSharpe12m)}
+            ${formatSharpeBenchmark(spySharpe12m)}
+          </div>
         </div>
-        <div class="metric">
-          <span class="label">Sharpe 12M</span>
-          ${formatSharpe(stratSharpe12m)}
-          ${formatSharpeBenchmark(spySharpe12m)}
+        <div class="metric-group">
+          <div class="metric">
+            <span class="label">3M Price</span>
+            ${formatPct(ret3m)}
+            ${formatBenchmark(spy3m)}
+          </div>
+          <div class="metric">
+            <span class="label">Sharpe 3M</span>
+            ${formatSharpe(stratSharpe3m)}
+            ${formatSharpeBenchmark(spySharpe3m)}
+          </div>
         </div>
       </div>
-      <div class="metric-group">
-        <div class="metric">
-          <span class="label">Rolling 3M Price</span>
-          ${formatPct(ret3m)}
-          ${formatBenchmark(spy3m)}
-        </div>
-        <div class="metric">
-          <span class="label">Sharpe 3M</span>
-          ${formatSharpe(stratSharpe3m)}
-          ${formatSharpeBenchmark(spySharpe3m)}
-        </div>
+      <div class="card-footer">
+        <span>${openCount} open</span>
+        <span>${closedCount} closed</span>
+        ${isMungerFamily(sid) || isSma10(sid) ? `<span>${pendingExitCount} exit pending</span>` : ""}
+        ${isMungerFamily(sid) ? `<span>${signalTickers.length} current signals</span>` : ""}
       </div>
+      ${openTickers.length ? `<div class="ticker-tags">${openTickers.map(t => `<span class="ticker-tag">${t}</span>`).join("")}</div>` : ""}
+      ${isMungerFamily(sid) && signalTickers.length ? `<div class="signal-note">Latest report buy signals: ${signalTickers.join(", ")}</div>` : ""}
     </div>
-    <div class="card-footer">
-      <span>${openCount} open</span>
-      <span>${closedCount} closed</span>
-      ${isMungerFamily(sid) || isSma10(sid) ? `<span>${pendingExitCount} exit pending</span>` : ""}
-      ${isMungerFamily(sid) ? `<span>${signalTickers.length} current signals</span>` : ""}
-    </div>
-    ${openTickers.length ? `<div class="ticker-tags">${openTickers.map(t => `<span class="ticker-tag">${t}</span>`).join("")}</div>` : ""}
-    ${isMungerFamily(sid) && signalTickers.length ? `<div class="signal-note">Latest report buy signals: ${signalTickers.join(", ")}</div>` : ""}
     <div class="kelly-panel" title="Half Kelly = 0.5 × max(0, win probability − loss probability ÷ payoff ratio)">
       <div class="kelly-heading">
         <span>Half-Kelly risk budget</span>

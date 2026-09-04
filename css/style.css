@@ -117,6 +117,9 @@ main { padding: 32px 32px; max-width: 1200px; }
   padding: 18px 20px;
   cursor: pointer;
   transition: border-color .15s, box-shadow .15s;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
 }
 
 .strategy-card:hover {
@@ -139,16 +142,40 @@ main { padding: 32px 32px; max-width: 1200px; }
 
 .strategy-card h3 { font-size: 15px; font-weight: 600; }
 
-.card-metrics { display: flex; gap: 16px; flex-wrap: wrap; justify-content: center; }
-.metric-group { display: flex; flex-direction: column; gap: 10px; }
-.metric { display: flex; flex-direction: column; gap: 2px; }
+.card-body {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.card-metrics {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px 16px;
+  align-items: start;
+}
+.metric-group {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 0;
+}
+.metric { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
 .metric .label {
   font-size: 11px;
   color: var(--muted);
   text-transform: uppercase;
   letter-spacing: .04em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
-.metric .value { font-size: 20px; font-weight: 700; }
+.metric .value {
+  font-size: 20px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
 .metric .value.positive { color: var(--green); }
 .metric .value.negative { color: var(--red); }
 .metric .value.neutral  { color: var(--text); }
@@ -194,6 +221,7 @@ main { padding: 32px 32px; max-width: 1200px; }
   margin-top: 14px;
   padding-top: 12px;
   border-top: 1px solid var(--border);
+  flex-shrink: 0;
 }
 
 .kelly-heading {
@@ -209,6 +237,7 @@ main { padding: 32px 32px; max-width: 1200px; }
 .kelly-heading strong {
   color: var(--accent);
   font-size: 20px;
+  font-variant-numeric: tabular-nums;
 }
 
 .kelly-stats {
@@ -224,6 +253,8 @@ main { padding: 32px 32px; max-width: 1200px; }
   margin-top: 7px;
   color: var(--muted);
   font-size: 10px;
+  line-height: 1.4;
+  min-height: 2.8em;
 }
 
 /* === Positions Tab === */

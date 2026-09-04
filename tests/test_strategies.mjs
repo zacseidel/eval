@@ -37,6 +37,16 @@ test("since-inception return uses the original 100 NAV baseline", () => {
     { date: "2026-01-05", value: 110, return_12m: null },
   ]);
   assert.ok(Math.abs(summary.value - 10) < 1e-12);
+  assert.equal(summary.label, "Since 2026-01-02");
+});
+
+test("12M return uses a short card label", () => {
+  const summary = getReturnSummary([
+    { date: "2025-01-02", value: 100, return_12m: null },
+    { date: "2026-01-05", value: 110, return_12m: 12.5 },
+  ]);
+  assert.equal(summary.value, 12.5);
+  assert.equal(summary.label, "12M Price");
 });
 
 test("all-history chart preserves NAV while shorter ranges rebase", () => {
