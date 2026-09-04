@@ -1457,6 +1457,15 @@
       "spy_rolling_3m": 1.7,
       "return_12m": null,
       "spy_12m": null
+    },
+    {
+      "date": "2026-08-31",
+      "value": 209.3331,
+      "spy_value": 111.2344,
+      "rolling_3m": -11.73,
+      "spy_rolling_3m": 1.12,
+      "return_12m": null,
+      "spy_12m": null
     }
   ],
   "sp500_next5": [
@@ -2915,6 +2924,15 @@
       "spy_value": 111.5679,
       "rolling_3m": -24.72,
       "spy_rolling_3m": 1.7,
+      "return_12m": null,
+      "spy_12m": null
+    },
+    {
+      "date": "2026-08-31",
+      "value": 111.664,
+      "spy_value": 111.2344,
+      "rolling_3m": -26.81,
+      "spy_rolling_3m": 1.12,
       "return_12m": null,
       "spy_12m": null
     }
@@ -4377,6 +4395,15 @@
       "spy_rolling_3m": 1.7,
       "return_12m": null,
       "spy_12m": null
+    },
+    {
+      "date": "2026-08-31",
+      "value": 140.4608,
+      "spy_value": 111.2344,
+      "rolling_3m": -13.41,
+      "spy_rolling_3m": 1.12,
+      "return_12m": null,
+      "spy_12m": null
     }
   ],
   "megacap_next5": [
@@ -5835,6 +5862,15 @@
       "spy_value": 111.5679,
       "rolling_3m": -8.44,
       "spy_rolling_3m": 1.7,
+      "return_12m": null,
+      "spy_12m": null
+    },
+    {
+      "date": "2026-08-31",
+      "value": 93.6864,
+      "spy_value": 111.2344,
+      "rolling_3m": -6.98,
+      "spy_rolling_3m": 1.12,
       "return_12m": null,
       "spy_12m": null
     }
@@ -7297,6 +7333,15 @@
       "spy_rolling_3m": 1.7,
       "return_12m": null,
       "spy_12m": null
+    },
+    {
+      "date": "2026-08-31",
+      "value": 129.1778,
+      "spy_value": 111.2344,
+      "rolling_3m": -21.14,
+      "spy_rolling_3m": 1.12,
+      "return_12m": null,
+      "spy_12m": null
     }
   ],
   "sp400_mcap_next5": [
@@ -8757,6 +8802,15 @@
       "spy_rolling_3m": 1.7,
       "return_12m": null,
       "spy_12m": null
+    },
+    {
+      "date": "2026-08-31",
+      "value": 75.8351,
+      "spy_value": 111.2344,
+      "rolling_3m": -20.33,
+      "spy_rolling_3m": 1.12,
+      "return_12m": null,
+      "spy_12m": null
     }
   ],
   "munger": [
@@ -10046,6 +10100,15 @@
       "spy_rolling_3m": 1.7,
       "return_12m": null,
       "spy_12m": null
+    },
+    {
+      "date": "2026-08-31",
+      "value": 116.3335,
+      "spy_value": 111.7839,
+      "rolling_3m": 2.78,
+      "spy_rolling_3m": 1.12,
+      "return_12m": null,
+      "spy_12m": null
     }
   ],
   "munger400l": [
@@ -10129,6 +10192,15 @@
       "spy_rolling_3m": null,
       "return_12m": null,
       "spy_12m": null
+    },
+    {
+      "date": "2026-08-31",
+      "value": 97.5398,
+      "spy_value": 99.9479,
+      "rolling_3m": null,
+      "spy_rolling_3m": null,
+      "return_12m": null,
+      "spy_12m": null
     }
   ],
   "munger400r": [
@@ -10208,6 +10280,15 @@
       "date": "2026-08-28",
       "value": 98.4852,
       "spy_value": 100.2476,
+      "rolling_3m": null,
+      "spy_rolling_3m": null,
+      "return_12m": null,
+      "spy_12m": null
+    },
+    {
+      "date": "2026-08-31",
+      "value": 98.2384,
+      "spy_value": 99.9479,
       "rolling_3m": null,
       "spy_rolling_3m": null,
       "return_12m": null,
@@ -11672,6 +11753,15 @@
       "spy_rolling_3m": 1.7,
       "return_12m": null,
       "spy_12m": null
+    },
+    {
+      "date": "2026-08-31",
+      "value": 133.5411,
+      "spy_value": 111.2344,
+      "rolling_3m": -32.0,
+      "spy_rolling_3m": 1.12,
+      "return_12m": null,
+      "spy_12m": null
     }
   ],
   "sp500_next5_sma10": [
@@ -13130,6 +13220,15 @@
       "spy_value": 111.5679,
       "rolling_3m": -34.51,
       "spy_rolling_3m": 1.7,
+      "return_12m": null,
+      "spy_12m": null
+    },
+    {
+      "date": "2026-08-31",
+      "value": 83.0961,
+      "spy_value": 111.2344,
+      "rolling_3m": -36.14,
+      "spy_rolling_3m": 1.12,
       "return_12m": null,
       "spy_12m": null
     }
@@ -14592,6 +14691,15 @@
       "spy_rolling_3m": 1.7,
       "return_12m": null,
       "spy_12m": null
+    },
+    {
+      "date": "2026-08-31",
+      "value": 102.6956,
+      "spy_value": 111.2344,
+      "rolling_3m": -31.28,
+      "spy_rolling_3m": 1.12,
+      "return_12m": null,
+      "spy_12m": null
     }
   ],
   "megacap_next5_sma10": [
@@ -16050,6 +16158,15 @@
       "spy_value": 111.5679,
       "rolling_3m": -7.4,
       "spy_rolling_3m": 1.7,
+      "return_12m": null,
+      "spy_12m": null
+    },
+    {
+      "date": "2026-08-31",
+      "value": 97.9053,
+      "spy_value": 111.2344,
+      "rolling_3m": -5.83,
+      "spy_rolling_3m": 1.12,
       "return_12m": null,
       "spy_12m": null
     }
@@ -17512,6 +17629,15 @@
       "spy_rolling_3m": 1.7,
       "return_12m": null,
       "spy_12m": null
+    },
+    {
+      "date": "2026-08-31",
+      "value": 102.2121,
+      "spy_value": 111.2344,
+      "rolling_3m": -38.99,
+      "spy_rolling_3m": 1.12,
+      "return_12m": null,
+      "spy_12m": null
     }
   ],
   "sp400_mcap_next5_sma10": [
@@ -18972,6 +19098,15 @@
       "spy_rolling_3m": 1.7,
       "return_12m": null,
       "spy_12m": null
+    },
+    {
+      "date": "2026-08-31",
+      "value": 84.1582,
+      "spy_value": 111.2344,
+      "rolling_3m": -20.47,
+      "spy_rolling_3m": 1.12,
+      "return_12m": null,
+      "spy_12m": null
     }
   ],
   "munger_sma10": [
@@ -20261,6 +20396,15 @@
       "spy_rolling_3m": 1.7,
       "return_12m": null,
       "spy_12m": null
+    },
+    {
+      "date": "2026-08-31",
+      "value": 112.5673,
+      "spy_value": 111.7839,
+      "rolling_3m": -1.65,
+      "spy_rolling_3m": 1.12,
+      "return_12m": null,
+      "spy_12m": null
     }
   ],
   "munger400l_sma10": [
@@ -20344,6 +20488,15 @@
       "spy_rolling_3m": null,
       "return_12m": null,
       "spy_12m": null
+    },
+    {
+      "date": "2026-08-31",
+      "value": 99.4238,
+      "spy_value": 99.9479,
+      "rolling_3m": null,
+      "spy_rolling_3m": null,
+      "return_12m": null,
+      "spy_12m": null
     }
   ],
   "munger400r_sma10": [
@@ -20423,6 +20576,15 @@
       "date": "2026-08-28",
       "value": 97.9537,
       "spy_value": 100.2476,
+      "rolling_3m": null,
+      "spy_rolling_3m": null,
+      "return_12m": null,
+      "spy_12m": null
+    },
+    {
+      "date": "2026-08-31",
+      "value": 97.7726,
+      "spy_value": 99.9479,
       "rolling_3m": null,
       "spy_rolling_3m": null,
       "return_12m": null,
@@ -21887,36 +22049,45 @@
       "spy_rolling_3m": 1.7,
       "return_12m": null,
       "spy_12m": null
+    },
+    {
+      "date": "2026-08-31",
+      "value": 111.2344,
+      "spy_value": 111.2344,
+      "rolling_3m": 1.12,
+      "spy_rolling_3m": 1.12,
+      "return_12m": null,
+      "spy_12m": null
     }
   ],
   "_sharpe": {
     "sp500_top5": {
       "12m": null,
-      "3m": -0.78
+      "3m": -0.69
     },
     "sp500_next5": {
       "12m": null,
-      "3m": -1.61
+      "3m": -1.77
     },
     "megacap_top5": {
       "12m": null,
-      "3m": -0.86
+      "3m": -0.84
     },
     "megacap_next5": {
       "12m": null,
-      "3m": -2.34
+      "3m": -1.97
     },
     "sp400_mcap5": {
       "12m": null,
-      "3m": -1.37
+      "3m": -1.59
     },
     "sp400_mcap_next5": {
       "12m": null,
-      "3m": -1.82
+      "3m": -1.74
     },
     "munger": {
       "12m": null,
-      "3m": 0.25
+      "3m": 0.42
     },
     "munger400l": {
       "12m": null,
@@ -21928,23 +22099,23 @@
     },
     "sp500_top5_sma10": {
       "12m": null,
-      "3m": -2.35
+      "3m": -2.28
     },
     "sp500_next5_sma10": {
       "12m": null,
-      "3m": -2.61
+      "3m": -2.77
     },
     "megacap_top5_sma10": {
       "12m": null,
-      "3m": -2.47
+      "3m": -2.48
     },
     "megacap_next5_sma10": {
       "12m": null,
-      "3m": -1.71
+      "3m": -1.39
     },
     "sp400_mcap5_sma10": {
       "12m": null,
-      "3m": -3.57
+      "3m": -3.79
     },
     "sp400_mcap_next5_sma10": {
       "12m": null,
@@ -21952,7 +22123,7 @@
     },
     "munger_sma10": {
       "12m": null,
-      "3m": -0.7
+      "3m": -0.61
     },
     "munger400l_sma10": {
       "12m": null,
@@ -21964,7 +22135,7 @@
     },
     "spy": {
       "12m": null,
-      "3m": 0.14
+      "3m": -0.03
     }
   }
 }

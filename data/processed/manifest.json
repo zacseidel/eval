@@ -1,9 +1,9 @@
 {
   "processor_version": 8,
   "price_cache_schema_version": 3,
-  "as_of": "2026-08-29",
-  "latest_report_date": "2026-08-28",
-  "market_data_through": "2026-08-28",
+  "as_of": "2026-09-01",
+  "latest_report_date": "2026-09-01",
+  "market_data_through": "2026-08-31",
   "entry_signal_source": "scraped_reports_only",
   "rank_exit_signal_source": "scraped_report_membership_only",
   "execution_price": "report entries on first available session; technical exits on next session; VWAP with midpoint fallback",
@@ -209,15 +209,15 @@
       "kelly_status": "calculated"
     },
     "munger400l": {
-      "closed_count": 9,
+      "closed_count": 10,
       "winner_count": 2,
-      "loser_count": 7,
+      "loser_count": 8,
       "breakeven_count": 0,
-      "winner_pct": 22.22,
-      "loser_pct": 77.78,
+      "winner_pct": 20.0,
+      "loser_pct": 80.0,
       "average_win_pct": 0.57,
-      "average_loss_pct": -2.7,
-      "payoff_ratio": 0.2089,
+      "average_loss_pct": -2.53,
+      "payoff_ratio": 0.2234,
       "full_kelly_pct": null,
       "half_kelly_pct": null,
       "minimum_closed_trades": 20,
@@ -225,112 +225,112 @@
       "kelly_status": "insufficient_sample"
     },
     "munger400r": {
-      "closed_count": 32,
-      "winner_count": 8,
-      "loser_count": 24,
+      "closed_count": 38,
+      "winner_count": 12,
+      "loser_count": 26,
       "breakeven_count": 0,
-      "winner_pct": 25.0,
-      "loser_pct": 75.0,
-      "average_win_pct": 1.49,
-      "average_loss_pct": -3.58,
-      "payoff_ratio": 0.4164,
-      "full_kelly_pct": -155.11,
+      "winner_pct": 31.58,
+      "loser_pct": 68.42,
+      "average_win_pct": 1.28,
+      "average_loss_pct": -3.54,
+      "payoff_ratio": 0.3635,
+      "full_kelly_pct": -156.67,
       "half_kelly_pct": 0.0,
       "minimum_closed_trades": 20,
       "minimum_sample_met": true,
       "kelly_status": "calculated"
     },
     "sp500_top5_sma10": {
-      "closed_count": 170,
-      "winner_count": 81,
+      "closed_count": 172,
+      "winner_count": 83,
       "loser_count": 89,
       "breakeven_count": 0,
-      "winner_pct": 47.65,
-      "loser_pct": 52.35,
-      "average_win_pct": 8.67,
+      "winner_pct": 48.26,
+      "loser_pct": 51.74,
+      "average_win_pct": 8.53,
       "average_loss_pct": -5.37,
-      "payoff_ratio": 1.6148,
-      "full_kelly_pct": 15.23,
-      "half_kelly_pct": 7.61,
+      "payoff_ratio": 1.5881,
+      "full_kelly_pct": 15.67,
+      "half_kelly_pct": 7.84,
       "minimum_closed_trades": 20,
       "minimum_sample_met": true,
       "kelly_status": "calculated"
     },
     "sp500_next5_sma10": {
-      "closed_count": 196,
+      "closed_count": 200,
       "winner_count": 84,
-      "loser_count": 112,
+      "loser_count": 116,
       "breakeven_count": 0,
-      "winner_pct": 42.86,
-      "loser_pct": 57.14,
+      "winner_pct": 42.0,
+      "loser_pct": 58.0,
       "average_win_pct": 6.9,
-      "average_loss_pct": -5.09,
-      "payoff_ratio": 1.3544,
-      "full_kelly_pct": 0.67,
-      "half_kelly_pct": 0.33,
+      "average_loss_pct": -5.04,
+      "payoff_ratio": 1.3672,
+      "full_kelly_pct": -0.42,
+      "half_kelly_pct": 0.0,
       "minimum_closed_trades": 20,
       "minimum_sample_met": true,
       "kelly_status": "calculated"
     },
     "megacap_top5_sma10": {
-      "closed_count": 185,
-      "winner_count": 73,
-      "loser_count": 112,
+      "closed_count": 189,
+      "winner_count": 74,
+      "loser_count": 115,
       "breakeven_count": 0,
-      "winner_pct": 39.46,
-      "loser_pct": 60.54,
-      "average_win_pct": 7.6,
-      "average_loss_pct": -3.52,
-      "payoff_ratio": 2.1592,
-      "full_kelly_pct": 11.42,
-      "half_kelly_pct": 5.71,
+      "winner_pct": 39.15,
+      "loser_pct": 60.85,
+      "average_win_pct": 7.52,
+      "average_loss_pct": -3.45,
+      "payoff_ratio": 2.1795,
+      "full_kelly_pct": 11.24,
+      "half_kelly_pct": 5.62,
       "minimum_closed_trades": 20,
       "minimum_sample_met": true,
       "kelly_status": "calculated"
     },
     "megacap_next5_sma10": {
-      "closed_count": 201,
-      "winner_count": 82,
-      "loser_count": 118,
+      "closed_count": 204,
+      "winner_count": 84,
+      "loser_count": 119,
       "breakeven_count": 1,
-      "winner_pct": 40.8,
-      "loser_pct": 58.71,
-      "average_win_pct": 3.03,
-      "average_loss_pct": -2.33,
-      "payoff_ratio": 1.3021,
-      "full_kelly_pct": -4.31,
+      "winner_pct": 41.18,
+      "loser_pct": 58.33,
+      "average_win_pct": 2.99,
+      "average_loss_pct": -2.32,
+      "payoff_ratio": 1.2909,
+      "full_kelly_pct": -4.03,
       "half_kelly_pct": 0.0,
       "minimum_closed_trades": 20,
       "minimum_sample_met": true,
       "kelly_status": "calculated"
     },
     "sp400_mcap5_sma10": {
-      "closed_count": 202,
+      "closed_count": 207,
       "winner_count": 95,
-      "loser_count": 107,
+      "loser_count": 112,
       "breakeven_count": 0,
-      "winner_pct": 47.03,
-      "loser_pct": 52.97,
+      "winner_pct": 45.89,
+      "loser_pct": 54.11,
       "average_win_pct": 6.58,
-      "average_loss_pct": -5.14,
-      "payoff_ratio": 1.2795,
-      "full_kelly_pct": 5.63,
-      "half_kelly_pct": 2.81,
+      "average_loss_pct": -5.06,
+      "payoff_ratio": 1.2987,
+      "full_kelly_pct": 4.23,
+      "half_kelly_pct": 2.12,
       "minimum_closed_trades": 20,
       "minimum_sample_met": true,
       "kelly_status": "calculated"
     },
     "sp400_mcap_next5_sma10": {
-      "closed_count": 231,
-      "winner_count": 94,
-      "loser_count": 137,
+      "closed_count": 235,
+      "winner_count": 95,
+      "loser_count": 140,
       "breakeven_count": 0,
-      "winner_pct": 40.69,
-      "loser_pct": 59.31,
-      "average_win_pct": 5.65,
-      "average_loss_pct": -4.43,
-      "payoff_ratio": 1.277,
-      "full_kelly_pct": -5.75,
+      "winner_pct": 40.43,
+      "loser_pct": 59.57,
+      "average_win_pct": 5.61,
+      "average_loss_pct": -4.38,
+      "payoff_ratio": 1.2795,
+      "full_kelly_pct": -6.14,
       "half_kelly_pct": 0.0,
       "minimum_closed_trades": 20,
       "minimum_sample_met": true,
@@ -353,15 +353,15 @@
       "kelly_status": "calculated"
     },
     "munger400l_sma10": {
-      "closed_count": 10,
+      "closed_count": 11,
       "winner_count": 2,
-      "loser_count": 8,
+      "loser_count": 9,
       "breakeven_count": 0,
-      "winner_pct": 20.0,
-      "loser_pct": 80.0,
+      "winner_pct": 18.18,
+      "loser_pct": 81.82,
       "average_win_pct": 0.57,
-      "average_loss_pct": -2.49,
-      "payoff_ratio": 0.2266,
+      "average_loss_pct": -2.36,
+      "payoff_ratio": 0.2393,
       "full_kelly_pct": null,
       "half_kelly_pct": null,
       "minimum_closed_trades": 20,
@@ -369,24 +369,24 @@
       "kelly_status": "insufficient_sample"
     },
     "munger400r_sma10": {
-      "closed_count": 39,
-      "winner_count": 9,
-      "loser_count": 30,
+      "closed_count": 47,
+      "winner_count": 13,
+      "loser_count": 34,
       "breakeven_count": 0,
-      "winner_pct": 23.08,
-      "loser_pct": 76.92,
-      "average_win_pct": 1.5,
-      "average_loss_pct": -3.23,
-      "payoff_ratio": 0.4647,
-      "full_kelly_pct": -142.46,
+      "winner_pct": 27.66,
+      "loser_pct": 72.34,
+      "average_win_pct": 1.37,
+      "average_loss_pct": -3.15,
+      "payoff_ratio": 0.4358,
+      "full_kelly_pct": -138.34,
       "half_kelly_pct": 0.0,
       "minimum_closed_trades": 20,
       "minimum_sample_met": true,
       "kelly_status": "calculated"
     }
   },
-  "report_count": 72,
-  "signal_snapshot_count": 5574,
+  "report_count": 73,
+  "signal_snapshot_count": 5686,
   "position_count": 2406,
   "positions_by_strategy": {
     "sp500_top5": {
@@ -418,48 +418,48 @@
       "closed": 147
     },
     "munger400l": {
-      "open": 4,
-      "closed": 9
+      "open": 3,
+      "closed": 10
     },
     "munger400r": {
-      "open": 26,
-      "closed": 32
+      "open": 20,
+      "closed": 38
     },
     "sp500_top5_sma10": {
-      "open": 5,
-      "closed": 170
+      "open": 3,
+      "closed": 172
     },
     "sp500_next5_sma10": {
-      "open": 7,
-      "closed": 196
+      "open": 3,
+      "closed": 200
     },
     "megacap_top5_sma10": {
-      "open": 5,
-      "closed": 185
+      "open": 1,
+      "closed": 189
     },
     "megacap_next5_sma10": {
-      "open": 5,
-      "closed": 201
+      "open": 2,
+      "closed": 204
     },
     "sp400_mcap5_sma10": {
-      "open": 5,
-      "closed": 202
+      "open": 0,
+      "closed": 207
     },
     "sp400_mcap_next5_sma10": {
-      "open": 5,
-      "closed": 231
+      "open": 1,
+      "closed": 235
     },
     "munger_sma10": {
       "open": 5,
       "closed": 203
     },
     "munger400l_sma10": {
-      "open": 3,
-      "closed": 10
+      "open": 2,
+      "closed": 11
     },
     "munger400r_sma10": {
-      "open": 24,
-      "closed": 39
+      "open": 16,
+      "closed": 47
     }
   },
   "reports": [
@@ -822,6 +822,11 @@
       "date": "2026-08-28",
       "path": "data/scraped/2026-08-28.json",
       "sha256": "6758db81f122332bfaf1394666f03d7396d8e08ecb2abbdeb6201dc608bf9070"
+    },
+    {
+      "date": "2026-09-01",
+      "path": "data/scraped/2026-09-01.json",
+      "sha256": "290d250dafbcad41fcc1121f9a2bd43f0fd7ef934566ee44b466f58d490dfdf2"
     }
   ]
 }
