@@ -2,7 +2,7 @@
   "_schema_version": 3,
   "_date_timezone": "UTC",
   "_fetched_from": "2025-09-09",
-  "_fetched_through": "2026-09-03",
+  "_fetched_through": "2026-09-04",
   "2025-09-09": {
     "open": 184.4,
     "high": 185.66,
@@ -1994,5 +1994,13 @@
     "close": 253.83,
     "volume": 4301498.250694,
     "vwap": 252.7089
+  },
+  "2026-09-04": {
+    "open": 256.56,
+    "high": 261.02,
+    "low": 255.495,
+    "close": 258.44,
+    "volume": 4244015.700667,
+    "vwap": 258.419
   }
 }
