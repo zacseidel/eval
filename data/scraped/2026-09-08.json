@@ -7,9 +7,7 @@
     "munger400r",
     "megacap",
     "sp500",
-    "sp400",
-    "industry_rank_up",
-    "industry_rank_down"
+    "sp400"
   ],
   "sp500": [
     {
@@ -602,90 +600,5 @@
       "new_entrant": false
     }
   ],
-  "universe_updates": [],
-  "industry_source_url": "https://zacseidel.github.io/momentum/reports/industry_2026-09-08.html",
-  "industry_rank_up": [
-    {
-      "ticker": "ANF",
-      "previous_rank": 518,
-      "current_rank": 108,
-      "rank_change": 410,
-      "return_12m": 56.9,
-      "rank": 1
-    },
-    {
-      "ticker": "CNH",
-      "previous_rank": 725,
-      "current_rank": 268,
-      "rank_change": 457,
-      "return_12m": 25.7,
-      "rank": 2
-    },
-    {
-      "ticker": "HOOD",
-      "previous_rank": 755,
-      "current_rank": 308,
-      "rank_change": 447,
-      "return_12m": 20.6,
-      "rank": 3
-    },
-    {
-      "ticker": "AGCO",
-      "previous_rank": 696,
-      "current_rank": 316,
-      "rank_change": 380,
-      "return_12m": 20.2,
-      "rank": 4
-    },
-    {
-      "ticker": "KDP",
-      "previous_rank": 719,
-      "current_rank": 385,
-      "rank_change": 334,
-      "return_12m": 13.8,
-      "rank": 5
-    }
-  ],
-  "industry_rank_down": [
-    {
-      "ticker": "FN",
-      "previous_rank": 112,
-      "current_rank": 433,
-      "rank_change": -321,
-      "return_12m": 10.1,
-      "rank": 1
-    },
-    {
-      "ticker": "AAL",
-      "previous_rank": 248,
-      "current_rank": 564,
-      "rank_change": -316,
-      "return_12m": 0.4,
-      "rank": 2
-    },
-    {
-      "ticker": "BURL",
-      "previous_rank": 281,
-      "current_rank": 663,
-      "rank_change": -382,
-      "return_12m": -8.9,
-      "rank": 3
-    },
-    {
-      "ticker": "VFC",
-      "previous_rank": 354,
-      "current_rank": 677,
-      "rank_change": -323,
-      "return_12m": -10.3,
-      "rank": 4
-    },
-    {
-      "ticker": "PVH",
-      "previous_rank": 407,
-      "current_rank": 721,
-      "rank_change": -314,
-      "return_12m": -15.3,
-      "rank": 5
-    }
-  ]
+  "universe_updates": []
 }

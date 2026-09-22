@@ -7,9 +7,7 @@
     "munger400r",
     "megacap",
     "sp500",
-    "sp400",
-    "industry_rank_up",
-    "industry_rank_down"
+    "sp400"
   ],
   "sp500": [
     {
@@ -523,91 +521,6 @@
       "cohort": "munger",
       "ticker": "AMGN",
       "action": "drop"
-    }
-  ],
-  "industry_source_url": "https://zacseidel.github.io/momentum/reports/industry_2026-09-11.html",
-  "industry_rank_up": [
-    {
-      "ticker": "ANF",
-      "previous_rank": 440,
-      "current_rank": 122,
-      "rank_change": 318,
-      "return_12m": 48.3,
-      "rank": 1
-    },
-    {
-      "ticker": "CNH",
-      "previous_rank": 750,
-      "current_rank": 290,
-      "rank_change": 460,
-      "return_12m": 20.1,
-      "rank": 2
-    },
-    {
-      "ticker": "KDP",
-      "previous_rank": 741,
-      "current_rank": 345,
-      "rank_change": 396,
-      "return_12m": 14.7,
-      "rank": 3
-    },
-    {
-      "ticker": "AGCO",
-      "previous_rank": 689,
-      "current_rank": 366,
-      "rank_change": 323,
-      "return_12m": 13.5,
-      "rank": 4
-    },
-    {
-      "ticker": "SNPS",
-      "previous_rank": 849,
-      "current_rank": 510,
-      "rank_change": 339,
-      "return_12m": 2.4,
-      "rank": 5
-    }
-  ],
-  "industry_rank_down": [
-    {
-      "ticker": "UAL",
-      "previous_rank": 228,
-      "current_rank": 557,
-      "rank_change": -329,
-      "return_12m": -0.9,
-      "rank": 1
-    },
-    {
-      "ticker": "PII",
-      "previous_rank": 246,
-      "current_rank": 559,
-      "rank_change": -313,
-      "return_12m": -1.0,
-      "rank": 2
-    },
-    {
-      "ticker": "AVGO",
-      "previous_rank": 230,
-      "current_rank": 570,
-      "rank_change": -340,
-      "return_12m": -2.4,
-      "rank": 3
-    },
-    {
-      "ticker": "BURL",
-      "previous_rank": 236,
-      "current_rank": 698,
-      "rank_change": -462,
-      "return_12m": -14.9,
-      "rank": 4
-    },
-    {
-      "ticker": "VFC",
-      "previous_rank": 343,
-      "current_rank": 709,
-      "rank_change": -366,
-      "return_12m": -15.7,
-      "rank": 5
     }
   ]
 }

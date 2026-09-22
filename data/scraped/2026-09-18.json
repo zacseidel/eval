@@ -7,9 +7,7 @@
     "munger400r",
     "megacap",
     "sp500",
-    "sp400",
-    "industry_rank_up",
-    "industry_rank_down"
+    "sp400"
   ],
   "sp500": [
     {
@@ -539,74 +537,5 @@
       "new_entrant": false
     }
   ],
-  "universe_updates": [],
-  "industry_source_url": "https://zacseidel.github.io/momentum/reports/industry_2026-09-18.html",
-  "industry_rank_up": [
-    {
-      "ticker": "ANF",
-      "previous_rank": 452,
-      "current_rank": 84,
-      "rank_change": 368,
-      "return_12m": 62.3,
-      "rank": 1
-    },
-    {
-      "ticker": "SAIC",
-      "previous_rank": 529,
-      "current_rank": 216,
-      "rank_change": 313,
-      "return_12m": 30.0,
-      "rank": 2
-    },
-    {
-      "ticker": "EBAY",
-      "previous_rank": 585,
-      "current_rank": 245,
-      "rank_change": 340,
-      "return_12m": 25.5,
-      "rank": 3
-    },
-    {
-      "ticker": "CNH",
-      "previous_rank": 737,
-      "current_rank": 249,
-      "rank_change": 488,
-      "return_12m": 24.9,
-      "rank": 4
-    },
-    {
-      "ticker": "SWKS",
-      "previous_rank": 682,
-      "current_rank": 262,
-      "rank_change": 420,
-      "return_12m": 22.6,
-      "rank": 5
-    }
-  ],
-  "industry_rank_down": [
-    {
-      "ticker": "MTZ",
-      "previous_rank": 98,
-      "current_rank": 428,
-      "rank_change": -330,
-      "return_12m": 7.4,
-      "rank": 1
-    },
-    {
-      "ticker": "FN",
-      "previous_rank": 79,
-      "current_rank": 448,
-      "rank_change": -369,
-      "return_12m": 6.3,
-      "rank": 2
-    },
-    {
-      "ticker": "RMBS",
-      "previous_rank": 230,
-      "current_rank": 677,
-      "rank_change": -447,
-      "return_12m": -11.9,
-      "rank": 3
-    }
-  ]
+  "universe_updates": []
 }
