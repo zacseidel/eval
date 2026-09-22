@@ -34,7 +34,7 @@ SMA_EXIT_LOOKBACK_DAYS = 30
 SMA10_SUFFIX = "_sma10"
 KELLY_MIN_CLOSED_TRADES = 20
 RISK_FREE_RATE_ANNUAL = 0.05
-PROCESSOR_VERSION = 8
+PROCESSOR_VERSION = 9
 
 # Every selection below is made only from ranks or membership in a scraped
 # report. The legacy IDs are retained so existing links keep working.
@@ -49,15 +49,34 @@ BASE_STRATEGIES = {
     "munger400l":       {"section": "munger400l", "ranks": None, "exit_model": "ema21"},
     "munger400r":       {"section": "munger400r", "ranks": None, "exit_model": "ema21"},
 }
+# Industry rank-change cards are their own entry rules, not SMA variants of a
+# rank-membership strategy. Positive changes exit below the 10-day SMA.
+# Negative changes exit above it.
+INDUSTRY_RANK_STRATEGIES = {
+    "industry_up5": {
+        "section": "industry_rank_up",
+        "ranks": range(1, 6),
+        "exit_model": "sma10",
+        "exit_direction": "below",
+    },
+    "industry_down5": {
+        "section": "industry_rank_down",
+        "ranks": range(1, 6),
+        "exit_model": "sma10",
+        "exit_direction": "above",
+    },
+}
 STRATEGIES = dict(BASE_STRATEGIES)
 STRATEGIES.update({
     f"{strategy_id}{SMA10_SUFFIX}": {
         **config,
         "variant_of": strategy_id,
         "exit_model": "sma10",
+        "exit_direction": "below",
     }
     for strategy_id, config in BASE_STRATEGIES.items()
 })
+STRATEGIES.update(INDUSTRY_RANK_STRATEGIES)
 
 
 def _parse_date(value: str) -> date:
@@ -130,6 +149,7 @@ def build_signal_snapshots(reports: list[dict]) -> list[dict]:
                     "source_sma_200": entry.get("sma_200"),
                     "source_return_12m": entry.get("return_12m"),
                     "source_return_1w": entry.get("return_1w"),
+                    "source_rank_change": entry.get("rank_change"),
                 })
             previous[strategy_id] = current
     return snapshots
@@ -245,6 +265,15 @@ def _ema_by_date(bars: list[dict], span: int = MUNGER_EMA_SPAN) -> dict[str, flo
     return values
 
 
+def _price_exit_triggered(close: float, level: float, direction: str) -> bool:
+    """True when a completed close breaches the indicator in ``direction``."""
+    if direction == "above":
+        return close > level
+    if direction == "below":
+        return close < level
+    raise ValueError(f"Unknown exit direction: {direction}")
+
+
 def _sma_by_date(bars: list[dict], window: int = SMA_EXIT_WINDOW) -> dict[str, float]:
     """Return a trailing close-based simple moving average."""
     closes = []
@@ -262,7 +291,8 @@ def _build_price_exit_ticker_positions(strategy_id: str, ticker: str,
                                        signal_dates: list[str], bars: list[dict],
                                        as_of: str, exit_levels: dict[str, float],
                                        exit_level_field: str,
-                                       reenter_on_exit_session: bool = False) -> list[dict]:
+                                       reenter_on_exit_session: bool = False,
+                                       exit_direction: str = "below") -> list[dict]:
     """Simulate report entries and next-session price-indicator exits."""
     positions = []
     open_position = None
@@ -310,7 +340,11 @@ def _build_price_exit_ticker_positions(strategy_id: str, ticker: str,
 
         exit_level = exit_levels.get(event_date)
         close = float(bar["close"])
-        if open_position is not None and exit_level is not None and close < exit_level:
+        if (
+            open_position is not None
+            and exit_level is not None
+            and _price_exit_triggered(close, exit_level, exit_direction)
+        ):
             open_position["exit_signal_date"] = event_date
             open_position["exit_signal_close"] = round(close, 4)
             open_position[exit_level_field] = round(exit_level, 4)
@@ -375,7 +409,11 @@ def _build_munger_positions(reports: list[dict], as_of: str) -> list[dict]:
 
 def _build_sma10_positions(reports: list[dict], strategy_id: str,
                            as_of: str) -> list[dict]:
-    """Buy from the base report signal; exit after a close below SMA10."""
+    """Buy from the report signal; exit the next session after an SMA10 breach.
+
+    The default breach is a close below the trailing 10-session average.
+    ``exit_direction`` of ``above`` sells after a close above that average.
+    """
     eligible_reports = _strategy_reports(reports, strategy_id)
     if not eligible_reports:
         return []
@@ -398,6 +436,7 @@ def _build_sma10_positions(reports: list[dict], strategy_id: str,
             _sma_by_date(bars),
             "exit_signal_sma_10",
             reenter_on_exit_session=True,
+            exit_direction=STRATEGIES[strategy_id].get("exit_direction", "below"),
         ))
     return positions
 
@@ -446,6 +485,7 @@ def validate_positions(positions: list[dict], as_of: str,
             technical_level_field = "exit_signal_ema_21"
         elif exit_model == "sma10":
             technical_level_field = "exit_signal_sma_10"
+        exit_direction = STRATEGIES[position["strategy"]].get("exit_direction", "below")
         if position["status"] == "closed":
             if position["exit_price"] is None or position["exit_price"] <= 0:
                 raise ValueError(f"Invalid exit price: {trade_id}")
@@ -458,10 +498,18 @@ def validate_positions(positions: list[dict], as_of: str,
                     raise ValueError(f"Technical exit has no signal: {trade_id}")
                 if position["exit_signal_date"] >= position["exit_date"]:
                     raise ValueError(f"Technical exit is not after its signal: {trade_id}")
-                if not position["exit_signal_close"] < position[technical_level_field]:
+                if not _price_exit_triggered(
+                    position["exit_signal_close"],
+                    position[technical_level_field],
+                    exit_direction,
+                ):
                     raise ValueError(f"Invalid technical exit signal: {trade_id}")
         elif technical_level_field and position["exit_signal_date"]:
-            if not position["exit_signal_close"] < position[technical_level_field]:
+            if not _price_exit_triggered(
+                position["exit_signal_close"],
+                position[technical_level_field],
+                exit_direction,
+            ):
                 raise ValueError(f"Invalid pending technical exit signal: {trade_id}")
             if position["exit_signal_date"] > position["current_date"]:
                 raise ValueError(f"Future pending technical exit signal: {trade_id}")
@@ -545,7 +593,7 @@ def prefetch_all_tickers(reports: list[dict], as_of: str,
         _parse_date(first_date) - timedelta(days=MUNGER_EMA_LOOKBACK_DAYS)
     ).isoformat()
     spy_start = (_parse_date(first_date) - timedelta(days=396)).isoformat()
-    report_sections = {config["section"] for config in BASE_STRATEGIES.values()}
+    report_sections = {config["section"] for config in STRATEGIES.values()}
     tickers = sorted({
         entry["ticker"]
         for report in reports
@@ -867,9 +915,28 @@ def _source_manifest(reports: list[dict], as_of: str,
             "lookback_calendar_days": SMA_EXIT_LOOKBACK_DAYS,
             "reentry": "a later qualifying report while flat opens a new trade",
         },
+        "industry_rank_changes": {
+            "strategy_ids": list(INDUSTRY_RANK_STRATEGIES),
+            "source": "industry report Stocks → Largest rank changes",
+            "selection": "published top 5 positive changes and top 5 negative changes",
+            "report_disappearance_exit": False,
+            "sma_window": SMA_EXIT_WINDOW,
+            "lookback_calendar_days": SMA_EXIT_LOOKBACK_DAYS,
+            "exit_execution": "next available trading session after the signal",
+            "reentry": "a later qualifying report while flat opens a new trade",
+            "industry_up5": {
+                "entry": "top 5 positive stock rank changes while flat",
+                "exit_signal": "daily split-adjusted close below trailing 10-session SMA",
+            },
+            "industry_down5": {
+                "entry": "top 5 negative stock rank changes while flat",
+                "exit_signal": "daily split-adjusted close above trailing 10-session SMA",
+            },
+        },
         "strategy_families": {
             "base": list(BASE_STRATEGIES),
             "sma10": [f"{strategy_id}{SMA10_SUFFIX}" for strategy_id in BASE_STRATEGIES],
+            "industry_rank": list(INDUSTRY_RANK_STRATEGIES),
         },
         "kelly": {
             "formula": "0.5 * max(0, p - q / b)",

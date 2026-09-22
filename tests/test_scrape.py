@@ -128,5 +128,153 @@ class MomentumSourceTests(unittest.TestCase):
 
 
 
+INDUSTRY_HTML = """
+<h3>Industries</h3>
+<h4>Largest rank changes</h4>
+<table>
+  <tr>
+    <td>Food (FOOD)</td><td class="num">#31</td><td class="num">#20</td>
+    <td class="num up">↑ 11</td><td class="num">+14.0%</td>
+  </tr>
+</table>
+<h3>Stocks</h3>
+<h4>Top-five comparison</h4>
+<table>
+  <tr>
+    <td>Sandisk Corporation Common Stock (SNDK)</td>
+    <td class="num">#1</td><td class="num">#1</td>
+    <td class="num">— 0</td><td class="num">+1.0%</td>
+  </tr>
+</table>
+<h4>Largest rank changes</h4>
+<table>
+  <thead><tr><th>Entity</th><th>Previous</th><th>Current</th><th>Change</th><th>Current return</th></tr></thead>
+  <tbody>
+    <tr>
+      <td>IES Holdings, Inc. Common Stock (IESC)</td>
+      <td class="num">#529</td><td class="num">#74</td>
+      <td class="num up">↑ 455</td><td class="num">+69.6%</td>
+    </tr>
+    <tr>
+      <td>Amphenol Corporation (APH)</td>
+      <td class="num">#828</td><td class="num">#214</td>
+      <td class="num up">↑ 614</td><td class="num">+30.3%</td>
+    </tr>
+    <tr>
+      <td>CNH INDUSTRIAL N.V. (CNH)</td>
+      <td class="num">#604</td><td class="num">#255</td>
+      <td class="num up">↑ 349</td><td class="num">+22.9%</td>
+    </tr>
+    <tr>
+      <td>Keurig Dr Pepper Inc. (KDP)</td>
+      <td class="num">#694</td><td class="num">#350</td>
+      <td class="num up">↑ 344</td><td class="num">+12.9%</td>
+    </tr>
+    <tr>
+      <td>Skyworks Solutions Inc (SWKS)</td>
+      <td class="num">#698</td><td class="num">#359</td>
+      <td class="num up">↑ 339</td><td class="num">+12.4%</td>
+    </tr>
+    <tr>
+      <td>Extra Gain (EXTRA)</td>
+      <td class="num">#10</td><td class="num">#1</td>
+      <td class="num up">↑ 900</td><td class="num">+1.0%</td>
+    </tr>
+    <tr>
+      <td>Casey's General Stores Inc (CASY)</td>
+      <td class="num">#108</td><td class="num">#432</td>
+      <td class="num down">↓ 324</td><td class="num">+7.0%</td>
+    </tr>
+    <tr>
+      <td>PG&amp;E Corporation (PCG)</td>
+      <td class="num">#359</td><td class="num">#685</td>
+      <td class="num down">↓ 326</td><td class="num">-13.2%</td>
+    </tr>
+  </tbody>
+</table>
+"""
+
+
+class IndustryRankScrapeTests(unittest.TestCase):
+    def test_stock_largest_rank_changes_keep_published_order_and_top_five(self):
+        up, down = scrape.parse_industry_stock_rank_changes(soup(INDUSTRY_HTML))
+
+        self.assertEqual(
+            ["IESC", "APH", "CNH", "KDP", "SWKS"],
+            [row["ticker"] for row in up],
+        )
+        self.assertEqual(1, up[0]["rank"])
+        self.assertEqual(455, up[0]["rank_change"])
+        self.assertEqual(529, up[0]["previous_rank"])
+        self.assertEqual(74, up[0]["current_rank"])
+        self.assertEqual(69.6, up[0]["return_12m"])
+        self.assertEqual(614, up[1]["rank_change"])
+        self.assertNotIn("EXTRA", [row["ticker"] for row in up])
+        self.assertNotIn("FOOD", [row["ticker"] for row in up + down])
+        self.assertNotIn("SNDK", [row["ticker"] for row in up + down])
+        self.assertEqual(["CASY", "PCG"], [row["ticker"] for row in down])
+        self.assertEqual(-324, down[0]["rank_change"])
+        self.assertEqual(-13.2, down[1]["return_12m"])
+
+    def test_empty_stock_rank_change_block_is_present(self):
+        parsed = scrape.parse_industry_stock_rank_changes(soup(
+            "<h3>Stocks</h3><h4>Largest rank changes</h4>"
+            "<p class='empty'>No qualifying names this week.</p>"
+        ))
+
+        self.assertEqual(([], []), parsed)
+
+    def test_industry_table_without_the_stocks_block_is_absent(self):
+        parsed = scrape.parse_industry_stock_rank_changes(soup(
+            "<h3>Industries</h3><h4>Largest rank changes</h4><table></table>"
+        ))
+
+        self.assertIsNone(parsed)
+
+    def test_cached_momentum_snapshot_still_fetches_a_new_industry_report(self):
+        report_date = "2026-09-08"
+        index = soup(
+            '<a href="reports/momentum_2026-09-08.html">September 8</a>'
+            '<a href="reports/industry_2026-09-08.html">Industry ranks</a>'
+        )
+        with tempfile.TemporaryDirectory() as temp_dir:
+            output = Path(temp_dir) / f"{report_date}.json"
+            output.write_text(json.dumps({
+                "date": report_date,
+                "source_url": scrape.report_url(report_date),
+                "sections_present": ["sp500"],
+                "sp500": [{"rank": 1, "ticker": "AAA"}],
+            }))
+            with patch.object(scrape, "SCRAPED_DIR", Path(temp_dir)), \
+                 patch.object(
+                     scrape, "fetch",
+                     side_effect=[index, soup(INDUSTRY_HTML)],
+                 ) as fetch_mock, \
+                 patch.object(scrape.time, "sleep"):
+                updated = scrape.scrape_all()
+            saved = json.loads(output.read_text())
+
+            with patch.object(scrape, "SCRAPED_DIR", Path(temp_dir)), \
+                 patch.object(scrape, "fetch", return_value=index) as second_fetch, \
+                 patch.object(scrape.time, "sleep"):
+                second = scrape.scrape_all()
+
+        self.assertEqual([report_date], updated)
+        self.assertEqual([], second)
+        self.assertEqual("AAA", saved["sp500"][0]["ticker"])
+        self.assertEqual(
+            scrape.industry_report_url(report_date),
+            saved["industry_source_url"],
+        )
+        self.assertEqual("IESC", saved["industry_rank_up"][0]["ticker"])
+        self.assertIn("industry_rank_up", saved["sections_present"])
+        self.assertIn("industry_rank_down", saved["sections_present"])
+        self.assertEqual(
+            scrape.industry_report_url(report_date),
+            fetch_mock.call_args_list[1].args[0],
+        )
+        second_fetch.assert_called_once_with(scrape.INDEX_URL)
+
+
 if __name__ == "__main__":
     unittest.main()

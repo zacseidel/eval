@@ -57,6 +57,24 @@ test("all-history chart preserves NAV while shorter ranges rebase", () => {
   assert.ok(Math.abs(rebased[1] - 109.0909090909091) < 1e-12);
 });
 
+test("industry rank-change cards appear only after their series exists", () => {
+  assert.equal(STRATEGY_META.industry_up5.label, "Rank Gains Top 5 · Below SMA10");
+  assert.equal(STRATEGY_META.industry_down5.label, "Rank Losses Top 5 · Above SMA10");
+
+  const before = getAvailableStrategyEntries({ sp500_top5: [] });
+  assert.equal(before.some(([sid]) => sid.startsWith("industry_")), false);
+
+  const after = getAvailableStrategyEntries({
+    sp500_top5: [],
+    industry_up5: [],
+    industry_down5: [],
+  });
+  assert.deepEqual(
+    after.map(([sid]) => sid).filter(sid => sid.startsWith("industry_")),
+    ["industry_up5", "industry_down5"],
+  );
+});
+
 test("Munger400L and Munger400R each have two cards and wait for processed series", () => {
   assert.equal(STRATEGY_META.munger400l.label, "Munger400L EMA21");
   assert.equal(STRATEGY_META.munger400l_sma10.label, "Munger400L SMA10");

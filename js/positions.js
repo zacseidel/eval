@@ -17,6 +17,8 @@ const STRATEGY_LABELS = {
   munger_sma10:           "Munger Signals · SMA10",
   munger400l_sma10:       "Munger400L SMA10",
   munger400r_sma10:       "Munger400R SMA10",
+  industry_up5:     "Rank Gains Top 5 · Below SMA10",
+  industry_down5:   "Rank Losses Top 5 · Above SMA10",
 };
 
 function exitLevel(p) {

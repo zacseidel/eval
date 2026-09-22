@@ -17,6 +17,8 @@ const STRATEGY_COLORS = {
   munger_sma10:           "#f472b6",
   munger400l_sma10:       "#22d3ee",
   munger400r_sma10:       "#f59e0b",
+  industry_up5:     "#4ade80",
+  industry_down5:   "#f87171",
   spy:          "#888888",
 };
 
@@ -39,6 +41,8 @@ const STRATEGY_LABELS = {
   munger_sma10:           "Munger Signals · SMA10",
   munger400l_sma10:       "Munger400L SMA10",
   munger400r_sma10:       "Munger400R SMA10",
+  industry_up5:     "Rank Gains Top 5 · Below SMA10",
+  industry_down5:   "Rank Losses Top 5 · Above SMA10",
   spy:          "SPY",
 };
 
@@ -75,7 +79,8 @@ function buildCumulativeChart(range) {
     "sp400_mcap5", "sp400_mcap_next5", "munger", "munger400l", "munger400r",
     "sp500_top5_sma10", "sp500_next5_sma10", "megacap_top5_sma10",
     "megacap_next5_sma10", "sp400_mcap5_sma10", "sp400_mcap_next5_sma10",
-    "munger_sma10", "munger400l_sma10", "munger400r_sma10", "spy",
+    "munger_sma10", "munger400l_sma10", "munger400r_sma10",
+    "industry_up5", "industry_down5", "spy",
   ];
   const orderedEntries = [
     ...strategyOrder.filter(sid => _strategyReturns[sid]).map(sid => [sid, _strategyReturns[sid]]),
@@ -152,8 +157,9 @@ function buildRolling3mChart() {
     if (!Array.isArray(series) || series.length === 0) continue;
     const last = series[series.length - 1];
     const val = last.rolling_3m;
+    if (val == null) continue;
     labels.push(STRATEGY_LABELS[sid] ?? sid);
-    values.push(val ?? 0);
+    values.push(val);
     colors.push(STRATEGY_COLORS[sid] ?? "#888");
   }
 
@@ -274,7 +280,7 @@ export function renderScatterCharts(positions) {
 
 export function renderCharts(strategyReturns) {
   _strategyReturns = strategyReturns;
-  for (const sid of ["munger400l", "munger400r"]) {
+  for (const sid of ["munger400l", "munger400r", "industry_up5", "industry_down5"]) {
     const scatter = document.getElementById(`scatter-container-${sid}`);
     if (scatter) scatter.classList.toggle("hidden", !Array.isArray(strategyReturns[sid]));
   }

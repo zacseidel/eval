@@ -10,7 +10,8 @@ sys.path.insert(0, str(SCRAPER_DIR))
 import process
 
 
-def report(report_date, munger=None, sp500=None, munger400l=None, munger400r=None):
+def report(report_date, munger=None, sp500=None, munger400l=None, munger400r=None,
+           industry_rank_up=None, industry_rank_down=None):
     result = {
         "date": report_date,
         "munger": munger or [],
@@ -22,7 +23,20 @@ def report(report_date, munger=None, sp500=None, munger400l=None, munger400r=Non
         result["munger400l"] = munger400l
     if munger400r is not None:
         result["munger400r"] = munger400r
+    if industry_rank_up is not None:
+        result["industry_rank_up"] = industry_rank_up
+    if industry_rank_down is not None:
+        result["industry_rank_down"] = industry_rank_down
     return result
+
+
+def rank_change(ticker, rank, change):
+    return {
+        "ticker": ticker,
+        "rank": rank,
+        "rank_change": change,
+        "return_12m": 10.0,
+    }
 
 
 def munger_entry(ticker, rank=1, new=True):
@@ -354,6 +368,143 @@ class SmaVariantLifecycleTests(unittest.TestCase):
         self.assertEqual("2026-01-06", positions[0]["exit_signal_date"])
         self.assertEqual("2026-01-07", positions[0]["exit_date"])
         process.validate_positions(positions, "2026-01-07")
+
+
+class IndustryRankChangeTests(unittest.TestCase):
+    @staticmethod
+    def _flat_then_jump():
+        bars = []
+        current = date(2026, 8, 17)
+        while current <= date(2026, 9, 11):
+            if current.weekday() < 5:
+                close = 130.0 if current >= date(2026, 9, 9) else 100.0
+                bars.append({
+                    "date": current.isoformat(),
+                    "open": close,
+                    "close": close,
+                    "vwap": close,
+                })
+            current += timedelta(days=1)
+        return bars
+
+    def test_positive_rank_changes_exit_after_a_close_below_sma10(self):
+        bars = self._flat_then_jump()
+        # 90 is below the trailing average of 100s; 100 equal to it is not.
+        bars[-1]["close"] = 90.0
+        bars[-1]["open"] = 90.0
+        bars[-1]["vwap"] = 90.0
+        reports = [report(
+            "2026-09-08",
+            industry_rank_up=[rank_change("UP", 1, 400)],
+        )]
+
+        with patch.object(process, "get_daily_bars", return_value=bars):
+            positions = process._build_sma10_positions(
+                reports, "industry_up5", "2026-09-11"
+            )
+
+        self.assertEqual(1, len(positions))
+        self.assertEqual("industry_up5", positions[0]["strategy"])
+        self.assertEqual("2026-09-08", positions[0]["signal_date"])
+        self.assertEqual("2026-09-08", positions[0]["entry_date"])
+        self.assertEqual("2026-09-11", positions[0]["exit_signal_date"])
+        self.assertIsNone(positions[0]["exit_date"])
+        self.assertLess(
+            positions[0]["exit_signal_close"],
+            positions[0]["exit_signal_sma_10"],
+        )
+        process.validate_positions(positions, "2026-09-11")
+
+    def test_negative_rank_changes_exit_the_next_session_after_a_close_above_sma10(self):
+        bars = self._flat_then_jump()
+        reports = [
+            report("2026-09-04", industry_rank_down=[rank_change("DOWN", 1, -300)]),
+            report("2026-09-08"),
+            report("2026-09-11", industry_rank_down=[rank_change("DOWN", 1, -280)]),
+        ]
+
+        with patch.object(process, "get_daily_bars", return_value=bars):
+            positions = process._build_sma10_positions(
+                reports, "industry_down5", "2026-09-11"
+            )
+
+        self.assertEqual(2, len(positions))
+        closed, reopened = positions
+        self.assertEqual("2026-09-09", closed["exit_signal_date"])
+        self.assertEqual("2026-09-10", closed["exit_date"])
+        self.assertGreater(closed["exit_signal_close"], closed["exit_signal_sma_10"])
+        self.assertEqual(30.0, closed["return_pct"])
+        # The September 8 report has no rank-loss row. The next qualifying
+        # report, after the sale, opens a new trade.
+        self.assertEqual("2026-09-11", reopened["signal_date"])
+        self.assertEqual("2026-09-11", reopened["entry_date"])
+        self.assertEqual("open", reopened["status"])
+        signals = process.build_signal_snapshots(reports)
+        process.validate_positions(positions, "2026-09-11", signals)
+        down_signals = [s for s in signals if s["strategy"] == "industry_down5"]
+        self.assertEqual(
+            ["2026-09-04", "2026-09-11"],
+            [s["report_date"] for s in down_signals],
+        )
+        self.assertEqual(-300, down_signals[0]["source_rank_change"])
+
+    def test_leaving_the_top_five_does_not_close_an_industry_rank_trade(self):
+        bars = [
+            {**bar, "open": 100.0, "close": 100.0, "vwap": 100.0}
+            for bar in self._flat_then_jump()
+        ]
+        reports = [
+            report("2026-09-08", industry_rank_up=[rank_change("UP", 1, 400)]),
+            report("2026-09-11", industry_rank_up=[rank_change("OTHER", 1, 500)]),
+        ]
+
+        with patch.object(process, "get_daily_bars", return_value=bars):
+            positions = process.build_positions(reports, "2026-09-11")
+
+        held = next(
+            p for p in positions
+            if p["strategy"] == "industry_up5" and p["ticker"] == "UP"
+        )
+        self.assertEqual("open", held["status"])
+        self.assertIsNone(held["exit_date"])
+        self.assertIsNone(held["exit_signal_date"])
+
+    def test_rank_six_and_reports_without_the_section_are_ignored(self):
+        reports = [
+            report("2026-09-01"),
+            report("2026-09-08", industry_rank_up=[
+                rank_change("UP", 1, 400),
+                rank_change("SKIP", 6, 100),
+            ], industry_rank_down=[
+                rank_change("DOWN", 1, -300),
+            ]),
+        ]
+
+        snapshots = process.build_signal_snapshots(reports)
+        self.assertEqual(
+            [],
+            [s for s in snapshots if s["report_date"] == "2026-09-01" and s["strategy"].startswith("industry_")],
+        )
+        self.assertEqual(
+            ["UP"],
+            [s["ticker"] for s in snapshots if s["strategy"] == "industry_up5"],
+        )
+        self.assertEqual(
+            ["DOWN"],
+            [s["ticker"] for s in snapshots if s["strategy"] == "industry_down5"],
+        )
+
+    def test_above_sma_exit_rejects_a_close_below_the_average(self):
+        position = process._new_position(
+            "industry_down5", "DOWN", "2026-09-08", "2026-09-08", 100.0
+        )
+        position["exit_signal_date"] = "2026-09-09"
+        position["exit_signal_close"] = 90.0
+        position["exit_signal_sma_10"] = 100.0
+        position = process._close_position(position, "2026-09-09", "2026-09-10", 90.0)
+
+        with self.assertRaises(ValueError):
+            process.validate_positions([position], "2026-09-10")
 
 
 class PortfolioLedgerTests(unittest.TestCase):

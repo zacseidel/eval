@@ -17,10 +17,20 @@ export const STRATEGY_META = {
   munger_sma10:           { label: "Munger Signals · SMA10", color: "#f472b6" },
   munger400l_sma10:       { label: "Munger400L SMA10", color: "#22d3ee" },
   munger400r_sma10:       { label: "Munger400R SMA10", color: "#f59e0b" },
+  industry_up5:     { label: "Rank Gains Top 5 · Below SMA10", color: "#4ade80" },
+  industry_down5:   { label: "Rank Losses Top 5 · Above SMA10", color: "#f87171" },
 };
 
 function isSma10(sid) {
   return sid.endsWith("_sma10");
+}
+
+function isIndustryRank(sid) {
+  return sid === "industry_up5" || sid === "industry_down5";
+}
+
+function showsPendingExit(sid) {
+  return isMungerFamily(sid) || isSma10(sid) || isIndustryRank(sid);
 }
 
 function isMungerFamily(sid) {
@@ -146,7 +156,7 @@ function buildCard(item) {
       <div class="card-footer">
         <span>${openCount} open</span>
         <span>${closedCount} closed</span>
-        ${isMungerFamily(sid) || isSma10(sid) ? `<span>${pendingExitCount} exit pending</span>` : ""}
+        ${showsPendingExit(sid) ? `<span>${pendingExitCount} exit pending</span>` : ""}
         ${isMungerFamily(sid) ? `<span>${signalTickers.length} current signals</span>` : ""}
       </div>
       ${openTickers.length ? `<div class="ticker-tags">${openTickers.map(t => `<span class="ticker-tag">${t}</span>`).join("")}</div>` : ""}
@@ -211,12 +221,18 @@ function renderCards(sortKey) {
 
   const primaryGrid = document.getElementById("strategy-grid");
   const smaGrid = document.getElementById("sma-strategy-grid");
+  const industryGrid = document.getElementById("industry-strategy-grid");
   primaryGrid.innerHTML = "";
   smaGrid.innerHTML = "";
+  industryGrid.innerHTML = "";
   sorted.forEach(item => {
-    const grid = isSma10(item.sid) ? smaGrid : primaryGrid;
+    const grid = isIndustryRank(item.sid)
+      ? industryGrid
+      : isSma10(item.sid) ? smaGrid : primaryGrid;
     grid.appendChild(buildCard(item));
   });
+  const industrySection = document.getElementById("industry-strategy-section");
+  if (industrySection) industrySection.hidden = industryGrid.childElementCount === 0;
 }
 
 export function renderStrategies(

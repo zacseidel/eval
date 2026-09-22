@@ -45,6 +45,8 @@ GitHub Actions runs the pipeline every **Tuesday and Friday at 7 PM MDT**, after
 | `munger` | Buy a qualifying report signal while flat; exit after a daily close below its 21-day EMA |
 | `munger400l` | Buy a qualifying Munger400L large-midcap report signal while flat; exit after a daily close below its 21-day EMA |
 | `munger400r` | Buy a qualifying Munger400R former-return-leader report signal while flat; exit after a daily close below its 21-day EMA |
+| `industry_up5` | Buy a top-5 positive stock rank change from the industry report while flat; exit after a daily close below its 10-day SMA |
+| `industry_down5` | Buy a top-5 negative stock rank change from the industry report while flat; exit after a daily close above its 10-day SMA |
 
 All entries use the first trading session on or after the report signal (VWAP when available, else midpoint of open/close). Rank-based positions close when a later report drops the ticker from the selected slot. For Munger and both Munger400 EMA21 models, each completed daily split-adjusted close is compared with its close-based 21-day EMA; a close below the EMA signals an exit for the next available trading session. This one-session delay prevents look-ahead. An entry session is eligible to create an EMA exit signal at that session's close, and continuing report membership can open a later trade once the prior trade has exited. Portfolios are equal-weighted and rebalanced on trade-event dates, then marked daily at split-adjusted closes.
 
@@ -57,6 +59,12 @@ Every base strategy also has a parallel evaluation whose ID adds `_sma10` (for e
 After entry, each completed adjusted close is compared with the arithmetic mean of that session and the prior nine trading-session closes. A close below that trailing 10-session SMA signals a mandatory sale on the next available trading session. If a new report recommendation is available on that exit session, the sale executes first and the recommendation opens a new trade at that session's execution price. This keeps both the technical exit and the scraped buy signal auditable without using future data. The calculation follows [NIST's definition of a simple moving average](https://www.itl.nist.gov/div898/handbook/pmc/section4/pmc421.htm).
 
 The overview displays the nine base-strategy cards under **Primary exit rules** and the nine `_sma10` cards under **10-day SMA exit variants**. Each Munger400 model therefore has two cards. Every card has its own returns, Sharpe ratios, open/closed counts, pending exits, and half-Kelly estimate.
+
+### Industry rank-change evaluations
+
+Once an industry-rank report is published, two more cards appear under **Industry rank changes**. Both read the **Stocks → Largest rank changes** table and ignore the industry table above it. `industry_up5` buys the five largest positive rank changes. `industry_down5` buys the five largest negative rank changes. A name is bought on the first available session after a qualifying report while that strategy is flat. Leaving a later report's top 5 does not close the trade.
+
+`industry_up5` sells on the next session after a completed close below the trailing 10-session SMA. `industry_down5` sells on the next session after a completed close above that same SMA. A close equal to the average does not exit. The sale is delayed one session, and a new report recommendation on the exit session opens a new trade only after the sale. Both cards use the same return, Sharpe, position-count, and half-Kelly figures as the other evaluations. A strategy's series starts on the first report that contains its table.
 
 ### Half-Kelly sizing
 
@@ -176,4 +184,4 @@ No build step. The frontend is three ES modules loaded directly by `index.html`:
 
 ## Source reports
 
-Reports are scraped from [zacseidel.github.io/momentum](https://zacseidel.github.io/momentum/) at paths like `/reports/momentum_YYYY-MM-DD.html`. Each raw snapshot records its `source_url`; snapshots without the current source URL are refreshed on the next scrape. The evaluator recognizes **SP500 Leaders**, **Megacap Leaders**, **SP400 Leaders**, **Munger Strategy**, **Munger400L** (`summary-munger400l`), and **Munger400R** (`summary-munger400r`). Each Munger400 evaluation begins with the first report containing its source section.
+Reports are scraped from [zacseidel.github.io/momentum](https://zacseidel.github.io/momentum/) at paths like `/reports/momentum_YYYY-MM-DD.html`. Industry rank changes come from the linked `/reports/industry_YYYY-MM-DD.html` pages and are stored on the same date snapshot. Each raw snapshot records its `source_url`; an industry page also records `industry_source_url`. A snapshot is refreshed when either URL is missing or out of date. The evaluator recognizes **SP500 Leaders**, **Megacap Leaders**, **SP400 Leaders**, **Munger Strategy**, **Munger400L** (`summary-munger400l`), **Munger400R** (`summary-munger400r`), and the industry report's **Stocks → Largest rank changes** table. Each evaluation begins with the first report containing its source section.
