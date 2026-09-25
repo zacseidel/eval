@@ -8,6 +8,7 @@ const STRATEGY_COLORS = {
   munger:           "#f472b6",
   munger400l:       "#22d3ee",
   munger400r:       "#f59e0b",
+  megalaggards2:    "#e879f9",
   sp500_top5_sma10:       "#6c8ef7",
   sp500_next5_sma10:      "#a78bfa",
   megacap_top5_sma10:     "#34d399",
@@ -17,6 +18,7 @@ const STRATEGY_COLORS = {
   munger_sma10:           "#f472b6",
   munger400l_sma10:       "#22d3ee",
   munger400r_sma10:       "#f59e0b",
+  megalaggards2_sma10:    "#e879f9",
   industry_up5:     "#4ade80",
   industry_down5:   "#f87171",
   spy:          "#888888",
@@ -32,6 +34,7 @@ const STRATEGY_LABELS = {
   munger:           "Munger 21-Day EMA",
   munger400l:       "Munger400L EMA21",
   munger400r:       "Munger400R EMA21",
+  megalaggards2:    "Mega Laggards 2 · Hold 21",
   sp500_top5_sma10:       "S&P 500 Top 5 · SMA10",
   sp500_next5_sma10:      "S&P 500 Next 5 · SMA10",
   megacap_top5_sma10:     "Megacap Top 5 · SMA10",
@@ -41,6 +44,7 @@ const STRATEGY_LABELS = {
   munger_sma10:           "Munger Signals · SMA10",
   munger400l_sma10:       "Munger400L SMA10",
   munger400r_sma10:       "Munger400R SMA10",
+  megalaggards2_sma10:    "Mega Laggards 2 · SMA10",
   industry_up5:     "Rank Gains Top 5 · Below SMA10",
   industry_down5:   "Rank Losses Top 5 · Above SMA10",
   spy:          "SPY",
@@ -77,10 +81,10 @@ function buildCumulativeChart(range) {
   const strategyOrder = [
     "sp500_top5", "sp500_next5", "megacap_top5", "megacap_next5",
     "sp400_mcap5", "sp400_mcap_next5", "munger", "munger400l", "munger400r",
-    "sp500_top5_sma10", "sp500_next5_sma10", "megacap_top5_sma10",
+    "megalaggards2", "sp500_top5_sma10", "sp500_next5_sma10", "megacap_top5_sma10",
     "megacap_next5_sma10", "sp400_mcap5_sma10", "sp400_mcap_next5_sma10",
     "munger_sma10", "munger400l_sma10", "munger400r_sma10",
-    "industry_up5", "industry_down5", "spy",
+    "megalaggards2_sma10", "industry_up5", "industry_down5", "spy",
   ];
   const orderedEntries = [
     ...strategyOrder.filter(sid => _strategyReturns[sid]).map(sid => [sid, _strategyReturns[sid]]),
@@ -280,7 +284,7 @@ export function renderScatterCharts(positions) {
 
 export function renderCharts(strategyReturns) {
   _strategyReturns = strategyReturns;
-  for (const sid of ["munger400l", "munger400r", "industry_up5", "industry_down5"]) {
+  for (const sid of ["munger400l", "munger400r", "megalaggards2", "industry_up5", "industry_down5"]) {
     const scatter = document.getElementById(`scatter-container-${sid}`);
     if (scatter) scatter.classList.toggle("hidden", !Array.isArray(strategyReturns[sid]));
   }

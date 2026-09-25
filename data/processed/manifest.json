@@ -1,9 +1,9 @@
 {
-  "processor_version": 8,
+  "processor_version": 10,
   "price_cache_schema_version": 3,
-  "as_of": "2026-09-22",
+  "as_of": "2026-09-25",
   "latest_report_date": "2026-09-22",
-  "market_data_through": "2026-09-21",
+  "market_data_through": "2026-09-24",
   "entry_signal_source": "scraped_reports_only",
   "rank_exit_signal_source": "scraped_report_membership_only",
   "execution_price": "report entries on first available session; technical exits on next session; VWAP with midpoint fallback",
@@ -16,7 +16,7 @@
     "ema_span": 21,
     "ema_lookback_calendar_days": 120,
     "entry_session_exit_signal_count": 45,
-    "entry_session_exit_signal_pct": 26.95
+    "entry_session_exit_signal_pct": 26.32
   },
   "ema21_strategies": {
     "strategy_ids": [
@@ -33,23 +33,23 @@
       "munger": {
         "source_section": "munger",
         "first_report_date": "2026-02-04",
-        "position_count": 167,
+        "position_count": 171,
         "entry_session_exit_signal_count": 45,
-        "entry_session_exit_signal_pct": 26.95
+        "entry_session_exit_signal_pct": 26.32
       },
       "munger400l": {
         "source_section": "munger400l",
         "first_report_date": "2026-08-18",
-        "position_count": 17,
+        "position_count": 19,
         "entry_session_exit_signal_count": 9,
-        "entry_session_exit_signal_pct": 52.94
+        "entry_session_exit_signal_pct": 47.37
       },
       "munger400r": {
         "source_section": "munger400r",
         "first_report_date": "2026-08-18",
-        "position_count": 91,
-        "entry_session_exit_signal_count": 36,
-        "entry_session_exit_signal_pct": 39.56
+        "position_count": 99,
+        "entry_session_exit_signal_count": 38,
+        "entry_session_exit_signal_pct": 38.38
       }
     }
   },
@@ -63,6 +63,37 @@
     "lookback_calendar_days": 30,
     "reentry": "a later qualifying report while flat opens a new trade"
   },
+  "hold21_strategies": {
+    "strategy_ids": [
+      "megalaggards2"
+    ],
+    "entry": "every qualifying scraped report listing opens a new lot, even while already holding the ticker",
+    "exit": "first available session 21 trading sessions after entry",
+    "report_disappearance_exit": false,
+    "weighting": "equal weight per open lot, so a ticker's weight scales with its open lot count",
+    "kelly_caveat": "overlapping lots are correlated; independent_run_count merges them into continuous holding runs"
+  },
+  "industry_rank_changes": {
+    "strategy_ids": [
+      "industry_up5",
+      "industry_down5"
+    ],
+    "source": "industry report Stocks \u2192 Largest rank changes",
+    "selection": "published top 5 positive changes and top 5 negative changes",
+    "report_disappearance_exit": false,
+    "sma_window": 10,
+    "lookback_calendar_days": 30,
+    "exit_execution": "next available trading session after the signal",
+    "reentry": "a later qualifying report while flat opens a new trade",
+    "industry_up5": {
+      "entry": "top 5 positive stock rank changes while flat",
+      "exit_signal": "daily split-adjusted close below trailing 10-session SMA"
+    },
+    "industry_down5": {
+      "entry": "top 5 negative stock rank changes while flat",
+      "exit_signal": "daily split-adjusted close above trailing 10-session SMA"
+    }
+  },
   "strategy_families": {
     "base": [
       "sp500_top5",
@@ -73,7 +104,8 @@
       "sp400_mcap_next5",
       "munger",
       "munger400l",
-      "munger400r"
+      "munger400r",
+      "megalaggards2"
     ],
     "sma10": [
       "sp500_top5_sma10",
@@ -84,7 +116,12 @@
       "sp400_mcap_next5_sma10",
       "munger_sma10",
       "munger400l_sma10",
-      "munger400r_sma10"
+      "munger400r_sma10",
+      "megalaggards2_sma10"
+    ],
+    "industry_rank": [
+      "industry_up5",
+      "industry_down5"
     ]
   },
   "kelly": {
@@ -98,6 +135,7 @@
   "strategy_trade_stats": {
     "sp500_top5": {
       "closed_count": 61,
+      "independent_run_count": null,
       "winner_count": 35,
       "loser_count": 26,
       "breakeven_count": 0,
@@ -113,23 +151,25 @@
       "kelly_status": "calculated"
     },
     "sp500_next5": {
-      "closed_count": 139,
-      "winner_count": 63,
+      "closed_count": 140,
+      "independent_run_count": null,
+      "winner_count": 64,
       "loser_count": 76,
       "breakeven_count": 0,
-      "winner_pct": 45.32,
-      "loser_pct": 54.68,
-      "average_win_pct": 8.94,
+      "winner_pct": 45.71,
+      "loser_pct": 54.29,
+      "average_win_pct": 8.86,
       "average_loss_pct": -5.95,
-      "payoff_ratio": 1.5011,
-      "full_kelly_pct": 8.9,
-      "half_kelly_pct": 4.45,
+      "payoff_ratio": 1.4879,
+      "full_kelly_pct": 9.23,
+      "half_kelly_pct": 4.62,
       "minimum_closed_trades": 20,
       "minimum_sample_met": true,
       "kelly_status": "calculated"
     },
     "megacap_top5": {
       "closed_count": 69,
+      "independent_run_count": null,
       "winner_count": 30,
       "loser_count": 38,
       "breakeven_count": 1,
@@ -146,6 +186,7 @@
     },
     "megacap_next5": {
       "closed_count": 130,
+      "independent_run_count": null,
       "winner_count": 54,
       "loser_count": 73,
       "breakeven_count": 3,
@@ -162,6 +203,7 @@
     },
     "sp400_mcap5": {
       "closed_count": 99,
+      "independent_run_count": null,
       "winner_count": 53,
       "loser_count": 46,
       "breakeven_count": 0,
@@ -177,39 +219,42 @@
       "kelly_status": "calculated"
     },
     "sp400_mcap_next5": {
-      "closed_count": 190,
-      "winner_count": 82,
-      "loser_count": 108,
+      "closed_count": 193,
+      "independent_run_count": null,
+      "winner_count": 84,
+      "loser_count": 109,
       "breakeven_count": 0,
-      "winner_pct": 43.16,
-      "loser_pct": 56.84,
-      "average_win_pct": 6.18,
+      "winner_pct": 43.52,
+      "loser_pct": 56.48,
+      "average_win_pct": 6.07,
       "average_loss_pct": -5.74,
-      "payoff_ratio": 1.077,
-      "full_kelly_pct": -9.62,
+      "payoff_ratio": 1.0575,
+      "full_kelly_pct": -9.88,
       "half_kelly_pct": 0.0,
       "minimum_closed_trades": 20,
       "minimum_sample_met": true,
       "kelly_status": "calculated"
     },
     "munger": {
-      "closed_count": 163,
+      "closed_count": 165,
+      "independent_run_count": null,
       "winner_count": 63,
-      "loser_count": 99,
+      "loser_count": 101,
       "breakeven_count": 1,
-      "winner_pct": 38.65,
-      "loser_pct": 60.74,
+      "winner_pct": 38.18,
+      "loser_pct": 61.21,
       "average_win_pct": 6.75,
-      "average_loss_pct": -3.06,
-      "payoff_ratio": 2.2071,
-      "full_kelly_pct": 11.2,
-      "half_kelly_pct": 5.6,
+      "average_loss_pct": -3.05,
+      "payoff_ratio": 2.214,
+      "full_kelly_pct": 10.6,
+      "half_kelly_pct": 5.3,
       "minimum_closed_trades": 20,
       "minimum_sample_met": true,
       "kelly_status": "calculated"
     },
     "munger400l": {
       "closed_count": 13,
+      "independent_run_count": null,
       "winner_count": 3,
       "loser_count": 10,
       "breakeven_count": 0,
@@ -225,169 +270,247 @@
       "kelly_status": "insufficient_sample"
     },
     "munger400r": {
-      "closed_count": 76,
-      "winner_count": 26,
-      "loser_count": 50,
+      "closed_count": 81,
+      "independent_run_count": null,
+      "winner_count": 28,
+      "loser_count": 53,
       "breakeven_count": 0,
-      "winner_pct": 34.21,
-      "loser_pct": 65.79,
-      "average_win_pct": 2.18,
-      "average_loss_pct": -3.32,
-      "payoff_ratio": 0.6552,
-      "full_kelly_pct": -66.2,
+      "winner_pct": 34.57,
+      "loser_pct": 65.43,
+      "average_win_pct": 2.11,
+      "average_loss_pct": -3.49,
+      "payoff_ratio": 0.6053,
+      "full_kelly_pct": -73.54,
       "half_kelly_pct": 0.0,
       "minimum_closed_trades": 20,
       "minimum_sample_met": true,
       "kelly_status": "calculated"
     },
-    "sp500_top5_sma10": {
-      "closed_count": 189,
-      "winner_count": 87,
-      "loser_count": 102,
+    "megalaggards2": {
+      "closed_count": 122,
+      "independent_run_count": 9,
+      "winner_count": 72,
+      "loser_count": 50,
       "breakeven_count": 0,
-      "winner_pct": 46.03,
-      "loser_pct": 53.97,
-      "average_win_pct": 8.28,
-      "average_loss_pct": -5.12,
-      "payoff_ratio": 1.6165,
-      "full_kelly_pct": 12.65,
-      "half_kelly_pct": 6.32,
+      "winner_pct": 59.02,
+      "loser_pct": 40.98,
+      "average_win_pct": 10.45,
+      "average_loss_pct": -4.99,
+      "payoff_ratio": 2.0958,
+      "full_kelly_pct": 39.46,
+      "half_kelly_pct": 19.73,
+      "minimum_closed_trades": 20,
+      "minimum_sample_met": true,
+      "kelly_status": "calculated"
+    },
+    "sp500_top5_sma10": {
+      "closed_count": 191,
+      "independent_run_count": null,
+      "winner_count": 88,
+      "loser_count": 103,
+      "breakeven_count": 0,
+      "winner_pct": 46.07,
+      "loser_pct": 53.93,
+      "average_win_pct": 8.24,
+      "average_loss_pct": -5.08,
+      "payoff_ratio": 1.6234,
+      "full_kelly_pct": 12.85,
+      "half_kelly_pct": 6.43,
       "minimum_closed_trades": 20,
       "minimum_sample_met": true,
       "kelly_status": "calculated"
     },
     "sp500_next5_sma10": {
-      "closed_count": 213,
-      "winner_count": 87,
+      "closed_count": 215,
+      "independent_run_count": null,
+      "winner_count": 89,
       "loser_count": 126,
       "breakeven_count": 0,
-      "winner_pct": 40.85,
-      "loser_pct": 59.15,
-      "average_win_pct": 6.69,
+      "winner_pct": 41.4,
+      "loser_pct": 58.6,
+      "average_win_pct": 6.65,
       "average_loss_pct": -4.8,
-      "payoff_ratio": 1.3943,
-      "full_kelly_pct": -1.58,
+      "payoff_ratio": 1.3863,
+      "full_kelly_pct": -0.88,
       "half_kelly_pct": 0.0,
       "minimum_closed_trades": 20,
       "minimum_sample_met": true,
       "kelly_status": "calculated"
     },
     "megacap_top5_sma10": {
-      "closed_count": 205,
+      "closed_count": 206,
+      "independent_run_count": null,
       "winner_count": 81,
-      "loser_count": 124,
+      "loser_count": 125,
       "breakeven_count": 0,
-      "winner_pct": 39.51,
-      "loser_pct": 60.49,
+      "winner_pct": 39.32,
+      "loser_pct": 60.68,
       "average_win_pct": 7.0,
-      "average_loss_pct": -3.32,
-      "payoff_ratio": 2.1122,
-      "full_kelly_pct": 10.88,
-      "half_kelly_pct": 5.44,
+      "average_loss_pct": -3.31,
+      "payoff_ratio": 2.1144,
+      "full_kelly_pct": 10.62,
+      "half_kelly_pct": 5.31,
       "minimum_closed_trades": 20,
       "minimum_sample_met": true,
       "kelly_status": "calculated"
     },
     "megacap_next5_sma10": {
-      "closed_count": 219,
-      "winner_count": 88,
+      "closed_count": 221,
+      "independent_run_count": null,
+      "winner_count": 90,
       "loser_count": 130,
       "breakeven_count": 1,
-      "winner_pct": 40.18,
-      "loser_pct": 59.36,
-      "average_win_pct": 2.91,
+      "winner_pct": 40.72,
+      "loser_pct": 58.82,
+      "average_win_pct": 2.88,
       "average_loss_pct": -2.26,
-      "payoff_ratio": 1.2894,
-      "full_kelly_pct": -5.88,
+      "payoff_ratio": 1.2743,
+      "full_kelly_pct": -5.46,
       "half_kelly_pct": 0.0,
       "minimum_closed_trades": 20,
       "minimum_sample_met": true,
       "kelly_status": "calculated"
     },
     "sp400_mcap5_sma10": {
-      "closed_count": 226,
+      "closed_count": 227,
+      "independent_run_count": null,
       "winner_count": 105,
-      "loser_count": 121,
+      "loser_count": 122,
       "breakeven_count": 0,
-      "winner_pct": 46.46,
-      "loser_pct": 53.54,
+      "winner_pct": 46.26,
+      "loser_pct": 53.74,
       "average_win_pct": 6.46,
-      "average_loss_pct": -5.01,
-      "payoff_ratio": 1.2907,
-      "full_kelly_pct": 4.98,
-      "half_kelly_pct": 2.49,
+      "average_loss_pct": -4.99,
+      "payoff_ratio": 1.2942,
+      "full_kelly_pct": 4.73,
+      "half_kelly_pct": 2.36,
       "minimum_closed_trades": 20,
       "minimum_sample_met": true,
       "kelly_status": "calculated"
     },
     "sp400_mcap_next5_sma10": {
-      "closed_count": 254,
+      "closed_count": 257,
+      "independent_run_count": null,
       "winner_count": 102,
-      "loser_count": 152,
+      "loser_count": 155,
       "breakeven_count": 0,
-      "winner_pct": 40.16,
-      "loser_pct": 59.84,
+      "winner_pct": 39.69,
+      "loser_pct": 60.31,
       "average_win_pct": 5.56,
-      "average_loss_pct": -4.35,
-      "payoff_ratio": 1.2774,
-      "full_kelly_pct": -6.69,
+      "average_loss_pct": -4.37,
+      "payoff_ratio": 1.2738,
+      "full_kelly_pct": -7.66,
       "half_kelly_pct": 0.0,
       "minimum_closed_trades": 20,
       "minimum_sample_met": true,
       "kelly_status": "calculated"
     },
     "munger_sma10": {
-      "closed_count": 219,
+      "closed_count": 220,
+      "independent_run_count": null,
       "winner_count": 95,
-      "loser_count": 124,
+      "loser_count": 125,
       "breakeven_count": 0,
-      "winner_pct": 43.38,
-      "loser_pct": 56.62,
+      "winner_pct": 43.18,
+      "loser_pct": 56.82,
       "average_win_pct": 4.14,
-      "average_loss_pct": -2.53,
-      "payoff_ratio": 1.6318,
-      "full_kelly_pct": 8.68,
-      "half_kelly_pct": 4.34,
+      "average_loss_pct": -2.52,
+      "payoff_ratio": 1.6383,
+      "full_kelly_pct": 8.5,
+      "half_kelly_pct": 4.25,
       "minimum_closed_trades": 20,
       "minimum_sample_met": true,
       "kelly_status": "calculated"
     },
     "munger400l_sma10": {
-      "closed_count": 18,
+      "closed_count": 20,
+      "independent_run_count": null,
       "winner_count": 6,
-      "loser_count": 12,
+      "loser_count": 14,
       "breakeven_count": 0,
-      "winner_pct": 33.33,
-      "loser_pct": 66.67,
+      "winner_pct": 30.0,
+      "loser_pct": 70.0,
       "average_win_pct": 2.22,
-      "average_loss_pct": -3.07,
-      "payoff_ratio": 0.7226,
+      "average_loss_pct": -2.76,
+      "payoff_ratio": 0.805,
+      "full_kelly_pct": -56.96,
+      "half_kelly_pct": 0.0,
+      "minimum_closed_trades": 20,
+      "minimum_sample_met": true,
+      "kelly_status": "calculated"
+    },
+    "munger400r_sma10": {
+      "closed_count": 111,
+      "independent_run_count": null,
+      "winner_count": 43,
+      "loser_count": 68,
+      "breakeven_count": 0,
+      "winner_pct": 38.74,
+      "loser_pct": 61.26,
+      "average_win_pct": 2.06,
+      "average_loss_pct": -3.38,
+      "payoff_ratio": 0.6095,
+      "full_kelly_pct": -61.77,
+      "half_kelly_pct": 0.0,
+      "minimum_closed_trades": 20,
+      "minimum_sample_met": true,
+      "kelly_status": "calculated"
+    },
+    "megalaggards2_sma10": {
+      "closed_count": 92,
+      "independent_run_count": null,
+      "winner_count": 48,
+      "loser_count": 44,
+      "breakeven_count": 0,
+      "winner_pct": 52.17,
+      "loser_pct": 47.83,
+      "average_win_pct": 2.72,
+      "average_loss_pct": -1.7,
+      "payoff_ratio": 1.5973,
+      "full_kelly_pct": 22.23,
+      "half_kelly_pct": 11.12,
+      "minimum_closed_trades": 20,
+      "minimum_sample_met": true,
+      "kelly_status": "calculated"
+    },
+    "industry_up5": {
+      "closed_count": 12,
+      "independent_run_count": null,
+      "winner_count": 3,
+      "loser_count": 9,
+      "breakeven_count": 0,
+      "winner_pct": 25.0,
+      "loser_pct": 75.0,
+      "average_win_pct": 0.53,
+      "average_loss_pct": -4.34,
+      "payoff_ratio": 0.1221,
       "full_kelly_pct": null,
       "half_kelly_pct": null,
       "minimum_closed_trades": 20,
       "minimum_sample_met": false,
       "kelly_status": "insufficient_sample"
     },
-    "munger400r_sma10": {
-      "closed_count": 108,
-      "winner_count": 42,
-      "loser_count": 66,
-      "breakeven_count": 0,
-      "winner_pct": 38.89,
-      "loser_pct": 61.11,
-      "average_win_pct": 2.11,
-      "average_loss_pct": -3.24,
-      "payoff_ratio": 0.65,
-      "full_kelly_pct": -55.13,
-      "half_kelly_pct": 0.0,
+    "industry_down5": {
+      "closed_count": 13,
+      "independent_run_count": null,
+      "winner_count": 6,
+      "loser_count": 6,
+      "breakeven_count": 1,
+      "winner_pct": 46.15,
+      "loser_pct": 46.15,
+      "average_win_pct": 5.08,
+      "average_loss_pct": -0.46,
+      "payoff_ratio": 11.0,
+      "full_kelly_pct": null,
+      "half_kelly_pct": null,
       "minimum_closed_trades": 20,
-      "minimum_sample_met": true,
-      "kelly_status": "calculated"
+      "minimum_sample_met": false,
+      "kelly_status": "insufficient_sample"
     }
   },
   "report_count": 79,
-  "signal_snapshot_count": 6368,
-  "position_count": 2688,
+  "signal_snapshot_count": 6690,
+  "position_count": 2999,
   "positions_by_strategy": {
     "sp500_top5": {
       "open": 5,
@@ -395,7 +518,7 @@
     },
     "sp500_next5": {
       "open": 5,
-      "closed": 139
+      "closed": 140
     },
     "megacap_top5": {
       "open": 5,
@@ -411,272 +534,288 @@
     },
     "sp400_mcap_next5": {
       "open": 5,
-      "closed": 190
+      "closed": 193
     },
     "munger": {
-      "open": 4,
-      "closed": 163
+      "open": 6,
+      "closed": 165
     },
     "munger400l": {
-      "open": 4,
+      "open": 6,
       "closed": 13
     },
     "munger400r": {
-      "open": 15,
-      "closed": 76
+      "open": 18,
+      "closed": 81
+    },
+    "megalaggards2": {
+      "open": 16,
+      "closed": 122
     },
     "sp500_top5_sma10": {
-      "open": 4,
-      "closed": 189
+      "open": 3,
+      "closed": 191
     },
     "sp500_next5_sma10": {
-      "open": 6,
-      "closed": 213
+      "open": 5,
+      "closed": 215
     },
     "megacap_top5_sma10": {
-      "open": 5,
-      "closed": 205
+      "open": 4,
+      "closed": 206
     },
     "megacap_next5_sma10": {
       "open": 3,
-      "closed": 219
+      "closed": 221
     },
     "sp400_mcap5_sma10": {
-      "open": 3,
-      "closed": 226
+      "open": 4,
+      "closed": 227
     },
     "sp400_mcap_next5_sma10": {
-      "open": 5,
-      "closed": 254
+      "open": 6,
+      "closed": 257
     },
     "munger_sma10": {
-      "open": 4,
-      "closed": 219
+      "open": 7,
+      "closed": 220
     },
     "munger400l_sma10": {
-      "open": 3,
-      "closed": 18
+      "open": 4,
+      "closed": 20
     },
     "munger400r_sma10": {
-      "open": 11,
-      "closed": 108
+      "open": 17,
+      "closed": 111
+    },
+    "megalaggards2_sma10": {
+      "open": 3,
+      "closed": 92
+    },
+    "industry_up5": {
+      "open": 5,
+      "closed": 12
+    },
+    "industry_down5": {
+      "open": 4,
+      "closed": 13
     }
   },
   "reports": [
     {
       "date": "2026-01-07",
       "path": "data/scraped/2026-01-07.json",
-      "sha256": "0f08e634c9a8a40f9cbf09865e8712c6f0dbc446e9a0d0158b41f67ee11ac590"
+      "sha256": "c92d527bd9466b40c06715e05b7c09d185fc67e2487ffbac06878c52a6c1b94d"
     },
     {
       "date": "2026-01-08",
       "path": "data/scraped/2026-01-08.json",
-      "sha256": "4227ac620cd2ab5f94e15a0c6cf6081b293130f60c48f8f37b8a5c98a76b2b9c"
+      "sha256": "76c4a77c36363d8c279723a44e7418c96828475dc2bafe505ef059b7f2abdb97"
     },
     {
       "date": "2026-01-09",
       "path": "data/scraped/2026-01-09.json",
-      "sha256": "73df5a73bec079538fe670bf0b3b165877fcfd591d8ef49e76223561a9af61ad"
+      "sha256": "f8819d0ca7a11cb3fa24644034927603bb8ba024aad43fd1fb7a3ccb30d1f00f"
     },
     {
       "date": "2026-01-10",
       "path": "data/scraped/2026-01-10.json",
-      "sha256": "8c84b5cbb022bd398080cc5878b1743cfb2f00026171a26ca37c893ac47a64ce"
+      "sha256": "9d11841f6a914e07a4eb72795d7e9195c02a40a2aaa1f119f0ae67563eaced9c"
     },
     {
       "date": "2026-01-13",
       "path": "data/scraped/2026-01-13.json",
-      "sha256": "ecbe7c75cbd0af6d6856ae09ac84d48e84f3f65b6dcc7e8f8d9d94ca3fd9588c"
+      "sha256": "e30ce8909edd25ed5643ad97100a8a2d903da6d4371d9e757a2b2bc23fd8654b"
     },
     {
       "date": "2026-01-14",
       "path": "data/scraped/2026-01-14.json",
-      "sha256": "62a3d6dd952ecff93a15c52e996ef5cd57a80953eb1b76ceb47f29827e050d29"
+      "sha256": "548ce102746b46950cb80d66f3df28e4183fef1a34f2a435742a569f9f42fcf6"
     },
     {
       "date": "2026-01-16",
       "path": "data/scraped/2026-01-16.json",
-      "sha256": "d02d91453dd6c1c343aeb7b2bdfebddeca154416bc1ca33bef43de69edd9a08c"
+      "sha256": "6c6eac84ff845af929ff3d6b9a197e3bf1088a7b4df84a9f21d8779ea73e983e"
     },
     {
       "date": "2026-01-20",
       "path": "data/scraped/2026-01-20.json",
-      "sha256": "5230f3da723ef80e4529ba96c83f09332840ae837b4ed87055f87176deeb84e9"
+      "sha256": "8585f3d53256496a519c9c047a68992cb5d16e22a29f9175316473f9be2746c2"
     },
     {
       "date": "2026-01-23",
       "path": "data/scraped/2026-01-23.json",
-      "sha256": "6994cadaca0031d9a75dd68eac73ceaa66fb568b086dc665396e6c7a75f2c8a4"
+      "sha256": "d1b86e178094e37d5c7453160d06c321d44051c5542935eb63a1d1b3fad12207"
     },
     {
       "date": "2026-01-27",
       "path": "data/scraped/2026-01-27.json",
-      "sha256": "1ea4939da48dbb008d0c43a599db807d359a3029414d0facf19a1a9a8b90474e"
+      "sha256": "b7f5d016e5725bcc401bc8125fe6c4a9f16c9e8113ddb32adbc58b26e4bf6abb"
     },
     {
       "date": "2026-01-30",
       "path": "data/scraped/2026-01-30.json",
-      "sha256": "42177b44cce683a06902752e6d322fb260177fa5f8beca376173093cb07a7d6d"
+      "sha256": "7de5ea2a291bb698f8eff1f2203964563673b67819d2c5949f9bf2da9cd86bb1"
     },
     {
       "date": "2026-02-03",
       "path": "data/scraped/2026-02-03.json",
-      "sha256": "5f8270d3a551dc8c0e381b952440b036469f412919652f4b5310517d1ab5e5de"
+      "sha256": "8983f2332b773422974814e9a13c012a1904f43580e6deda712c8f1914de32e0"
     },
     {
       "date": "2026-02-04",
       "path": "data/scraped/2026-02-04.json",
-      "sha256": "97a166d4baef41c269d8468f5e4f156d2cfe7b19ab27c62943fbbe7c61cee623"
+      "sha256": "a4b447cb97128311e98eddceed5d4eaafb2ddfef09d977c7b81517973fe0a89a"
     },
     {
       "date": "2026-02-06",
       "path": "data/scraped/2026-02-06.json",
-      "sha256": "55de25f1f5294416354d6cdb227b5f09c233911ed9a33412a3c3d35b8b87b7e4"
+      "sha256": "ce21185cba26fda3f7c583b32c2c7615e38474a8da12b24feed2618ad0e1a171"
     },
     {
       "date": "2026-02-10",
       "path": "data/scraped/2026-02-10.json",
-      "sha256": "9f004a1102f6df424efecb45f069f8a8f5d79b9f6de06f99e5bf09a7d5247adc"
+      "sha256": "3e966ccbd7d994dd8d757df01ce813ad814e6ca55f281c104da32f579d3904dc"
     },
     {
       "date": "2026-02-13",
       "path": "data/scraped/2026-02-13.json",
-      "sha256": "4b5e367ed06b3abffe582937f2ed0a46edb6a112fc39bdd155ec9d4f29601999"
+      "sha256": "91f05048576cfe9e727b943b5e6a0321d10d96b4a13465743fb649e089108c0a"
     },
     {
       "date": "2026-02-17",
       "path": "data/scraped/2026-02-17.json",
-      "sha256": "d52880fb1d3f5045054b13be59a305386398c63747efe4093d0f872b88d1929b"
+      "sha256": "af056d9158654e7093dde2c9de528291b2f18773c80ba7e71e7931aeaf6f4e2b"
     },
     {
       "date": "2026-02-20",
       "path": "data/scraped/2026-02-20.json",
-      "sha256": "2e814fee80723ea60b2333e424833ee9d42d57a10d224fdfbe27fed5ab01a00d"
+      "sha256": "6f482f6a4eb9aabdcc4be587fe594d59879b9884720143643fe997c3ee500551"
     },
     {
       "date": "2026-02-24",
       "path": "data/scraped/2026-02-24.json",
-      "sha256": "9e56e77ec38b709897b3460e24e85acc3dc5d9a4ee4a842c234e8c16f268060f"
+      "sha256": "34ba092a26c8011f30f17359de3f399136dd9bb041841012feae254cf9d45a74"
     },
     {
       "date": "2026-02-27",
       "path": "data/scraped/2026-02-27.json",
-      "sha256": "60548e43f26989aad5ccf206d66e0d0e5074f942a7b9b88350cebbaf7fdc9858"
+      "sha256": "4be0f7a0e082b600b6c678340e71e09f7bcf1daeb117cc1f6deb48af2b064f1e"
     },
     {
       "date": "2026-03-03",
       "path": "data/scraped/2026-03-03.json",
-      "sha256": "2791707db1fda46870239ff53d639d6e9ddba129b108a74f61e015a44f229dda"
+      "sha256": "27f44219dce1de921e9644e4b24c2fdc7c97df5820eee9e89abdde48e113cc73"
     },
     {
       "date": "2026-03-06",
       "path": "data/scraped/2026-03-06.json",
-      "sha256": "f4aab5bd6353d6b74f67eb884cf8dcc47abfaaddb42031aeed0e71c73436fe22"
+      "sha256": "cd7c239165ca2520e06518823b0817ca327a56ac653a07441e4af121de945f34"
     },
     {
       "date": "2026-03-10",
       "path": "data/scraped/2026-03-10.json",
-      "sha256": "d584e7e3487cd09494da195e1415c76a97c0affd7f8a3a62d4a88ae1c1db2390"
+      "sha256": "6d331dd646e18bd3cb64cc06e47a2e1127f44fb9ab23077c0d66c4aab884fba1"
     },
     {
       "date": "2026-03-13",
       "path": "data/scraped/2026-03-13.json",
-      "sha256": "bde22a2ea3b507d100cb946245caf87a31d0972f543766c9b8ad60f678d082c0"
+      "sha256": "eb9076e1ab00496899ec8b748da2454d4f804e5d81abe2f378bdcfb3f9ef1a89"
     },
     {
       "date": "2026-03-17",
       "path": "data/scraped/2026-03-17.json",
-      "sha256": "cb27c17501b8635202ec1036f951c21464cdfae1840bbe86288a3c5943c7feff"
+      "sha256": "f8a02a1193497696cd818ae4f52e60257f598f8adf8ca32622d6a1107826a958"
     },
     {
       "date": "2026-03-20",
       "path": "data/scraped/2026-03-20.json",
-      "sha256": "51fd24f1de895bd65de452e9d54c411ce8337d740ea03affe941d3e6b51972fa"
+      "sha256": "5044ab623c2955c404ac218146e000507297aa32f3bfd318b6617076325195b8"
     },
     {
       "date": "2026-03-24",
       "path": "data/scraped/2026-03-24.json",
-      "sha256": "c47d13e8946389f67c23d206cc4991d336e697e00be1f84dbf0eea42f49fc47e"
+      "sha256": "aa836b3c058cbb781c14acec365ca3fc1b49756d07caabf9a25479cd9825dbfd"
     },
     {
       "date": "2026-03-27",
       "path": "data/scraped/2026-03-27.json",
-      "sha256": "ad0674849b9d01ff6de31650de2653514e030d56bdd33d59e5f441be89c4bcf4"
+      "sha256": "886da04ab39bf5cb3e335631f5fd7b38ab2d07e29d3066188dc7a756a8437092"
     },
     {
       "date": "2026-03-31",
       "path": "data/scraped/2026-03-31.json",
-      "sha256": "93b482d95d3f5320196a70a6354000c1b62b75ad03144273b6d41c3b86fca4b4"
+      "sha256": "27b1ecf2b78d1f715b52a0fe1e267780ee5446ba7b132a8dd05ef62f846276ba"
     },
     {
       "date": "2026-04-03",
       "path": "data/scraped/2026-04-03.json",
-      "sha256": "7a3b41ea885fe66e88a3f1910c958cb15ec9d2126fb4e35ec7da5d22b155b89c"
+      "sha256": "5d16fb6d3d40275cb617e4fcf589d40501a0b5bc9c710dc3f755e7b1eb1c957d"
     },
     {
       "date": "2026-04-07",
       "path": "data/scraped/2026-04-07.json",
-      "sha256": "7ebefb9d79cdd8dd7c8b502421a216291d8f5ab842ccb6dbe063d6101fbe4fb9"
+      "sha256": "3a5b7f29af6a05d693e7a271b596d1157626385d48a6d58f372b6377e703f51f"
     },
     {
       "date": "2026-04-10",
       "path": "data/scraped/2026-04-10.json",
-      "sha256": "7cc93f204b73bf8f67b501698288c7991529e205897ceec54dd30d972756c1da"
+      "sha256": "1070d440841a1086bc26e19bf2a2263d4b02570e34da4cb1ebcd3969df217e89"
     },
     {
       "date": "2026-04-14",
       "path": "data/scraped/2026-04-14.json",
-      "sha256": "079f4e391f236149644010f418abc347071ec47a81f1eeaed1226d1c55145609"
+      "sha256": "4687efbc2204c0dce4929676377003bf27da09e23964b8f37c353f322abd0e58"
     },
     {
       "date": "2026-04-17",
       "path": "data/scraped/2026-04-17.json",
-      "sha256": "3d72813d372d857eb060395c12ea92c663fdd45541a3e268632b12e11158d75f"
+      "sha256": "72cd07c9e1ba5500e2dba6ffc047e54dc732d71df8932c40953de39a2f2f46fd"
     },
     {
       "date": "2026-04-21",
       "path": "data/scraped/2026-04-21.json",
-      "sha256": "b3763a543032f9df028c99f3922d1142667c53dbe4c476c6e76d624df088120e"
+      "sha256": "58df7fd9d549309b3a9d945381f016f20c34dd638a436d06a03e45ec0050d3fc"
     },
     {
       "date": "2026-04-24",
       "path": "data/scraped/2026-04-24.json",
-      "sha256": "58d9f9528f1d7ac3fd5f2555584d838f0b7beba618d382c07a0c81fe2dc21254"
+      "sha256": "53133a86cec72e2a4fc789b17df37c3f4515120bf10e31227345d889c67f2c00"
     },
     {
       "date": "2026-04-28",
       "path": "data/scraped/2026-04-28.json",
-      "sha256": "db5f40e5a70e9ab40d47bb5981ec1eb57a4946cbdcf306961804696e440891a1"
+      "sha256": "4387846c8580c7ee2675f8351da361cfabd97d149d3ab0b9a486eb21b77090eb"
     },
     {
       "date": "2026-05-01",
       "path": "data/scraped/2026-05-01.json",
-      "sha256": "d35dac544007d5baa0e73d91e6c54cd3e2e5208752e0e33dfb57d596a21c5f3c"
+      "sha256": "9aef217818f0b8002125350cfff8c70d2574caa42bd667b2d9b934013a24a3a5"
     },
     {
       "date": "2026-05-05",
       "path": "data/scraped/2026-05-05.json",
-      "sha256": "577f9bb402c7a43696e38de17ac1cc1aba95e38f858bee6b885e677853f98f19"
+      "sha256": "a2393ceeedcc01cffbc86f5681fcd18fe3e79765322b43ee3d7540a2caec778d"
     },
     {
       "date": "2026-05-08",
       "path": "data/scraped/2026-05-08.json",
-      "sha256": "10af4cad678451ceab29f9bbd52f1710004fe21451f1d3685b5797a2c754ae1c"
+      "sha256": "5ceee010fa0a929055a06e7a4840909de8553b5a97aa841e7200400725ba7447"
     },
     {
       "date": "2026-05-12",
       "path": "data/scraped/2026-05-12.json",
-      "sha256": "a67d35f295540121776c4e795db9b7435fe583afc8c27bb4867a0a40d2235d55"
+      "sha256": "6085d27d996a14aff13d1bdf2b86b3b90a0e9e14dfbe45fadab212193c33ce9e"
     },
     {
       "date": "2026-05-15",
       "path": "data/scraped/2026-05-15.json",
-      "sha256": "6cbc614c69141e9c15445425404c0927124fc9ceefd6950efd53059638442a84"
+      "sha256": "713216915cba786ee7a6ae46db8112641d7f89d02bcaaf38de554310c89b9f06"
     },
     {
       "date": "2026-05-19",
       "path": "data/scraped/2026-05-19.json",
-      "sha256": "578112c39018d3c3042030e01a1cf08669f9fb07afdbe85cfb2df12b4fb8bcca"
+      "sha256": "2a4d4c9f4ffe6fad93d5959deec6bea02d418ef764f50fba992f575a91b2f81e"
     },
     {
       "date": "2026-05-22",
@@ -696,167 +835,167 @@
     {
       "date": "2026-06-02",
       "path": "data/scraped/2026-06-02.json",
-      "sha256": "1325c450a2aad59f67659262251cc6114446d8723606e6aa0d30792b2d738981"
+      "sha256": "3640a9ea951c479f902ff621571fdb4b519a027649dd220fde39f8bd2e68952f"
     },
     {
       "date": "2026-06-05",
       "path": "data/scraped/2026-06-05.json",
-      "sha256": "31f50b61c97d99b1c0d3bf7ad2fb441c3a2c9300e45177475fd9d3ce89d1a9ab"
+      "sha256": "5186e4ed4c6d6fc50a1db0951a855283be45d838d8cd812a486e57dd76603c26"
     },
     {
       "date": "2026-06-09",
       "path": "data/scraped/2026-06-09.json",
-      "sha256": "2af3434cf7e12c774cff4209686f6542d7575bbe7311091ff0bd98134ebbc117"
+      "sha256": "04ecc389593ae1ec3cec394be385d1853864791b833af0c41de8a0a67d0aa33f"
     },
     {
       "date": "2026-06-12",
       "path": "data/scraped/2026-06-12.json",
-      "sha256": "8dfc7618188c58d1012758039bb726f0d00a3c4a5c89beb44699468cfdaa3fff"
+      "sha256": "8f5a81dcd9dff3d7b44dba9cca440e1a8320b107d7d4e88a49f0d452a5542a56"
     },
     {
       "date": "2026-06-16",
       "path": "data/scraped/2026-06-16.json",
-      "sha256": "414d31286773cc7ab2ed06729720605c1f12dbffa135fd1c213a7cbf260e5ccf"
+      "sha256": "d8890812e15798e06875c5ca8a583593801ba9a269ba78bd86c7b2e34ea51fe9"
     },
     {
       "date": "2026-06-19",
       "path": "data/scraped/2026-06-19.json",
-      "sha256": "d7ee6f52ecfa66fed95e3c701e5b9d4af9b9caf439241f8dacae2591c998d71b"
+      "sha256": "203dedbdd53e26174a1485799d4161c73ee2c42d1d03aebb6cf4b839749e1e39"
     },
     {
       "date": "2026-06-23",
       "path": "data/scraped/2026-06-23.json",
-      "sha256": "5bb02ef0cb0cbdf31953d2aefde646038e60de751fee445674daaf67f6fd5653"
+      "sha256": "f281f2208dd0da0222e93ac926cca2c15a26b0d9b40255eb597dfe87260a6246"
     },
     {
       "date": "2026-06-26",
       "path": "data/scraped/2026-06-26.json",
-      "sha256": "16715b41b770e92d6dc1bffb55ff0e0df9727ec639817252b7f34fba04ba8823"
+      "sha256": "a9ce9506d8d5e885024749d83e94db78782d52d00c1068e46d650a31b9f5a5e7"
     },
     {
       "date": "2026-06-30",
       "path": "data/scraped/2026-06-30.json",
-      "sha256": "c3958c50c88110fd82873e632d1888d27328dca826516ce74d5d18385457e0f4"
+      "sha256": "0941b4dd54ece172612a8f8878cc44f120708268bb5910ae5ffe4d4b9b77348d"
     },
     {
       "date": "2026-07-03",
       "path": "data/scraped/2026-07-03.json",
-      "sha256": "3a4f3f453d946dfbeaff98a6fffd0e1af3f8f3a894e92b448a9ef4671a7c412b"
+      "sha256": "48aabc3118a5f12272195ebb7d4ef4874592b0620c6d0410f8f9fe1563c7911a"
     },
     {
       "date": "2026-07-07",
       "path": "data/scraped/2026-07-07.json",
-      "sha256": "aa8854e6aa7c638bf7b157b9a62eb20080059f03c9dc337aa4887fee73350482"
+      "sha256": "35801d212bd534d6741fa69d7e0ff580f0eaf5497c565cb69d64045a71b5ff09"
     },
     {
       "date": "2026-07-10",
       "path": "data/scraped/2026-07-10.json",
-      "sha256": "a74f5072c41f3afa341d39314539e195c65db8619bfadd9dffa1d245840c8560"
+      "sha256": "2dde504db8c31a1137fb947943eeb1669171493d776b6c6fae624a82407d71b4"
     },
     {
       "date": "2026-07-14",
       "path": "data/scraped/2026-07-14.json",
-      "sha256": "808499de9155b257b5cfcf2fbec231aec928e3e33c1fe52f611b9f02f77c7762"
+      "sha256": "454ab0a8b802e511847d4ff6ae0788c8cfd14c033cfe822a4f9b3d9a836660d6"
     },
     {
       "date": "2026-07-17",
       "path": "data/scraped/2026-07-17.json",
-      "sha256": "a9a9095649e965ffd05a558efbb75da254badd856b9acd84369fa6ec38522ce7"
+      "sha256": "8376d0d0882fb1b26f4f9568860e96a9afbac1923d49c580b3635b6ab7fd7958"
     },
     {
       "date": "2026-07-21",
       "path": "data/scraped/2026-07-21.json",
-      "sha256": "b5eab56071271f0b1a1ddc6f3b4b0a23d074b5d68dcb2588274e45fb5f5c3505"
+      "sha256": "f8cf1ee50441ba6531685597683361ecfbe7599f49b9f5e6531f772342186a9e"
     },
     {
       "date": "2026-07-24",
       "path": "data/scraped/2026-07-24.json",
-      "sha256": "0eaf81b4e935d9704927e70de52eea57814cbe9ceb658f1d642aac5306655000"
+      "sha256": "a2290bf0f4f40de2fda154bb80e40f87eee41afa3efa215479f716ed0b4b699a"
     },
     {
       "date": "2026-07-28",
       "path": "data/scraped/2026-07-28.json",
-      "sha256": "08ffa24b5ef3eed51f25e505872601a5c37c37abb8c350adfa7ed6a410773436"
+      "sha256": "c13fdbd80f3c78370a1795f1d75c0108d3a8a9651ecadc9f05408ac907eb534d"
     },
     {
       "date": "2026-07-31",
       "path": "data/scraped/2026-07-31.json",
-      "sha256": "8035c719f860193136cc378943a5c0b1a05af3de2d565294c579e4c1818465d1"
+      "sha256": "4ab171bc350fc3b1118c4322c0af9f32c7507e6bf77e52b8fbed0337da41c3ae"
     },
     {
       "date": "2026-08-04",
       "path": "data/scraped/2026-08-04.json",
-      "sha256": "867820cbfc1967d2728f10b97fe39611d824cc932113bc1b481f28149f9d8ef1"
+      "sha256": "71585f096c0266c9d47309ba9c04e1794585e569f7c300b3a2bb8cb3fcd72ff7"
     },
     {
       "date": "2026-08-07",
       "path": "data/scraped/2026-08-07.json",
-      "sha256": "adf31db59332214ae5c8d0d9f2ebc841feffdbb39158950c36eda8279dcaeee3"
+      "sha256": "31e81fdc6858a52b0d522fc70c3d981fb23af78b756074a910f2f692d011181d"
     },
     {
       "date": "2026-08-11",
       "path": "data/scraped/2026-08-11.json",
-      "sha256": "eecad961fd0725537756b6d920df6d4442706d4d21a38c0dd4a0446fab7df94e"
+      "sha256": "cb8266bdc83fff0a77b1a07021bc76e8796eba3ddc917ce5e76a600499537490"
     },
     {
       "date": "2026-08-14",
       "path": "data/scraped/2026-08-14.json",
-      "sha256": "a6938460e24d5bc44a339d528f34568ef45711d04d84f27ed5cac254a71e1c1e"
+      "sha256": "4f16978ba0e74a0803471c3124ebc8cd11c605ab16ea1341859ddcebc4b98dd6"
     },
     {
       "date": "2026-08-18",
       "path": "data/scraped/2026-08-18.json",
-      "sha256": "9de339b40ffaeea59935346d846fe2a6edd5f911b9f7b6808e8258599ecda8a5"
+      "sha256": "a40e2789e2c4942cb251fc16871728d47e107bf7ec3783f401084336fa749e04"
     },
     {
       "date": "2026-08-21",
       "path": "data/scraped/2026-08-21.json",
-      "sha256": "9c80f95250f573087816a89a452bed9e6adf9ba457b3f8fc96c60d797c041876"
+      "sha256": "dc7ef1dd083291e783b617d062b2559032f4fa9f7bb5cac74d8e5b1397f49e35"
     },
     {
       "date": "2026-08-25",
       "path": "data/scraped/2026-08-25.json",
-      "sha256": "64fe9bbd2d3ef5d8266c6111da6ffc3aacf4289c187bfedf8fc7960eb48b2dcd"
+      "sha256": "dabd72407b824f4d7006f907e8406f3bdbe298148974e9867aed69ed5d93b367"
     },
     {
       "date": "2026-08-28",
       "path": "data/scraped/2026-08-28.json",
-      "sha256": "6758db81f122332bfaf1394666f03d7396d8e08ecb2abbdeb6201dc608bf9070"
+      "sha256": "3e0afaa5d60f0f8a1113421a9157465e7e9a53ec90341849d3bca97d7b2b98e7"
     },
     {
       "date": "2026-09-01",
       "path": "data/scraped/2026-09-01.json",
-      "sha256": "290d250dafbcad41fcc1121f9a2bd43f0fd7ef934566ee44b466f58d490dfdf2"
+      "sha256": "9acc75479ad5373fa3649a6f2f0f81e1b71d208cfa2c162503d39342e842ee34"
     },
     {
       "date": "2026-09-04",
       "path": "data/scraped/2026-09-04.json",
-      "sha256": "744d8478cf34985bc756c1a7f1e7df50ebefb3aea5efb84a04ef00ac6020af75"
+      "sha256": "81b54b478048e02e2b0d155ce998a34264b7e6a3426892066cbe772d2aa89955"
     },
     {
       "date": "2026-09-08",
       "path": "data/scraped/2026-09-08.json",
-      "sha256": "5ef175ee20ff2960a1a8be95a46f9d276c2de1588ed2830e363cd09d3db45c0f"
+      "sha256": "6c0d789b509be384334841cba387b317b8e6e24be208470615a5efd441059d8a"
     },
     {
       "date": "2026-09-11",
       "path": "data/scraped/2026-09-11.json",
-      "sha256": "f9c6710b40842941bf53230fabbd4ac6a8942be96a061e30c13ec312a6dfac59"
+      "sha256": "793c528ef2a7ecfa0a6f1bcde91b336d7eb88613458544d72dd96d66c615d56a"
     },
     {
       "date": "2026-09-15",
       "path": "data/scraped/2026-09-15.json",
-      "sha256": "a98e9ce6db65994d28a2bc6f35e810c5edd1a572248ec467842e35c3b06cca83"
+      "sha256": "0c202ce0675b5e5559bcc9c7153bca89ef77a1228d735756c47b53e15d7fe868"
     },
     {
       "date": "2026-09-18",
       "path": "data/scraped/2026-09-18.json",
-      "sha256": "42a3b07c37b6471f5f4e96297b89fd4c553ad9ce00322b61e9d688b27187bb4f"
+      "sha256": "0372ea10f3d47b2b625e9a165ce5baa73cca0bd47517fddf59b2d2d990621e84"
     },
     {
       "date": "2026-09-22",
       "path": "data/scraped/2026-09-22.json",
-      "sha256": "90d3c5dbcea49e77c8ed411c0f95e99ac09a8906fb60c2f1c0614dd9d6a9eeda"
+      "sha256": "4db56ecfb4e9ad870b6548ed97f4a01406b8267ce99d075f0c785394e6661cbc"
     }
   ]
 }

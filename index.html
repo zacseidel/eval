@@ -34,7 +34,7 @@
       </div>
       <section class="strategy-section">
         <h2 class="strategy-section-title">Primary exit rules</h2>
-        <p class="strategy-section-note">Report-rank exits for momentum strategies; 21-day EMA exits for Munger strategies.</p>
+        <p class="strategy-section-note">Report-rank exits for momentum strategies; 21-day EMA exits for Munger strategies; Mega Laggards 2 buys the two worst megacap laggards as a new lot on every report and sells each lot after 21 trading sessions.</p>
         <div id="strategy-grid"></div>
       </section>
       <section class="strategy-section">
@@ -64,6 +64,7 @@
             <option value="munger">Munger 21-Day EMA</option>
             <option value="munger400l">Munger400L EMA21</option>
             <option value="munger400r">Munger400R EMA21</option>
+            <option value="megalaggards2">Mega Laggards 2 · Hold 21</option>
             <option value="sp500_top5_sma10">S&amp;P 500 Top 5 · SMA10</option>
             <option value="sp500_next5_sma10">S&amp;P 500 Next 5 · SMA10</option>
             <option value="megacap_top5_sma10">Megacap Top 5 · SMA10</option>
@@ -73,6 +74,7 @@
             <option value="munger_sma10">Munger Signals · SMA10</option>
             <option value="munger400l_sma10">Munger400L SMA10</option>
             <option value="munger400r_sma10">Munger400R SMA10</option>
+            <option value="megalaggards2_sma10">Mega Laggards 2 · SMA10</option>
             <option value="industry_up5">Rank Gains Top 5 · Below SMA10</option>
             <option value="industry_down5">Rank Losses Top 5 · Above SMA10</option>
           </select>
@@ -149,6 +151,10 @@
           <div id="scatter-container-munger400r" class="chart-container hidden">
             <h3>Munger400R EMA21</h3>
             <canvas id="scatter-munger400r"></canvas>
+          </div>
+          <div id="scatter-container-megalaggards2" class="chart-container hidden">
+            <h3>Mega Laggards 2 · Hold 21</h3>
+            <canvas id="scatter-megalaggards2"></canvas>
           </div>
           <div id="scatter-container-industry_up5" class="chart-container hidden">
             <h3>Rank Gains Top 5 · Below SMA10</h3>

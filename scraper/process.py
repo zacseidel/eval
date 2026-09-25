@@ -32,9 +32,10 @@ MUNGER_EMA_LOOKBACK_DAYS = 120
 SMA_EXIT_WINDOW = 10
 SMA_EXIT_LOOKBACK_DAYS = 30
 SMA10_SUFFIX = "_sma10"
+HOLD_EXIT_SESSIONS = 21
 KELLY_MIN_CLOSED_TRADES = 20
 RISK_FREE_RATE_ANNUAL = 0.05
-PROCESSOR_VERSION = 9
+PROCESSOR_VERSION = 10
 
 # Every selection below is made only from ranks or membership in a scraped
 # report. The legacy IDs are retained so existing links keep working.
@@ -48,6 +49,9 @@ BASE_STRATEGIES = {
     "munger":           {"section": "munger",    "ranks": None, "exit_model": "ema21"},
     "munger400l":       {"section": "munger400l", "ranks": None, "exit_model": "ema21"},
     "munger400r":       {"section": "munger400r", "ranks": None, "exit_model": "ema21"},
+    # Each listing opens its own 21-session lot, so consecutive reports stack
+    # overlapping lots of the same ticker and the portfolio weights each lot.
+    "megalaggards2":    {"section": "megalaggards", "ranks": range(1, 3), "exit_model": "hold21"},
 }
 # Industry rank-change cards are their own entry rules, not SMA variants of a
 # rank-membership strategy. Positive changes exit below the 10-day SMA.
@@ -441,6 +445,38 @@ def _build_sma10_positions(reports: list[dict], strategy_id: str,
     return positions
 
 
+def _build_hold_positions(reports: list[dict], strategy_id: str,
+                          as_of: str) -> list[dict]:
+    """Open one lot per report listing; sell it HOLD_EXIT_SESSIONS sessions later.
+
+    Repeated listings are separate lots, so one ticker can hold several
+    overlapping lots. The exit date is fixed at entry, so it uses no future data.
+    """
+    positions = []
+    for report in _strategy_reports(reports, strategy_id):
+        signal_date = report["date"]
+        for entry in _selected_entries(report, strategy_id):
+            ticker = entry["ticker"]
+            entry_date, entry_price = _execution_price(ticker, signal_date, as_of)
+            position = _new_position(
+                strategy_id, ticker, signal_date, entry_date, entry_price
+            )
+            bars = [
+                bar for bar in get_daily_bars(ticker, entry_date, as_of)
+                if bar["date"] >= entry_date
+            ]
+            if not bars or bars[0]["date"] != entry_date:
+                raise RuntimeError(f"Missing {ticker} entry bar on {entry_date}")
+            if len(bars) > HOLD_EXIT_SESSIONS:
+                exit_bar = bars[HOLD_EXIT_SESSIONS]
+                positions.append(_close_position(
+                    position, None, exit_bar["date"], _bar_execution_price(exit_bar)
+                ))
+            else:
+                positions.append(_mark_open_position_from_bar(position, bars[-1]))
+    return positions
+
+
 def build_positions(reports: list[dict], as_of: str) -> list[dict]:
     positions = []
     for strategy_id in STRATEGIES:
@@ -449,6 +485,8 @@ def build_positions(reports: list[dict], as_of: str) -> list[dict]:
             positions.extend(_build_sma10_positions(reports, strategy_id, as_of))
         elif exit_model == "ema21":
             positions.extend(_build_ema21_positions(reports, strategy_id, as_of))
+        elif exit_model == "hold21":
+            positions.extend(_build_hold_positions(reports, strategy_id, as_of))
         else:
             positions.extend(_build_rank_positions(reports, strategy_id, as_of))
     positions.sort(key=lambda p: (p["strategy"], p["entry_date"], p["ticker"]))
@@ -515,10 +553,29 @@ def validate_positions(positions: list[dict], as_of: str,
                 raise ValueError(f"Future pending technical exit signal: {trade_id}")
 
     for key, ticker_positions in by_ticker.items():
+        if STRATEGIES[key[0]].get("exit_model") == "hold21":
+            continue  # Stacked lots of one ticker are intended to overlap.
         ordered = sorted(ticker_positions, key=lambda p: p["entry_date"])
         for previous, current in zip(ordered, ordered[1:]):
             if previous["exit_date"] is None or previous["exit_date"] > current["entry_date"]:
                 raise ValueError(f"Overlapping trades for {key}: {previous['trade_id']}, {current['trade_id']}")
+
+
+def _independent_run_count(closed: list[dict]) -> int:
+    """Count continuous holding runs per ticker, merging overlapping lots."""
+    runs = 0
+    by_ticker = defaultdict(list)
+    for position in closed:
+        by_ticker[position["ticker"]].append(position)
+    for lots in by_ticker.values():
+        run_end = None
+        for lot in sorted(lots, key=lambda p: p["entry_date"]):
+            if run_end is None or lot["entry_date"] > run_end:
+                runs += 1
+                run_end = lot["exit_date"]
+            else:
+                run_end = max(run_end, lot["exit_date"])
+    return runs
 
 
 def compute_trade_stats(positions: list[dict]) -> dict:
@@ -565,6 +622,11 @@ def compute_trade_stats(positions: list[dict]) -> dict:
 
         stats[strategy_id] = {
             "closed_count": len(closed),
+            "independent_run_count": (
+                _independent_run_count(closed)
+                if STRATEGIES[strategy_id].get("exit_model") == "hold21"
+                else None
+            ),
             "winner_count": len(winners),
             "loser_count": len(losers),
             "breakeven_count": breakeven_count,
@@ -670,7 +732,12 @@ def _add_return_windows(series: list[dict]) -> None:
 
 def build_strategy_returns(reports: list[dict], positions: list[dict],
                            spy_bars: list[dict], as_of: str) -> dict:
-    """Simulate an equal-weight portfolio rebalanced only on trade-event days."""
+    """Simulate an equal-weight portfolio rebalanced only on trade-event days.
+
+    Holdings are keyed by trade so overlapping lots of one ticker each get
+    their own equal weight. Strategies without overlapping trades are
+    unaffected because each ticker has at most one open trade.
+    """
     if not reports or not spy_bars:
         return {}
     first_report_date = reports[0]["date"]
@@ -714,7 +781,7 @@ def build_strategy_returns(reports: list[dict], positions: list[dict],
                 exits_by_date[position["exit_date"]].append(position)
 
         cash = 100.0
-        holdings: dict[str, float] = {}
+        holdings: dict[str, tuple[str, float]] = {}  # trade_id -> (ticker, shares)
         last_closes: dict[str, float] = {}
         series = []
 
@@ -728,16 +795,16 @@ def build_strategy_returns(reports: list[dict], positions: list[dict],
             day_exits = exits_by_date.get(trading_date, [])
             if day_entries or day_exits:
                 for position in day_exits:
-                    shares = holdings.pop(position["ticker"], 0.0)
+                    _ticker, shares = holdings.pop(position["trade_id"], (None, 0.0))
                     cash += shares * float(position["exit_price"])
 
-                active_tickers = {
-                    p["ticker"] for p in strategy_positions
+                active_trades = {
+                    p["trade_id"]: p["ticker"] for p in strategy_positions
                     if p["entry_date"] <= trading_date
                     and (p["exit_date"] is None or p["exit_date"] > trading_date)
                 }
                 execution_prices = {}
-                for ticker in active_tickers:
+                for ticker in set(active_trades.values()):
                     bar = bar_maps[ticker].get(trading_date)
                     if bar is None:
                         raise RuntimeError(
@@ -747,26 +814,29 @@ def build_strategy_returns(reports: list[dict], positions: list[dict],
 
                 nav_at_execution = cash + sum(
                     shares * execution_prices[ticker]
-                    for ticker, shares in holdings.items()
+                    for ticker, shares in holdings.values()
                 )
-                if active_tickers:
-                    target_value = nav_at_execution / len(active_tickers)
+                if active_trades:
+                    target_value = nav_at_execution / len(active_trades)
                     holdings = {
-                        ticker: target_value / execution_prices[ticker]
-                        for ticker in sorted(active_tickers)
+                        trade_id: (ticker, target_value / execution_prices[ticker])
+                        for trade_id, ticker in sorted(active_trades.items())
                     }
                     cash = 0.0
                 else:
                     holdings = {}
                     cash = nav_at_execution
 
-            missing_marks = [ticker for ticker in holdings if ticker not in last_closes]
+            missing_marks = sorted({
+                ticker for ticker, _shares in holdings.values()
+                if ticker not in last_closes
+            })
             if missing_marks:
                 raise RuntimeError(
                     f"Missing close marks for {strategy_id} on {trading_date}: {missing_marks}"
                 )
             nav = cash + sum(
-                shares * last_closes[ticker] for ticker, shares in holdings.items()
+                shares * last_closes[ticker] for ticker, shares in holdings.values()
             )
             spy_value = float(spy_map[trading_date]["close"]) / spy_base * 100
             series.append({
@@ -914,6 +984,17 @@ def _source_manifest(reports: list[dict], as_of: str,
             "sma_window": SMA_EXIT_WINDOW,
             "lookback_calendar_days": SMA_EXIT_LOOKBACK_DAYS,
             "reentry": "a later qualifying report while flat opens a new trade",
+        },
+        "hold21_strategies": {
+            "strategy_ids": [
+                strategy_id for strategy_id, config in BASE_STRATEGIES.items()
+                if config.get("exit_model") == "hold21"
+            ],
+            "entry": "every qualifying scraped report listing opens a new lot, even while already holding the ticker",
+            "exit": f"first available session {HOLD_EXIT_SESSIONS} trading sessions after entry",
+            "report_disappearance_exit": False,
+            "weighting": "equal weight per open lot, so a ticker's weight scales with its open lot count",
+            "kelly_caveat": "overlapping lots are correlated; independent_run_count merges them into continuous holding runs",
         },
         "industry_rank_changes": {
             "strategy_ids": list(INDUSTRY_RANK_STRATEGIES),

@@ -1,13 +1,17 @@
 {
   "date": "2026-09-15",
   "source_url": "https://zacseidel.github.io/momentum/reports/momentum_2026-09-15.html",
+  "parser_version": 2,
   "sections_present": [
     "munger",
     "munger400l",
     "munger400r",
     "megacap",
+    "megalaggards",
     "sp500",
-    "sp400"
+    "sp400",
+    "industry_rank_up",
+    "industry_rank_down"
   ],
   "sp500": [
     {
@@ -211,6 +215,44 @@
       "entry_date": "2026-08-28",
       "status": "\ud83d\udd25",
       "new_entrant": false
+    }
+  ],
+  "megalaggards": [
+    {
+      "rank": 1,
+      "ticker": "TSLA",
+      "price": 358.97,
+      "return_3m": -11.7,
+      "return_6m": -8.2,
+      "return_12m": -9.3,
+      "avg_rank": 9.7,
+      "entry_date": "2026-08-14",
+      "status": "\ud83d\udd25",
+      "new_entrant": false
+    },
+    {
+      "rank": 2,
+      "ticker": "AVGO",
+      "price": 344.72,
+      "return_3m": -9.8,
+      "return_6m": 7.0,
+      "return_12m": -4.2,
+      "avg_rank": 8.3,
+      "entry_date": "2026-08-21",
+      "status": "\ud83d\udd25",
+      "new_entrant": false
+    },
+    {
+      "rank": 3,
+      "ticker": "BRK.B",
+      "price": 514.95,
+      "return_3m": 5.3,
+      "return_6m": 5.1,
+      "return_12m": 4.3,
+      "avg_rank": 6.7,
+      "entry_date": "2026-09-15",
+      "status": "\u2728",
+      "new_entrant": true
     }
   ],
   "sp400": [
@@ -566,6 +608,75 @@
       "cohort": "munger",
       "ticker": "LIN",
       "action": "drop"
+    }
+  ],
+  "industry_source_url": "https://zacseidel.github.io/momentum/reports/industry_2026-09-15.html",
+  "industry_rank_up": [
+    {
+      "ticker": "ANF",
+      "previous_rank": 467,
+      "current_rank": 88,
+      "rank_change": 379,
+      "return_12m": 60.7,
+      "rank": 1
+    },
+    {
+      "ticker": "CNH",
+      "previous_rank": 736,
+      "current_rank": 248,
+      "rank_change": 488,
+      "return_12m": 25.3,
+      "rank": 2
+    },
+    {
+      "ticker": "AVTR",
+      "previous_rank": 541,
+      "current_rank": 259,
+      "rank_change": 282,
+      "return_12m": 23.2,
+      "rank": 3
+    },
+    {
+      "ticker": "EL",
+      "previous_rank": 648,
+      "current_rank": 315,
+      "rank_change": 333,
+      "return_12m": 17.4,
+      "rank": 4
+    },
+    {
+      "ticker": "KDP",
+      "previous_rank": 688,
+      "current_rank": 328,
+      "rank_change": 360,
+      "return_12m": 16.0,
+      "rank": 5
+    }
+  ],
+  "industry_rank_down": [
+    {
+      "ticker": "FN",
+      "previous_rank": 83,
+      "current_rank": 443,
+      "rank_change": -360,
+      "return_12m": 6.9,
+      "rank": 1
+    },
+    {
+      "ticker": "RMBS",
+      "previous_rank": 247,
+      "current_rank": 623,
+      "rank_change": -376,
+      "return_12m": -6.6,
+      "rank": 2
+    },
+    {
+      "ticker": "BURL",
+      "previous_rank": 343,
+      "current_rank": 688,
+      "rank_change": -345,
+      "return_12m": -13.0,
+      "rank": 3
     }
   ]
 }

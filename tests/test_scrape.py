@@ -26,6 +26,10 @@ REPORT_HTML = """
 <div><a>FFF</a><span>($60.00 | Best 12M: 80.0% (#2/400) | 200SMA: $55.00) - New Entrant</span></div>
 <h2 id="summary-megacap">Megacap Leaders</h2>
 <div><a>BBB</a><span>($200.00 | 25.0% 12M, +2.0% 1W) - New Entrant</span></div>
+<h2 id="summary-megalaggards">Mega Cap Laggards</h2>
+<p>The 10 largest S&amp;P 500 stocks ranked by 3-, 6-, and 12-month return.</p>
+<div><a>LAG</a><span>($375.30 | 3M -6.3% / 6M 2.0% / 12M -11.9% | Avg Rank 9.3 of 10) - 🔥 since 2026-08-14</span></div>
+<div><a>SLO</a><span>($120.00 | 3M 1.5% / 6M -4.0% / 12M 3.0% | Avg Rank 8.7 of 10) - ✨ New Entrant</span></div>
 <h2 id="summary-sp500">SP500 Leaders</h2>
 <div><a>CCC</a><span>($300.00 | 20.0% 12M, +1.0% 1W) - New Entrant</span></div>
 <h2 id="summary-sp400">SP400 Leaders</h2>
@@ -52,6 +56,53 @@ class MomentumSourceTests(unittest.TestCase):
         self.assertEqual("DDD", parsed["sp400"][0]["ticker"])
         self.assertIn("munger400l", parsed["sections_present"])
         self.assertIn("munger400r", parsed["sections_present"])
+
+    def test_mega_cap_laggards_parse_in_published_worst_first_order(self):
+        parsed = scrape.parse_report("2026-09-22", soup(REPORT_HTML))
+
+        self.assertIn("megalaggards", parsed["sections_present"])
+        first, second = parsed["megalaggards"]
+        self.assertEqual(("LAG", 1), (first["ticker"], first["rank"]))
+        self.assertEqual(-6.3, first["return_3m"])
+        self.assertEqual(2.0, first["return_6m"])
+        self.assertEqual(-11.9, first["return_12m"])
+        self.assertEqual(9.3, first["avg_rank"])
+        self.assertEqual("2026-08-14", first["entry_date"])
+        self.assertEqual(("SLO", 2), (second["ticker"], second["rank"]))
+        self.assertEqual("2026-09-22", second["entry_date"])
+        self.assertTrue(second["new_entrant"])
+        # The Leaders parser must not swallow the laggards rows.
+        self.assertEqual(["BBB"], [row["ticker"] for row in parsed["megacap"]])
+
+    def test_report_without_laggards_is_marked_absent(self):
+        parsed = scrape.parse_report(
+            "2026-01-13",
+            soup('<h2 id="summary-megacap">Megacap Leaders</h2>'),
+        )
+
+        self.assertEqual([], parsed["megalaggards"])
+        self.assertNotIn("megalaggards", parsed["sections_present"])
+
+    def test_snapshot_from_an_older_parser_is_refreshed(self):
+        report_date = "2026-08-18"
+        index = soup(
+            '<a href="reports/momentum_2026-08-18.html">August 18 report</a>'
+        )
+        with tempfile.TemporaryDirectory() as temp_dir:
+            output = Path(temp_dir) / f"{report_date}.json"
+            output.write_text(json.dumps({
+                "date": report_date,
+                "source_url": scrape.report_url(report_date),
+            }))
+            with patch.object(scrape, "SCRAPED_DIR", Path(temp_dir)), \
+                 patch.object(scrape, "fetch", side_effect=[index, soup(REPORT_HTML)]), \
+                 patch.object(scrape.time, "sleep"):
+                updated = scrape.scrape_all()
+            saved = json.loads(output.read_text())
+
+        self.assertEqual([report_date], updated)
+        self.assertEqual(scrape.SNAPSHOT_PARSER_VERSION, saved["parser_version"])
+        self.assertEqual("LAG", saved["megalaggards"][0]["ticker"])
 
     def test_historical_report_without_munger400_models_is_marked_absent(self):
         parsed = scrape.parse_report(
@@ -118,6 +169,7 @@ class MomentumSourceTests(unittest.TestCase):
             output.write_text(json.dumps({
                 "date": report_date,
                 "source_url": scrape.report_url(report_date),
+                "parser_version": scrape.SNAPSHOT_PARSER_VERSION,
             }))
             with patch.object(scrape, "SCRAPED_DIR", Path(temp_dir)), \
                  patch.object(scrape, "fetch", return_value=index) as fetch_mock:
@@ -242,6 +294,7 @@ class IndustryRankScrapeTests(unittest.TestCase):
             output.write_text(json.dumps({
                 "date": report_date,
                 "source_url": scrape.report_url(report_date),
+                "parser_version": scrape.SNAPSHOT_PARSER_VERSION,
                 "sections_present": ["sp500"],
                 "sp500": [{"rank": 1, "ticker": "AAA"}],
             }))

@@ -8,6 +8,7 @@ export const STRATEGY_META = {
   munger:           { label: "Munger 21-Day EMA", color: "#f472b6" },
   munger400l:       { label: "Munger400L EMA21", color: "#22d3ee" },
   munger400r:       { label: "Munger400R EMA21", color: "#f59e0b" },
+  megalaggards2:    { label: "Mega Laggards 2 · Hold 21", color: "#e879f9" },
   sp500_top5_sma10:       { label: "S&P 500 Top 5 · SMA10", color: "#6c8ef7" },
   sp500_next5_sma10:      { label: "S&P 500 Next 5 · SMA10", color: "#a78bfa" },
   megacap_top5_sma10:     { label: "Megacap Top 5 · SMA10", color: "#34d399" },
@@ -17,6 +18,7 @@ export const STRATEGY_META = {
   munger_sma10:           { label: "Munger Signals · SMA10", color: "#f472b6" },
   munger400l_sma10:       { label: "Munger400L SMA10", color: "#22d3ee" },
   munger400r_sma10:       { label: "Munger400R SMA10", color: "#f59e0b" },
+  megalaggards2_sma10:    { label: "Mega Laggards 2 · SMA10", color: "#e879f9" },
   industry_up5:     { label: "Rank Gains Top 5 · Below SMA10", color: "#4ade80" },
   industry_down5:   { label: "Rank Losses Top 5 · Above SMA10", color: "#f87171" },
 };
@@ -27,6 +29,20 @@ function isSma10(sid) {
 
 function isIndustryRank(sid) {
   return sid === "industry_up5" || sid === "industry_down5";
+}
+
+// Lot strategies open a new trade on every listing, so one ticker can hold
+// several overlapping lots at once.
+function isLotStrategy(sid) {
+  return sid === "megalaggards2";
+}
+
+export function summarizeLots(openPositions) {
+  const counts = new Map();
+  for (const p of openPositions) counts.set(p.ticker, (counts.get(p.ticker) ?? 0) + 1);
+  return [...counts]
+    .map(([ticker, lots]) => ({ ticker, lots }))
+    .sort((a, b) => b.lots - a.lots || a.ticker.localeCompare(b.ticker));
 }
 
 function showsPendingExit(sid) {
@@ -99,8 +115,9 @@ export function getAvailableStrategyEntries(strategyReturns) {
 function buildCard(item) {
   const { sid, meta, returnLabel, ret12m, ret3m, spy12m, spy3m,
           stratSharpe12m, stratSharpe3m, spySharpe12m, spySharpe3m,
-          openCount, closedCount, pendingExitCount, openTickers, signalTickers,
-          tradeStats } = item;
+          openCount, closedCount, pendingExitCount, openTickers, openLots,
+          signalTickers, tradeStats } = item;
+  const lotBased = isLotStrategy(sid);
 
   const halfKelly = tradeStats?.half_kelly_pct;
   const kellyValue = halfKelly == null ? "—" : `${halfKelly.toFixed(1)}%`;
@@ -116,6 +133,10 @@ function buildCard(item) {
     kellyNote = `${tradeStats.closed_count} closed trades${breakevenNote} · no positive historical Kelly edge`;
   } else {
     kellyNote = `${tradeStats.closed_count} closed trades${breakevenNote} · historical estimate`;
+  }
+  if (lotBased && tradeStats?.independent_run_count != null) {
+    kellyNote = kellyNote.replace("closed trades", "closed lots") +
+      ` · overlapping lots form ${tradeStats.independent_run_count} independent runs`;
   }
 
   const card = document.createElement("div");
@@ -154,12 +175,15 @@ function buildCard(item) {
         </div>
       </div>
       <div class="card-footer">
-        <span>${openCount} open</span>
-        <span>${closedCount} closed</span>
+        ${lotBased
+          ? `<span>${openCount} open lots</span><span>${openLots.length} names</span><span>${closedCount} closed lots</span>`
+          : `<span>${openCount} open</span><span>${closedCount} closed</span>`}
         ${showsPendingExit(sid) ? `<span>${pendingExitCount} exit pending</span>` : ""}
         ${isMungerFamily(sid) ? `<span>${signalTickers.length} current signals</span>` : ""}
       </div>
-      ${openTickers.length ? `<div class="ticker-tags">${openTickers.map(t => `<span class="ticker-tag">${t}</span>`).join("")}</div>` : ""}
+      ${lotBased && openLots.length
+        ? `<div class="ticker-tags">${openLots.map(({ ticker, lots }) => `<span class="ticker-tag">${ticker} · ${lots} ${lots === 1 ? "lot" : "lots"}</span>`).join("")}</div>`
+        : openTickers.length ? `<div class="ticker-tags">${openTickers.map(t => `<span class="ticker-tag">${t}</span>`).join("")}</div>` : ""}
       ${isMungerFamily(sid) && signalTickers.length ? `<div class="signal-note">Latest report buy signals: ${signalTickers.join(", ")}</div>` : ""}
     </div>
     <div class="kelly-panel" title="Half Kelly = 0.5 × max(0, win probability − loss probability ÷ payoff ratio)">
@@ -270,6 +294,7 @@ export function renderStrategies(
         closedCount: stratPositions.filter(p => p.status === "closed").length,
         pendingExitCount: pendingExitPositions.length,
         openTickers: openPositions.map(p => p.ticker),
+        openLots: summarizeLots(openPositions),
         signalTickers,
         tradeStats: strategyTradeStats[sid] || null,
       };

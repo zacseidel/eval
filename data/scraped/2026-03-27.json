@@ -1,9 +1,11 @@
 {
   "date": "2026-03-27",
   "source_url": "https://zacseidel.github.io/momentum/reports/momentum_2026-03-27.html",
+  "parser_version": 2,
   "sections_present": [
     "munger",
     "megacap",
+    "megalaggards",
     "sp500",
     "sp400"
   ],
@@ -207,6 +209,44 @@
       "return_12m": 14.2,
       "return_1w": 1.6,
       "entry_date": "2026-03-24",
+      "status": "\ud83d\udd25",
+      "new_entrant": false
+    }
+  ],
+  "megalaggards": [
+    {
+      "rank": 1,
+      "ticker": "MSFT",
+      "price": 365.97,
+      "return_3m": -25.0,
+      "return_6m": -28.4,
+      "return_12m": -6.2,
+      "avg_rank": 9.3,
+      "entry_date": "2026-01-20",
+      "status": "\ud83d\udd25",
+      "new_entrant": false
+    },
+    {
+      "rank": 2,
+      "ticker": "META",
+      "price": 547.54,
+      "return_3m": -17.5,
+      "return_6m": -26.4,
+      "return_12m": -10.4,
+      "avg_rank": 8.7,
+      "entry_date": "2026-03-06",
+      "status": "\ud83d\udd25",
+      "new_entrant": false
+    },
+    {
+      "rank": 3,
+      "ticker": "TSLA",
+      "price": 372.11,
+      "return_3m": -21.7,
+      "return_6m": -15.5,
+      "return_12m": 36.8,
+      "avg_rank": 7.0,
+      "entry_date": "2026-03-20",
       "status": "\ud83d\udd25",
       "new_entrant": false
     }

@@ -7,6 +7,7 @@ import {
   getAvailableStrategyEntries,
   getReturnSummary,
   STRATEGY_META,
+  summarizeLots,
 } from "../js/strategies.js";
 
 function card(sid, halfKelly, sharpe12m = null, sharpe3m = null) {
@@ -95,4 +96,18 @@ test("Munger400L and Munger400R each have two cards and wait for processed serie
     afterSection.map(([sid]) => sid),
     ["munger", "munger400l", "munger400r", "munger400l_sma10", "munger400r_sma10"],
   );
+});
+
+test("Mega Laggards 2 has hold and SMA10 cards and groups open lots by ticker", () => {
+  assert.equal(STRATEGY_META.megalaggards2.label, "Mega Laggards 2 · Hold 21");
+  assert.equal(STRATEGY_META.megalaggards2_sma10.label, "Mega Laggards 2 · SMA10");
+
+  const lots = summarizeLots([
+    { ticker: "META" }, { ticker: "TSLA" }, { ticker: "TSLA" }, { ticker: "AVGO" }, { ticker: "TSLA" },
+  ]);
+  assert.deepEqual(lots, [
+    { ticker: "TSLA", lots: 3 },
+    { ticker: "AVGO", lots: 1 },
+    { ticker: "META", lots: 1 },
+  ]);
 });

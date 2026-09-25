@@ -11,7 +11,7 @@ import process
 
 
 def report(report_date, munger=None, sp500=None, munger400l=None, munger400r=None,
-           industry_rank_up=None, industry_rank_down=None):
+           industry_rank_up=None, industry_rank_down=None, megalaggards=None):
     result = {
         "date": report_date,
         "munger": munger or [],
@@ -23,6 +23,8 @@ def report(report_date, munger=None, sp500=None, munger400l=None, munger400r=Non
         result["munger400l"] = munger400l
     if munger400r is not None:
         result["munger400r"] = munger400r
+    if megalaggards is not None:
+        result["megalaggards"] = megalaggards
     if industry_rank_up is not None:
         result["industry_rank_up"] = industry_rank_up
     if industry_rank_down is not None:
@@ -589,6 +591,127 @@ class PortfolioLedgerTests(unittest.TestCase):
 
         self.assertIn("munger400l", result)
         self.assertEqual([], result["munger400l"])
+
+
+def weekday_bars(start, count, close=100.0):
+    bars = []
+    current = date.fromisoformat(start)
+    while len(bars) < count:
+        if current.weekday() < 5:
+            bars.append({
+                "date": current.isoformat(),
+                "open": close,
+                "close": close,
+                "vwap": close,
+            })
+        current += timedelta(days=1)
+    return bars
+
+
+class MegaLaggardsHoldTests(unittest.TestCase):
+    def setUp(self):
+        # Price rises by 1 each session so every lot's return is traceable.
+        self.bars = [
+            {**bar, "open": 100.0 + i, "close": 100.0 + i, "vwap": 100.0 + i}
+            for i, bar in enumerate(weekday_bars("2026-03-02", 40))
+        ]
+        self.by_date = {bar["date"]: bar for bar in self.bars}
+
+    def _bars(self, _ticker, start, end):
+        return [bar for bar in self.bars if start <= bar["date"] <= end]
+
+    def _execution(self, _ticker, signal_date, as_of=None):
+        bar = next(bar for bar in self.bars if bar["date"] >= signal_date)
+        return bar["date"], bar["vwap"]
+
+    def _build(self, reports, as_of):
+        with patch.object(process, "get_daily_bars", side_effect=self._bars), \
+             patch.object(process, "get_execution_price", side_effect=self._execution):
+            return process._build_hold_positions(reports, "megalaggards2", as_of)
+
+    def test_worst_two_config_and_sma10_twin(self):
+        base = process.STRATEGIES["megalaggards2"]
+        twin = process.STRATEGIES["megalaggards2_sma10"]
+        self.assertEqual("megalaggards", base["section"])
+        self.assertEqual([1, 2], list(base["ranks"]))
+        self.assertEqual("hold21", base["exit_model"])
+        self.assertEqual([1, 2], list(twin["ranks"]))
+        self.assertEqual("sma10", twin["exit_model"])
+        self.assertEqual("below", twin["exit_direction"])
+
+    def test_each_listing_opens_a_lot_that_sells_21_sessions_later(self):
+        reports = [
+            report("2026-03-02", megalaggards=[
+                munger_entry("AAA", 1), munger_entry("BBB", 2), munger_entry("CCC", 3),
+            ]),
+            report("2026-03-05", megalaggards=[munger_entry("AAA", 1)]),
+        ]
+        positions = self._build(reports, self.bars[-1]["date"])
+
+        self.assertEqual(
+            ["AAA:2026-03-02", "BBB:2026-03-02", "AAA:2026-03-05"],
+            [f"{p['ticker']}:{p['signal_date']}" for p in positions],
+        )
+        first = positions[0]
+        self.assertEqual("closed", first["status"])
+        self.assertEqual(self.bars[21]["date"], first["exit_date"])
+        self.assertIsNone(first["exit_signal_date"])
+        self.assertEqual(21.0, round(first["exit_price"] - first["entry_price"], 4))
+        repeat = positions[2]
+        self.assertEqual(self.bars[3]["date"], repeat["entry_date"])
+        self.assertEqual(self.bars[24]["date"], repeat["exit_date"])
+        process.validate_positions(positions, self.bars[-1]["date"])
+
+    def test_lot_stays_open_until_its_21st_session_trades(self):
+        reports = [report("2026-03-02", megalaggards=[munger_entry("AAA")])]
+        still_open = self._build(reports, self.bars[20]["date"])
+        closed = self._build(reports, self.bars[21]["date"])
+
+        self.assertEqual("open", still_open[0]["status"])
+        self.assertEqual(self.bars[20]["date"], still_open[0]["current_date"])
+        self.assertEqual("closed", closed[0]["status"])
+
+    def test_overlap_is_still_rejected_for_single_position_strategies(self):
+        first = process._new_position("munger", "AAA", "2026-03-02", "2026-03-02", 100.0)
+        second = process._new_position("munger", "AAA", "2026-03-03", "2026-03-03", 100.0)
+        with self.assertRaisesRegex(ValueError, "Overlapping trades"):
+            process.validate_positions([first, second], "2026-03-04")
+
+    def test_portfolio_weights_each_open_lot_equally(self):
+        spy = [{"date": bar["date"], "close": 100.0} for bar in self.bars[:3]]
+        flat = [{**bar, "open": 100.0, "close": 100.0, "vwap": 100.0} for bar in self.bars[:3]]
+        doubles = [{**bar, "close": 200.0 if i == 2 else 100.0} for i, bar in enumerate(flat)]
+        day0, day1, day2 = (bar["date"] for bar in flat)
+        lots = [
+            process._new_position("megalaggards2", "AAA", day0, day0, 100.0),
+            process._new_position("megalaggards2", "AAA", day1, day1, 100.0),
+            process._new_position("megalaggards2", "BBB", day1, day1, 100.0),
+        ]
+        bars = {"AAA": doubles, "BBB": flat}
+        reports = [report(day0, megalaggards=[munger_entry("AAA")])]
+
+        with patch.object(process, "get_daily_bars",
+                          side_effect=lambda ticker, *_: bars[ticker]):
+            series = process.build_strategy_returns(reports, lots, spy, day2)["megalaggards2"]
+
+        # AAA holds two of three lots, so doubling AAA adds 2/3 of NAV.
+        self.assertAlmostEqual(100.0 + 200.0 / 3, series[-1]["value"], places=3)
+
+    def test_trade_stats_count_overlapping_lots_as_one_run(self):
+        def lot(ticker, entry, exit_date, ret):
+            return {"strategy": "megalaggards2", "ticker": ticker, "status": "closed",
+                    "entry_date": entry, "exit_date": exit_date, "return_pct": ret}
+        positions = [
+            lot("AAA", "2026-03-02", "2026-03-31", 5.0),
+            lot("AAA", "2026-03-05", "2026-04-03", 4.0),
+            lot("AAA", "2026-04-10", "2026-05-11", -2.0),
+            lot("BBB", "2026-03-02", "2026-03-31", 1.0),
+        ]
+        stats = process.compute_trade_stats(positions)
+
+        self.assertEqual(4, stats["megalaggards2"]["closed_count"])
+        self.assertEqual(3, stats["megalaggards2"]["independent_run_count"])
+        self.assertIsNone(stats["munger"]["independent_run_count"])
 
 
 class KellySizingTests(unittest.TestCase):

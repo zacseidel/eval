@@ -1,9 +1,11 @@
 {
   "date": "2026-02-10",
   "source_url": "https://zacseidel.github.io/momentum/reports/momentum_2026-02-10.html",
+  "parser_version": 2,
   "sections_present": [
     "munger",
     "megacap",
+    "megalaggards",
     "sp500",
     "sp400"
   ],
@@ -209,6 +211,44 @@
       "entry_date": "2026-02-10",
       "status": "\u2728",
       "new_entrant": true
+    }
+  ],
+  "megalaggards": [
+    {
+      "rank": 1,
+      "ticker": "MSFT",
+      "price": 413.6,
+      "return_3m": -16.8,
+      "return_6m": -20.8,
+      "return_12m": 0.9,
+      "avg_rank": 9.3,
+      "entry_date": "2026-01-20",
+      "status": "\ud83d\udd25",
+      "new_entrant": false
+    },
+    {
+      "rank": 2,
+      "ticker": "AMZN",
+      "price": 208.72,
+      "return_3m": -14.6,
+      "return_6m": -6.3,
+      "return_12m": -8.9,
+      "avg_rank": 9.0,
+      "entry_date": "2026-02-06",
+      "status": "\ud83d\udd25",
+      "new_entrant": false
+    },
+    {
+      "rank": 3,
+      "ticker": "META",
+      "price": 677.22,
+      "return_3m": 8.9,
+      "return_6m": -12.0,
+      "return_12m": -5.2,
+      "avg_rank": 6.7,
+      "entry_date": "2026-02-03",
+      "status": "\ud83d\udd25",
+      "new_entrant": false
     }
   ],
   "sp400": [

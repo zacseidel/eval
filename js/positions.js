@@ -8,6 +8,7 @@ const STRATEGY_LABELS = {
   munger:           "Munger 21-Day EMA",
   munger400l:       "Munger400L EMA21",
   munger400r:       "Munger400R EMA21",
+  megalaggards2:    "Mega Laggards 2 · Hold 21",
   sp500_top5_sma10:       "S&P 500 Top 5 · SMA10",
   sp500_next5_sma10:      "S&P 500 Next 5 · SMA10",
   megacap_top5_sma10:     "Megacap Top 5 · SMA10",
@@ -17,6 +18,7 @@ const STRATEGY_LABELS = {
   munger_sma10:           "Munger Signals · SMA10",
   munger400l_sma10:       "Munger400L SMA10",
   munger400r_sma10:       "Munger400R SMA10",
+  megalaggards2_sma10:    "Mega Laggards 2 · SMA10",
   industry_up5:     "Rank Gains Top 5 · Below SMA10",
   industry_down5:   "Rank Losses Top 5 · Above SMA10",
 };

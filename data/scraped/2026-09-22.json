@@ -1,13 +1,17 @@
 {
   "date": "2026-09-22",
   "source_url": "https://zacseidel.github.io/momentum/reports/momentum_2026-09-22.html",
+  "parser_version": 2,
   "sections_present": [
     "munger",
     "munger400l",
     "munger400r",
     "megacap",
+    "megalaggards",
     "sp500",
-    "sp400"
+    "sp400",
+    "industry_rank_up",
+    "industry_rank_down"
   ],
   "sp500": [
     {
@@ -209,6 +213,44 @@
       "return_12m": 18.9,
       "return_1w": 1.0,
       "entry_date": "2026-09-04",
+      "status": "\ud83d\udd25",
+      "new_entrant": false
+    }
+  ],
+  "megalaggards": [
+    {
+      "rank": 1,
+      "ticker": "TSLA",
+      "price": 375.3,
+      "return_3m": -6.3,
+      "return_6m": 2.0,
+      "return_12m": -11.9,
+      "avg_rank": 9.3,
+      "entry_date": "2026-08-14",
+      "status": "\ud83d\udd25",
+      "new_entrant": false
+    },
+    {
+      "rank": 2,
+      "ticker": "AVGO",
+      "price": 362.66,
+      "return_3m": -11.8,
+      "return_6m": 16.8,
+      "return_12m": 5.1,
+      "avg_rank": 8.7,
+      "entry_date": "2026-08-21",
+      "status": "\ud83d\udd25",
+      "new_entrant": false
+    },
+    {
+      "rank": 3,
+      "ticker": "META",
+      "price": 741.25,
+      "return_3m": 28.4,
+      "return_6m": 24.9,
+      "return_12m": -4.8,
+      "avg_rank": 6.0,
+      "entry_date": "2026-09-18",
       "status": "\ud83d\udd25",
       "new_entrant": false
     }
@@ -672,6 +714,91 @@
       "cohort": "munger",
       "ticker": "IBM",
       "action": "drop"
+    }
+  ],
+  "industry_source_url": "https://zacseidel.github.io/momentum/reports/industry_2026-09-22.html",
+  "industry_rank_up": [
+    {
+      "ticker": "IESC",
+      "previous_rank": 529,
+      "current_rank": 74,
+      "rank_change": 455,
+      "return_12m": 69.6,
+      "rank": 1
+    },
+    {
+      "ticker": "APH",
+      "previous_rank": 828,
+      "current_rank": 214,
+      "rank_change": 614,
+      "return_12m": 30.3,
+      "rank": 2
+    },
+    {
+      "ticker": "CNH",
+      "previous_rank": 604,
+      "current_rank": 255,
+      "rank_change": 349,
+      "return_12m": 22.9,
+      "rank": 3
+    },
+    {
+      "ticker": "KDP",
+      "previous_rank": 694,
+      "current_rank": 350,
+      "rank_change": 344,
+      "return_12m": 12.9,
+      "rank": 4
+    },
+    {
+      "ticker": "SWKS",
+      "previous_rank": 698,
+      "current_rank": 359,
+      "rank_change": 339,
+      "return_12m": 12.4,
+      "rank": 5
+    }
+  ],
+  "industry_rank_down": [
+    {
+      "ticker": "CASY",
+      "previous_rank": 108,
+      "current_rank": 432,
+      "rank_change": -324,
+      "return_12m": 7.0,
+      "rank": 1
+    },
+    {
+      "ticker": "FN",
+      "previous_rank": 120,
+      "current_rank": 464,
+      "rank_change": -344,
+      "return_12m": 4.8,
+      "rank": 2
+    },
+    {
+      "ticker": "IDCC",
+      "previous_rank": 234,
+      "current_rank": 552,
+      "rank_change": -318,
+      "return_12m": -2.4,
+      "rank": 3
+    },
+    {
+      "ticker": "RMBS",
+      "previous_rank": 264,
+      "current_rank": 597,
+      "rank_change": -333,
+      "return_12m": -5.3,
+      "rank": 4
+    },
+    {
+      "ticker": "PCG",
+      "previous_rank": 359,
+      "current_rank": 685,
+      "rank_change": -326,
+      "return_12m": -13.2,
+      "rank": 5
     }
   ]
 }

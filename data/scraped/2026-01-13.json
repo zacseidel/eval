@@ -1,6 +1,7 @@
 {
   "date": "2026-01-13",
   "source_url": "https://zacseidel.github.io/momentum/reports/momentum_2026-01-13.html",
+  "parser_version": 2,
   "sections_present": [
     "megacap",
     "sp500",
@@ -210,6 +211,7 @@
       "new_entrant": true
     }
   ],
+  "megalaggards": [],
   "sp400": [
     {
       "rank": 1,

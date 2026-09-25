@@ -1,8 +1,10 @@
 {
   "date": "2026-01-27",
   "source_url": "https://zacseidel.github.io/momentum/reports/momentum_2026-01-27.html",
+  "parser_version": 2,
   "sections_present": [
     "megacap",
+    "megalaggards",
     "sp500",
     "sp400"
   ],
@@ -208,6 +210,44 @@
       "entry_date": "2026-01-27",
       "status": "\u2728",
       "new_entrant": true
+    }
+  ],
+  "megalaggards": [
+    {
+      "rank": 1,
+      "ticker": "META",
+      "price": 672.36,
+      "return_3m": -8.9,
+      "return_6m": -5.7,
+      "return_12m": 3.8,
+      "avg_rank": 9.0,
+      "entry_date": "2026-01-20",
+      "status": "\ud83d\udd25",
+      "new_entrant": false
+    },
+    {
+      "rank": 2,
+      "ticker": "MSFT",
+      "price": 470.28,
+      "return_3m": -10.2,
+      "return_6m": -8.5,
+      "return_12m": 5.9,
+      "avg_rank": 9.0,
+      "entry_date": "2026-01-20",
+      "status": "\ud83d\udd25",
+      "new_entrant": false
+    },
+    {
+      "rank": 3,
+      "ticker": "BRK.B",
+      "price": 483.47,
+      "return_3m": -1.8,
+      "return_6m": -0.1,
+      "return_12m": 4.4,
+      "avg_rank": 7.3,
+      "entry_date": "2026-01-20",
+      "status": "\ud83d\udd25",
+      "new_entrant": false
     }
   ],
   "sp400": [

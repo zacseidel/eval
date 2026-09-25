@@ -9,12 +9,16 @@ from bs4 import BeautifulSoup
 
 BASE_URL = "https://zacseidel.github.io/momentum"
 INDEX_URL = f"{BASE_URL}/"
+# Bump when a momentum-report section is added so cached snapshots are
+# re-parsed from the same source URL.
+SNAPSHOT_PARSER_VERSION = 2
 SCRAPED_DIR = Path(__file__).parent.parent / "data" / "scraped"
 SECTION_IDS = {
     "munger":  "summary-munger",
     "munger400l": "summary-munger400l",
     "munger400r": "summary-munger400r",
     "megacap": "summary-megacap",
+    "megalaggards": "summary-megalaggards",
     "sp500":   "summary-sp500",
     "sp400":   "summary-sp400",
 }
@@ -131,6 +135,41 @@ def parse_munger_section(h2_tag, report_date):
             "ticker": ticker,
             "price": float(price_m.group(1).replace(",", "")) if price_m else None,
             "sma_200": float(sma_m.group(1).replace(",", "")) if sma_m else None,
+            "entry_date": entry_date,
+            "status": status,
+            "new_entrant": new_entrant,
+        })
+    return rows
+
+
+def parse_laggards_section(h2_tag, report_date):
+    """
+    Parse the Mega Cap Laggards section, listed worst average rank first.
+    Span text format:
+      ($375.30 | 3M -6.3% / 6M 2.0% / 12M -11.9% | Avg Rank 9.3 of 10) - 🔥 since 2026-08-14
+    """
+    rows = []
+    for rank, (ticker, text) in enumerate(_parse_entry_divs(h2_tag, report_date), start=1):
+        price_m = re.search(r"\(\$([0-9,.]+)", text)
+        returns = {
+            window: re.search(rf"{window}\s*([+-]?[0-9.]+)%", text)
+            for window in ("3M", "6M", "12M")
+        }
+        avg_rank_m = re.search(r"Avg Rank\s*([0-9.]+)", text)
+        date_m = re.search(r"since\s+(\d{4}-\d{2}-\d{2})", text)
+        status = "🔥" if "🔥" in text else ("✨" if "✨" in text else None)
+        new_entrant = "New Entrant" in text
+
+        entry_date = date_m.group(1) if date_m else (report_date if new_entrant else None)
+
+        rows.append({
+            "rank": rank,
+            "ticker": ticker,
+            "price": float(price_m.group(1).replace(",", "")) if price_m else None,
+            "return_3m": float(returns["3M"].group(1)) if returns["3M"] else None,
+            "return_6m": float(returns["6M"].group(1)) if returns["6M"] else None,
+            "return_12m": float(returns["12M"].group(1)) if returns["12M"] else None,
+            "avg_rank": float(avg_rank_m.group(1)) if avg_rank_m else None,
             "entry_date": entry_date,
             "status": status,
             "new_entrant": new_entrant,
@@ -276,9 +315,11 @@ def parse_report(date, soup, source_url=None):
     result = {
         "date": date,
         "source_url": source_url or report_url(date),
+        "parser_version": SNAPSHOT_PARSER_VERSION,
         "sections_present": [],
         "sp500": [],
         "megacap": [],
+        "megalaggards": [],
         "sp400": [],
         "munger": [],
         "munger400l": [],
@@ -301,6 +342,8 @@ def parse_report(date, soup, source_url=None):
         result["sections_present"].append(section)
         if section in {"munger", "munger400l", "munger400r"}:
             result[section] = parse_munger_section(h2, date)
+        elif section == "megalaggards":
+            result[section] = parse_laggards_section(h2, date)
         else:
             result[section] = parse_leaders_section(h2, date)
 
@@ -322,6 +365,7 @@ def _empty_report(report_date):
         "sections_present": [],
         "sp500": [],
         "megacap": [],
+        "megalaggards": [],
         "sp400": [],
         "munger": [],
         "munger400l": [],
@@ -357,7 +401,11 @@ def scrape_all(force=False):
         industry_url = industry_report_url(date) if date in industry_dates else None
         existing = None if force or not out_path.exists() else _load_snapshot(out_path)
         need_momentum = bool(
-            momentum_url and (existing is None or existing.get("source_url") != momentum_url)
+            momentum_url and (
+                existing is None
+                or existing.get("source_url") != momentum_url
+                or existing.get("parser_version", 1) < SNAPSHOT_PARSER_VERSION
+            )
         )
         need_industry = bool(
             industry_url and (

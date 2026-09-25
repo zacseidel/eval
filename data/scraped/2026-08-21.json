@@ -1,11 +1,13 @@
 {
   "date": "2026-08-21",
   "source_url": "https://zacseidel.github.io/momentum/reports/momentum_2026-08-21.html",
+  "parser_version": 2,
   "sections_present": [
     "munger",
     "munger400l",
     "munger400r",
     "megacap",
+    "megalaggards",
     "sp500",
     "sp400"
   ],
@@ -208,6 +210,44 @@
       "price": 173.96,
       "return_12m": 11.5,
       "return_1w": -2.8,
+      "entry_date": "2026-08-21",
+      "status": "\u2728",
+      "new_entrant": true
+    }
+  ],
+  "megalaggards": [
+    {
+      "rank": 1,
+      "ticker": "META",
+      "price": 545.83,
+      "return_3m": -9.8,
+      "return_6m": -16.8,
+      "return_12m": -27.0,
+      "avg_rank": 9.0,
+      "entry_date": "2026-05-01",
+      "status": "\ud83d\udd25",
+      "new_entrant": false
+    },
+    {
+      "rank": 2,
+      "ticker": "TSLA",
+      "price": 345.13,
+      "return_3m": -17.3,
+      "return_6m": -16.2,
+      "return_12m": 6.6,
+      "avg_rank": 9.0,
+      "entry_date": "2026-08-14",
+      "status": "\ud83d\udd25",
+      "new_entrant": false
+    },
+    {
+      "rank": 3,
+      "ticker": "AVGO",
+      "price": 364.03,
+      "return_3m": -12.9,
+      "return_6m": 9.4,
+      "return_12m": 25.0,
+      "avg_rank": 7.0,
       "entry_date": "2026-08-21",
       "status": "\u2728",
       "new_entrant": true
