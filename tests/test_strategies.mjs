@@ -10,12 +10,12 @@ import {
   summarizeLots,
 } from "../js/strategies.js";
 
-function card(sid, halfKelly, sharpe12m = null, sharpe3m = null) {
+function card(sid, halfKelly, sharpe12m = null, sharpeInception = null) {
   return {
     sid,
     ret12m: null,
     stratSharpe12m: sharpe12m,
-    stratSharpe3m: sharpe3m,
+    stratSharpeInception: sharpeInception,
     tradeStats: { half_kelly_pct: halfKelly },
   };
 }
@@ -26,10 +26,12 @@ test("Size sorts descending by half-Kelly and puts missing estimates last", () =
   assert.deepEqual(cards.map(item => item.sid), ["large", "small", "zero", "missing"]);
 });
 
-test("Sharpe falls back to the available 3M value", () => {
-  const cards = [card("low", 0, null, -0.2), card("missing", 0), card("high", 0, null, 1.4)];
+test("Sharpe prefers 12M and falls back to the full-period value", () => {
+  const cards = [
+    card("low", 0, null, -0.2), card("missing", 0), card("high", 0, null, 1.4), card("year", 0, 0.5, 3.0),
+  ];
   cards.sort((a, b) => compareCards(a, b, "sharpe"));
-  assert.deepEqual(cards.map(item => item.sid), ["high", "low", "missing"]);
+  assert.deepEqual(cards.map(item => item.sid), ["high", "year", "low", "missing"]);
 });
 
 test("since-inception return uses the original 100 NAV baseline", () => {
@@ -76,11 +78,9 @@ test("industry rank-change cards appear only after their series exists", () => {
   );
 });
 
-test("Munger400L and Munger400R each have two cards and wait for processed series", () => {
+test("Munger400L and Munger400R wait for processed series", () => {
   assert.equal(STRATEGY_META.munger400l.label, "Munger400L EMA21");
-  assert.equal(STRATEGY_META.munger400l_sma10.label, "Munger400L SMA10");
   assert.equal(STRATEGY_META.munger400r.label, "Munger400R EMA21");
-  assert.equal(STRATEGY_META.munger400r_sma10.label, "Munger400R SMA10");
 
   const beforeSection = getAvailableStrategyEntries({ munger: [] });
   assert.deepEqual(beforeSection.map(([sid]) => sid), ["munger"]);
@@ -88,19 +88,17 @@ test("Munger400L and Munger400R each have two cards and wait for processed serie
   const afterSection = getAvailableStrategyEntries({
     munger: [],
     munger400l: [],
-    munger400l_sma10: [],
     munger400r: [],
-    munger400r_sma10: [],
   });
-  assert.deepEqual(
-    afterSection.map(([sid]) => sid),
-    ["munger", "munger400l", "munger400r", "munger400l_sma10", "munger400r_sma10"],
-  );
+  assert.deepEqual(afterSection.map(([sid]) => sid), ["munger", "munger400l", "munger400r"]);
 });
 
-test("Mega Laggards 2 has hold and SMA10 cards and groups open lots by ticker", () => {
+test("Mega Laggards 2 holds 21 sessions and groups open lots by ticker", () => {
   assert.equal(STRATEGY_META.megalaggards2.label, "Mega Laggards 2 · Hold 21");
-  assert.equal(STRATEGY_META.megalaggards2_sma10.label, "Mega Laggards 2 · SMA10");
+  assert.equal(
+    Object.keys(STRATEGY_META).some(sid => sid.endsWith("_sma10")),
+    false,
+  );
 
   const lots = summarizeLots([
     { ticker: "META" }, { ticker: "TSLA" }, { ticker: "TSLA" }, { ticker: "AVGO" }, { ticker: "TSLA" },
@@ -110,4 +108,14 @@ test("Mega Laggards 2 has hold and SMA10 cards and groups open lots by ticker", 
     { ticker: "AVGO", lots: 1 },
     { ticker: "META", lots: 1 },
   ]);
+});
+
+test("Rank Momentum cards cover top and next five of each index", () => {
+  assert.equal(STRATEGY_META.rankmom500_top5.label, "S&P 500 Rank Momentum Top 5");
+  assert.equal(STRATEGY_META.rankmom500_next5.label, "S&P 500 Rank Momentum Next 5");
+  assert.equal(STRATEGY_META.rankmom400_top5.label, "S&P 400 Rank Momentum Top 5");
+  assert.equal(STRATEGY_META.rankmom400_next5.label, "S&P 400 Rank Momentum Next 5");
+
+  const entries = getAvailableStrategyEntries({ sp500_top5: [], rankmom500_top5: [] });
+  assert.deepEqual(entries.map(([sid]) => sid), ["sp500_top5", "rankmom500_top5"]);
 });

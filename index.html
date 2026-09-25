@@ -16,7 +16,7 @@
       <h1>Strategy Evaluator</h1>
       <a class="momentum-link" href="https://zacseidel.github.io/momentum" target="_blank" rel="noopener">Momentum Report ↗</a>
     </div>
-    <p class="subtitle">Scraped-report entries with primary, 10-day SMA, and industry rank-change evaluations. <span id="last-updated"></span></p>
+    <p class="subtitle">Scraped-report entries with strategy and industry rank-change evaluations. <span id="last-updated"></span></p>
     <nav>
       <button class="tab-btn active" data-tab="overview">Overview</button>
       <button class="tab-btn" data-tab="positions">Positions</button>
@@ -33,14 +33,9 @@
         <button class="sort-btn" data-sort="size">Size</button>
       </div>
       <section class="strategy-section">
-        <h2 class="strategy-section-title">Primary exit rules</h2>
-        <p class="strategy-section-note">Report-rank exits for momentum strategies; 21-day EMA exits for Munger strategies; Mega Laggards 2 buys the two worst megacap laggards as a new lot on every report and sells each lot after 21 trading sessions.</p>
+        <h2 class="strategy-section-title">Strategies</h2>
+        <p class="strategy-section-note">Report-rank exits for momentum strategies; 21-day EMA exits for Munger strategies; Mega Laggards 2 buys the two worst megacap laggards as a new lot on every report and sells each lot after 21 trading sessions; Rank Momentum cards sell the session after a report drops the name from its ranks.</p>
         <div id="strategy-grid"></div>
-      </section>
-      <section class="strategy-section">
-        <h2 class="strategy-section-title">10-day SMA exit variants</h2>
-        <p class="strategy-section-note">The same scraped-report buy signals, with an exit after a close below the trailing 10-session SMA.</p>
-        <div id="sma-strategy-grid"></div>
       </section>
       <section class="strategy-section" id="industry-strategy-section" hidden>
         <h2 class="strategy-section-title">Industry rank changes</h2>
@@ -65,16 +60,10 @@
             <option value="munger400l">Munger400L EMA21</option>
             <option value="munger400r">Munger400R EMA21</option>
             <option value="megalaggards2">Mega Laggards 2 · Hold 21</option>
-            <option value="sp500_top5_sma10">S&amp;P 500 Top 5 · SMA10</option>
-            <option value="sp500_next5_sma10">S&amp;P 500 Next 5 · SMA10</option>
-            <option value="megacap_top5_sma10">Megacap Top 5 · SMA10</option>
-            <option value="megacap_next5_sma10">Megacap Next 5 · SMA10</option>
-            <option value="sp400_mcap5_sma10">S&amp;P 400 Top 5 · SMA10</option>
-            <option value="sp400_mcap_next5_sma10">S&amp;P 400 Next 5 · SMA10</option>
-            <option value="munger_sma10">Munger Signals · SMA10</option>
-            <option value="munger400l_sma10">Munger400L SMA10</option>
-            <option value="munger400r_sma10">Munger400R SMA10</option>
-            <option value="megalaggards2_sma10">Mega Laggards 2 · SMA10</option>
+            <option value="rankmom500_top5">S&amp;P 500 Rank Momentum Top 5</option>
+            <option value="rankmom500_next5">S&amp;P 500 Rank Momentum Next 5</option>
+            <option value="rankmom400_top5">S&amp;P 400 Rank Momentum Top 5</option>
+            <option value="rankmom400_next5">S&amp;P 400 Rank Momentum Next 5</option>
             <option value="industry_up5">Rank Gains Top 5 · Below SMA10</option>
             <option value="industry_down5">Rank Losses Top 5 · Above SMA10</option>
           </select>
@@ -155,6 +144,22 @@
           <div id="scatter-container-megalaggards2" class="chart-container hidden">
             <h3>Mega Laggards 2 · Hold 21</h3>
             <canvas id="scatter-megalaggards2"></canvas>
+          </div>
+<div id="scatter-container-rankmom500_top5" class="chart-container hidden">
+            <h3>S&amp;P 500 Rank Momentum Top 5</h3>
+            <canvas id="scatter-rankmom500_top5"></canvas>
+          </div>
+          <div id="scatter-container-rankmom500_next5" class="chart-container hidden">
+            <h3>S&amp;P 500 Rank Momentum Next 5</h3>
+            <canvas id="scatter-rankmom500_next5"></canvas>
+          </div>
+          <div id="scatter-container-rankmom400_top5" class="chart-container hidden">
+            <h3>S&amp;P 400 Rank Momentum Top 5</h3>
+            <canvas id="scatter-rankmom400_top5"></canvas>
+          </div>
+          <div id="scatter-container-rankmom400_next5" class="chart-container hidden">
+            <h3>S&amp;P 400 Rank Momentum Next 5</h3>
+            <canvas id="scatter-rankmom400_next5"></canvas>
           </div>
           <div id="scatter-container-industry_up5" class="chart-container hidden">
             <h3>Rank Gains Top 5 · Below SMA10</h3>

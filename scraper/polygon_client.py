@@ -375,7 +375,9 @@ def get_daily_bars(ticker: str, from_date: str, to_date: str) -> list[dict]:
         refresh_ranges.add(fetch_range)
     else:
         grouped_fresh = ticker in _refreshed_tickers
-        if from_date < fetched_from and not grouped_fresh:
+        # Grouped daily requests only extend the right edge. Names seeded from
+        # a grouped session still need a per-ticker request for older history.
+        if from_date < fetched_from:
             day_before = (datetime.strptime(fetched_from, "%Y-%m-%d") - timedelta(days=1)).strftime("%Y-%m-%d")
             ranges_to_fetch.append((from_date, day_before))
         refresh_right_edge = not grouped_fresh and to_date >= fetched_through

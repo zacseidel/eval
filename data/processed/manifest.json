@@ -1,5 +1,5 @@
 {
-  "processor_version": 10,
+  "processor_version": 13,
   "price_cache_schema_version": 3,
   "as_of": "2026-09-25",
   "latest_report_date": "2026-09-22",
@@ -40,28 +40,31 @@
       "munger400l": {
         "source_section": "munger400l",
         "first_report_date": "2026-08-18",
-        "position_count": 19,
-        "entry_session_exit_signal_count": 9,
-        "entry_session_exit_signal_pct": 47.37
+        "position_count": 24,
+        "entry_session_exit_signal_count": 14,
+        "entry_session_exit_signal_pct": 58.33
       },
       "munger400r": {
         "source_section": "munger400r",
         "first_report_date": "2026-08-18",
-        "position_count": 99,
-        "entry_session_exit_signal_count": 38,
-        "entry_session_exit_signal_pct": 38.38
+        "position_count": 104,
+        "entry_session_exit_signal_count": 42,
+        "entry_session_exit_signal_pct": 40.38
       }
     }
   },
-  "sma10_variants": {
-    "strategy_suffix": "_sma10",
-    "entry": "same scraped report membership as the corresponding base strategy while flat",
-    "report_disappearance_exit": false,
-    "exit_signal": "daily split-adjusted close below trailing close-based 10-session SMA",
-    "exit_execution": "next available trading session after the signal",
-    "sma_window": 10,
-    "lookback_calendar_days": 30,
-    "reentry": "a later qualifying report while flat opens a new trade"
+  "rank_next_session_strategies": {
+    "strategy_ids": [
+      "rankmom500_top5",
+      "rankmom500_next5",
+      "rankmom400_top5",
+      "rankmom400_next5"
+    ],
+    "source": "S&P 500 and S&P 400 Rank Momentum sections: ten names with the best average 3-, 6-, and 12-month return rank",
+    "selection": "top 5 = ranks 1-5; next 5 = ranks 6-10",
+    "entry": "qualifying report membership while flat, first session on or after the report",
+    "exit_signal": "first later report that no longer lists the ticker in the selected ranks",
+    "exit_execution": "first session strictly after the exit-signal report; a relisting before that session cancels the sale"
   },
   "hold21_strategies": {
     "strategy_ids": [
@@ -105,19 +108,11 @@
       "munger",
       "munger400l",
       "munger400r",
-      "megalaggards2"
-    ],
-    "sma10": [
-      "sp500_top5_sma10",
-      "sp500_next5_sma10",
-      "megacap_top5_sma10",
-      "megacap_next5_sma10",
-      "sp400_mcap5_sma10",
-      "sp400_mcap_next5_sma10",
-      "munger_sma10",
-      "munger400l_sma10",
-      "munger400r_sma10",
-      "megalaggards2_sma10"
+      "megalaggards2",
+      "rankmom500_top5",
+      "rankmom500_next5",
+      "rankmom400_top5",
+      "rankmom400_next5"
     ],
     "industry_rank": [
       "industry_up5",
@@ -253,34 +248,34 @@
       "kelly_status": "calculated"
     },
     "munger400l": {
-      "closed_count": 13,
+      "closed_count": 21,
       "independent_run_count": null,
-      "winner_count": 3,
-      "loser_count": 10,
+      "winner_count": 7,
+      "loser_count": 14,
       "breakeven_count": 0,
-      "winner_pct": 23.08,
-      "loser_pct": 76.92,
-      "average_win_pct": 2.92,
-      "average_loss_pct": -3.34,
-      "payoff_ratio": 0.876,
-      "full_kelly_pct": null,
-      "half_kelly_pct": null,
+      "winner_pct": 33.33,
+      "loser_pct": 66.67,
+      "average_win_pct": 1.47,
+      "average_loss_pct": -2.98,
+      "payoff_ratio": 0.4945,
+      "full_kelly_pct": -101.49,
+      "half_kelly_pct": 0.0,
       "minimum_closed_trades": 20,
-      "minimum_sample_met": false,
-      "kelly_status": "insufficient_sample"
+      "minimum_sample_met": true,
+      "kelly_status": "calculated"
     },
     "munger400r": {
-      "closed_count": 81,
+      "closed_count": 90,
       "independent_run_count": null,
-      "winner_count": 28,
-      "loser_count": 53,
+      "winner_count": 30,
+      "loser_count": 60,
       "breakeven_count": 0,
-      "winner_pct": 34.57,
-      "loser_pct": 65.43,
-      "average_win_pct": 2.11,
+      "winner_pct": 33.33,
+      "loser_pct": 66.67,
+      "average_win_pct": 1.99,
       "average_loss_pct": -3.49,
-      "payoff_ratio": 0.6053,
-      "full_kelly_pct": -73.54,
+      "payoff_ratio": 0.5709,
+      "full_kelly_pct": -83.45,
       "half_kelly_pct": 0.0,
       "minimum_closed_trades": 20,
       "minimum_sample_met": true,
@@ -303,187 +298,85 @@
       "minimum_sample_met": true,
       "kelly_status": "calculated"
     },
-    "sp500_top5_sma10": {
-      "closed_count": 191,
+    "rankmom500_top5": {
+      "closed_count": 50,
       "independent_run_count": null,
-      "winner_count": 88,
-      "loser_count": 103,
+      "winner_count": 27,
+      "loser_count": 23,
       "breakeven_count": 0,
-      "winner_pct": 46.07,
-      "loser_pct": 53.93,
-      "average_win_pct": 8.24,
-      "average_loss_pct": -5.08,
-      "payoff_ratio": 1.6234,
-      "full_kelly_pct": 12.85,
-      "half_kelly_pct": 6.43,
+      "winner_pct": 54.0,
+      "loser_pct": 46.0,
+      "average_win_pct": 20.81,
+      "average_loss_pct": -6.34,
+      "payoff_ratio": 3.2819,
+      "full_kelly_pct": 39.98,
+      "half_kelly_pct": 19.99,
       "minimum_closed_trades": 20,
       "minimum_sample_met": true,
       "kelly_status": "calculated"
     },
-    "sp500_next5_sma10": {
-      "closed_count": 215,
+    "rankmom500_next5": {
+      "closed_count": 134,
       "independent_run_count": null,
-      "winner_count": 89,
-      "loser_count": 126,
-      "breakeven_count": 0,
-      "winner_pct": 41.4,
-      "loser_pct": 58.6,
-      "average_win_pct": 6.65,
-      "average_loss_pct": -4.8,
-      "payoff_ratio": 1.3863,
-      "full_kelly_pct": -0.88,
-      "half_kelly_pct": 0.0,
-      "minimum_closed_trades": 20,
-      "minimum_sample_met": true,
-      "kelly_status": "calculated"
-    },
-    "megacap_top5_sma10": {
-      "closed_count": 206,
-      "independent_run_count": null,
-      "winner_count": 81,
-      "loser_count": 125,
-      "breakeven_count": 0,
-      "winner_pct": 39.32,
-      "loser_pct": 60.68,
-      "average_win_pct": 7.0,
-      "average_loss_pct": -3.31,
-      "payoff_ratio": 2.1144,
-      "full_kelly_pct": 10.62,
-      "half_kelly_pct": 5.31,
-      "minimum_closed_trades": 20,
-      "minimum_sample_met": true,
-      "kelly_status": "calculated"
-    },
-    "megacap_next5_sma10": {
-      "closed_count": 221,
-      "independent_run_count": null,
-      "winner_count": 90,
-      "loser_count": 130,
+      "winner_count": 74,
+      "loser_count": 59,
       "breakeven_count": 1,
-      "winner_pct": 40.72,
-      "loser_pct": 58.82,
-      "average_win_pct": 2.88,
-      "average_loss_pct": -2.26,
-      "payoff_ratio": 1.2743,
-      "full_kelly_pct": -5.46,
+      "winner_pct": 55.22,
+      "loser_pct": 44.03,
+      "average_win_pct": 10.33,
+      "average_loss_pct": -7.63,
+      "payoff_ratio": 1.3534,
+      "full_kelly_pct": 22.86,
+      "half_kelly_pct": 11.43,
+      "minimum_closed_trades": 20,
+      "minimum_sample_met": true,
+      "kelly_status": "calculated"
+    },
+    "rankmom400_top5": {
+      "closed_count": 79,
+      "independent_run_count": null,
+      "winner_count": 29,
+      "loser_count": 50,
+      "breakeven_count": 0,
+      "winner_pct": 36.71,
+      "loser_pct": 63.29,
+      "average_win_pct": 10.76,
+      "average_loss_pct": -8.31,
+      "payoff_ratio": 1.2946,
+      "full_kelly_pct": -12.18,
       "half_kelly_pct": 0.0,
       "minimum_closed_trades": 20,
       "minimum_sample_met": true,
       "kelly_status": "calculated"
     },
-    "sp400_mcap5_sma10": {
-      "closed_count": 227,
+    "rankmom400_next5": {
+      "closed_count": 171,
       "independent_run_count": null,
-      "winner_count": 105,
-      "loser_count": 122,
+      "winner_count": 80,
+      "loser_count": 91,
       "breakeven_count": 0,
-      "winner_pct": 46.26,
-      "loser_pct": 53.74,
-      "average_win_pct": 6.46,
-      "average_loss_pct": -4.99,
-      "payoff_ratio": 1.2942,
-      "full_kelly_pct": 4.73,
-      "half_kelly_pct": 2.36,
-      "minimum_closed_trades": 20,
-      "minimum_sample_met": true,
-      "kelly_status": "calculated"
-    },
-    "sp400_mcap_next5_sma10": {
-      "closed_count": 257,
-      "independent_run_count": null,
-      "winner_count": 102,
-      "loser_count": 155,
-      "breakeven_count": 0,
-      "winner_pct": 39.69,
-      "loser_pct": 60.31,
-      "average_win_pct": 5.56,
-      "average_loss_pct": -4.37,
-      "payoff_ratio": 1.2738,
-      "full_kelly_pct": -7.66,
-      "half_kelly_pct": 0.0,
-      "minimum_closed_trades": 20,
-      "minimum_sample_met": true,
-      "kelly_status": "calculated"
-    },
-    "munger_sma10": {
-      "closed_count": 220,
-      "independent_run_count": null,
-      "winner_count": 95,
-      "loser_count": 125,
-      "breakeven_count": 0,
-      "winner_pct": 43.18,
-      "loser_pct": 56.82,
-      "average_win_pct": 4.14,
-      "average_loss_pct": -2.52,
-      "payoff_ratio": 1.6383,
-      "full_kelly_pct": 8.5,
-      "half_kelly_pct": 4.25,
-      "minimum_closed_trades": 20,
-      "minimum_sample_met": true,
-      "kelly_status": "calculated"
-    },
-    "munger400l_sma10": {
-      "closed_count": 20,
-      "independent_run_count": null,
-      "winner_count": 6,
-      "loser_count": 14,
-      "breakeven_count": 0,
-      "winner_pct": 30.0,
-      "loser_pct": 70.0,
-      "average_win_pct": 2.22,
-      "average_loss_pct": -2.76,
-      "payoff_ratio": 0.805,
-      "full_kelly_pct": -56.96,
-      "half_kelly_pct": 0.0,
-      "minimum_closed_trades": 20,
-      "minimum_sample_met": true,
-      "kelly_status": "calculated"
-    },
-    "munger400r_sma10": {
-      "closed_count": 111,
-      "independent_run_count": null,
-      "winner_count": 43,
-      "loser_count": 68,
-      "breakeven_count": 0,
-      "winner_pct": 38.74,
-      "loser_pct": 61.26,
-      "average_win_pct": 2.06,
-      "average_loss_pct": -3.38,
-      "payoff_ratio": 0.6095,
-      "full_kelly_pct": -61.77,
-      "half_kelly_pct": 0.0,
-      "minimum_closed_trades": 20,
-      "minimum_sample_met": true,
-      "kelly_status": "calculated"
-    },
-    "megalaggards2_sma10": {
-      "closed_count": 92,
-      "independent_run_count": null,
-      "winner_count": 48,
-      "loser_count": 44,
-      "breakeven_count": 0,
-      "winner_pct": 52.17,
-      "loser_pct": 47.83,
-      "average_win_pct": 2.72,
-      "average_loss_pct": -1.7,
-      "payoff_ratio": 1.5973,
-      "full_kelly_pct": 22.23,
-      "half_kelly_pct": 11.12,
+      "winner_pct": 46.78,
+      "loser_pct": 53.22,
+      "average_win_pct": 7.7,
+      "average_loss_pct": -6.02,
+      "payoff_ratio": 1.2786,
+      "full_kelly_pct": 5.16,
+      "half_kelly_pct": 2.58,
       "minimum_closed_trades": 20,
       "minimum_sample_met": true,
       "kelly_status": "calculated"
     },
     "industry_up5": {
-      "closed_count": 12,
+      "closed_count": 17,
       "independent_run_count": null,
-      "winner_count": 3,
-      "loser_count": 9,
+      "winner_count": 7,
+      "loser_count": 10,
       "breakeven_count": 0,
-      "winner_pct": 25.0,
-      "loser_pct": 75.0,
-      "average_win_pct": 0.53,
-      "average_loss_pct": -4.34,
-      "payoff_ratio": 0.1221,
+      "winner_pct": 41.18,
+      "loser_pct": 58.82,
+      "average_win_pct": 0.95,
+      "average_loss_pct": -3.44,
+      "payoff_ratio": 0.2772,
       "full_kelly_pct": null,
       "half_kelly_pct": null,
       "minimum_closed_trades": 20,
@@ -493,14 +386,14 @@
     "industry_down5": {
       "closed_count": 13,
       "independent_run_count": null,
-      "winner_count": 6,
-      "loser_count": 6,
+      "winner_count": 5,
+      "loser_count": 7,
       "breakeven_count": 1,
-      "winner_pct": 46.15,
-      "loser_pct": 46.15,
-      "average_win_pct": 5.08,
-      "average_loss_pct": -0.46,
-      "payoff_ratio": 11.0,
+      "winner_pct": 38.46,
+      "loser_pct": 53.85,
+      "average_win_pct": 5.04,
+      "average_loss_pct": -0.77,
+      "payoff_ratio": 6.575,
       "full_kelly_pct": null,
       "half_kelly_pct": null,
       "minimum_closed_trades": 20,
@@ -509,8 +402,8 @@
     }
   },
   "report_count": 79,
-  "signal_snapshot_count": 6690,
-  "position_count": 2999,
+  "signal_snapshot_count": 4888,
+  "position_count": 1652,
   "positions_by_strategy": {
     "sp500_top5": {
       "open": 5,
@@ -541,60 +434,36 @@
       "closed": 165
     },
     "munger400l": {
-      "open": 6,
-      "closed": 13
+      "open": 3,
+      "closed": 21
     },
     "munger400r": {
-      "open": 18,
-      "closed": 81
+      "open": 14,
+      "closed": 90
     },
     "megalaggards2": {
       "open": 16,
       "closed": 122
     },
-    "sp500_top5_sma10": {
-      "open": 3,
-      "closed": 191
-    },
-    "sp500_next5_sma10": {
+    "rankmom500_top5": {
       "open": 5,
-      "closed": 215
+      "closed": 50
     },
-    "megacap_top5_sma10": {
-      "open": 4,
-      "closed": 206
+    "rankmom500_next5": {
+      "open": 5,
+      "closed": 134
     },
-    "megacap_next5_sma10": {
-      "open": 3,
-      "closed": 221
+    "rankmom400_top5": {
+      "open": 5,
+      "closed": 79
     },
-    "sp400_mcap5_sma10": {
-      "open": 4,
-      "closed": 227
-    },
-    "sp400_mcap_next5_sma10": {
-      "open": 6,
-      "closed": 257
-    },
-    "munger_sma10": {
-      "open": 7,
-      "closed": 220
-    },
-    "munger400l_sma10": {
-      "open": 4,
-      "closed": 20
-    },
-    "munger400r_sma10": {
-      "open": 17,
-      "closed": 111
-    },
-    "megalaggards2_sma10": {
-      "open": 3,
-      "closed": 92
+    "rankmom400_next5": {
+      "open": 5,
+      "closed": 171
     },
     "industry_up5": {
       "open": 5,
-      "closed": 12
+      "closed": 17
     },
     "industry_down5": {
       "open": 4,
@@ -605,217 +474,217 @@
     {
       "date": "2026-01-07",
       "path": "data/scraped/2026-01-07.json",
-      "sha256": "c92d527bd9466b40c06715e05b7c09d185fc67e2487ffbac06878c52a6c1b94d"
+      "sha256": "fb05d2860577caef33f589acf2ae97bea2a493287b00f2a6850baded22d728f3"
     },
     {
       "date": "2026-01-08",
       "path": "data/scraped/2026-01-08.json",
-      "sha256": "76c4a77c36363d8c279723a44e7418c96828475dc2bafe505ef059b7f2abdb97"
+      "sha256": "ff51efdff18bd45313948847d783c580882dda355c73d547751569ea11a305c8"
     },
     {
       "date": "2026-01-09",
       "path": "data/scraped/2026-01-09.json",
-      "sha256": "f8819d0ca7a11cb3fa24644034927603bb8ba024aad43fd1fb7a3ccb30d1f00f"
+      "sha256": "e1cf94ff67eec59cbadca0a2a871eedeef29c2c4e65c1f6e3d36bbfaacb99c5c"
     },
     {
       "date": "2026-01-10",
       "path": "data/scraped/2026-01-10.json",
-      "sha256": "9d11841f6a914e07a4eb72795d7e9195c02a40a2aaa1f119f0ae67563eaced9c"
+      "sha256": "b1212e2a56ffd8f3c32f0154dbdc36f4d29b4c22a30f9efbffd1423ba421dbee"
     },
     {
       "date": "2026-01-13",
       "path": "data/scraped/2026-01-13.json",
-      "sha256": "e30ce8909edd25ed5643ad97100a8a2d903da6d4371d9e757a2b2bc23fd8654b"
+      "sha256": "4b5a52182c6036cd2d9827328beae82bb74efdc76557ce3301df337bd5366ef2"
     },
     {
       "date": "2026-01-14",
       "path": "data/scraped/2026-01-14.json",
-      "sha256": "548ce102746b46950cb80d66f3df28e4183fef1a34f2a435742a569f9f42fcf6"
+      "sha256": "c42d0f85225cd74019170f50437d4c12cdf99755796ac9b5a12ba98b71ca58c8"
     },
     {
       "date": "2026-01-16",
       "path": "data/scraped/2026-01-16.json",
-      "sha256": "6c6eac84ff845af929ff3d6b9a197e3bf1088a7b4df84a9f21d8779ea73e983e"
+      "sha256": "b3e43c5f0c1cd6c22f1a7509b6debf9d14b88ee5d9ef36628d04dc7e5b011f72"
     },
     {
       "date": "2026-01-20",
       "path": "data/scraped/2026-01-20.json",
-      "sha256": "8585f3d53256496a519c9c047a68992cb5d16e22a29f9175316473f9be2746c2"
+      "sha256": "5fbc553d91c92933a80a1495bb47ab97a994f3b94ee8c718a6c3d2caa36dacf3"
     },
     {
       "date": "2026-01-23",
       "path": "data/scraped/2026-01-23.json",
-      "sha256": "d1b86e178094e37d5c7453160d06c321d44051c5542935eb63a1d1b3fad12207"
+      "sha256": "c4c4cb3ebc1a81b63d81dd25800e6b1cdb757157918cbd77106de8018dcf7ccf"
     },
     {
       "date": "2026-01-27",
       "path": "data/scraped/2026-01-27.json",
-      "sha256": "b7f5d016e5725bcc401bc8125fe6c4a9f16c9e8113ddb32adbc58b26e4bf6abb"
+      "sha256": "c228e4c25cdad33a578d9489742fdb1537f5abab3dd0e9343b05f7acb01a4844"
     },
     {
       "date": "2026-01-30",
       "path": "data/scraped/2026-01-30.json",
-      "sha256": "7de5ea2a291bb698f8eff1f2203964563673b67819d2c5949f9bf2da9cd86bb1"
+      "sha256": "87fb1231152537f927c5b8e074953d62ecb5568853d683c71cb4e7898920e1f1"
     },
     {
       "date": "2026-02-03",
       "path": "data/scraped/2026-02-03.json",
-      "sha256": "8983f2332b773422974814e9a13c012a1904f43580e6deda712c8f1914de32e0"
+      "sha256": "32d07344e437db4bceb06aed037071329cd284963f7ad35af4814e1d58d9916b"
     },
     {
       "date": "2026-02-04",
       "path": "data/scraped/2026-02-04.json",
-      "sha256": "a4b447cb97128311e98eddceed5d4eaafb2ddfef09d977c7b81517973fe0a89a"
+      "sha256": "bd96c55b615e6129211f4e2c9590fdfafc94f49db9aa110b996fd05c1d63ec82"
     },
     {
       "date": "2026-02-06",
       "path": "data/scraped/2026-02-06.json",
-      "sha256": "ce21185cba26fda3f7c583b32c2c7615e38474a8da12b24feed2618ad0e1a171"
+      "sha256": "230ef03a24731e0eeea2a06556c88b65b2ee09663940a52cddef29e7b1918fd5"
     },
     {
       "date": "2026-02-10",
       "path": "data/scraped/2026-02-10.json",
-      "sha256": "3e966ccbd7d994dd8d757df01ce813ad814e6ca55f281c104da32f579d3904dc"
+      "sha256": "bb1a6df9b202f8dcf50aed4973fb61a18a62c8526b9b63bcc1435f602e7e27ec"
     },
     {
       "date": "2026-02-13",
       "path": "data/scraped/2026-02-13.json",
-      "sha256": "91f05048576cfe9e727b943b5e6a0321d10d96b4a13465743fb649e089108c0a"
+      "sha256": "2b20f9313299bbcc258b7a298550c09707df646b1d674d5cc68f0517eaef95c8"
     },
     {
       "date": "2026-02-17",
       "path": "data/scraped/2026-02-17.json",
-      "sha256": "af056d9158654e7093dde2c9de528291b2f18773c80ba7e71e7931aeaf6f4e2b"
+      "sha256": "714a4725669f22a6ee4858ce8b7f89a14f6415ffecb055c56f4f9c6ad0245673"
     },
     {
       "date": "2026-02-20",
       "path": "data/scraped/2026-02-20.json",
-      "sha256": "6f482f6a4eb9aabdcc4be587fe594d59879b9884720143643fe997c3ee500551"
+      "sha256": "89dfd1e398676c09036b3e0a0876d347fd225e037094006331d38730a680e4d3"
     },
     {
       "date": "2026-02-24",
       "path": "data/scraped/2026-02-24.json",
-      "sha256": "34ba092a26c8011f30f17359de3f399136dd9bb041841012feae254cf9d45a74"
+      "sha256": "897406deb6532f9381d37304236c60f8f8c45a8cac0582caa19ad18d40bdf782"
     },
     {
       "date": "2026-02-27",
       "path": "data/scraped/2026-02-27.json",
-      "sha256": "4be0f7a0e082b600b6c678340e71e09f7bcf1daeb117cc1f6deb48af2b064f1e"
+      "sha256": "31d2521c180008cf06b450d35cac088c5d8b90d30a2bbb6566b1db7fa3a82b87"
     },
     {
       "date": "2026-03-03",
       "path": "data/scraped/2026-03-03.json",
-      "sha256": "27f44219dce1de921e9644e4b24c2fdc7c97df5820eee9e89abdde48e113cc73"
+      "sha256": "868ac9373eece997982b3cb5e06d092fcee13a0ea28dc1aba0b78703507a5529"
     },
     {
       "date": "2026-03-06",
       "path": "data/scraped/2026-03-06.json",
-      "sha256": "cd7c239165ca2520e06518823b0817ca327a56ac653a07441e4af121de945f34"
+      "sha256": "7e2e2c5756ea09f423abcba287a66459f91bea9933ed201e5d48f929880853aa"
     },
     {
       "date": "2026-03-10",
       "path": "data/scraped/2026-03-10.json",
-      "sha256": "6d331dd646e18bd3cb64cc06e47a2e1127f44fb9ab23077c0d66c4aab884fba1"
+      "sha256": "26a4ffacca9023a1444b4a45028316cef8dd6439813b29f6fd86086640e2074d"
     },
     {
       "date": "2026-03-13",
       "path": "data/scraped/2026-03-13.json",
-      "sha256": "eb9076e1ab00496899ec8b748da2454d4f804e5d81abe2f378bdcfb3f9ef1a89"
+      "sha256": "3a19b8b8dabcc11fae7981b68da49bed40900337cb24a1ac3d061cc5e40be400"
     },
     {
       "date": "2026-03-17",
       "path": "data/scraped/2026-03-17.json",
-      "sha256": "f8a02a1193497696cd818ae4f52e60257f598f8adf8ca32622d6a1107826a958"
+      "sha256": "a006ba74f38eed207734ed2862907bc2fbbf75b5017e5f63015f81f277a2eea8"
     },
     {
       "date": "2026-03-20",
       "path": "data/scraped/2026-03-20.json",
-      "sha256": "5044ab623c2955c404ac218146e000507297aa32f3bfd318b6617076325195b8"
+      "sha256": "716a184ccab1c3064808845cca9c5521fb77d9d2761ba43147241f75a1ece552"
     },
     {
       "date": "2026-03-24",
       "path": "data/scraped/2026-03-24.json",
-      "sha256": "aa836b3c058cbb781c14acec365ca3fc1b49756d07caabf9a25479cd9825dbfd"
+      "sha256": "8d02be25807fb5d36ed47b9985917a5bc387c1d73a0a039c092e7bde8bcf435d"
     },
     {
       "date": "2026-03-27",
       "path": "data/scraped/2026-03-27.json",
-      "sha256": "886da04ab39bf5cb3e335631f5fd7b38ab2d07e29d3066188dc7a756a8437092"
+      "sha256": "a6cbdea4a187a71eeb5579605cd94643155d215f31dc190bedf8755f495e5f84"
     },
     {
       "date": "2026-03-31",
       "path": "data/scraped/2026-03-31.json",
-      "sha256": "27b1ecf2b78d1f715b52a0fe1e267780ee5446ba7b132a8dd05ef62f846276ba"
+      "sha256": "5040c59604f96faef05be89db9e842a85234a5b830fc0cd31c95c1af3761c039"
     },
     {
       "date": "2026-04-03",
       "path": "data/scraped/2026-04-03.json",
-      "sha256": "5d16fb6d3d40275cb617e4fcf589d40501a0b5bc9c710dc3f755e7b1eb1c957d"
+      "sha256": "a5c76a889c21f822fff01f7e8948fe4ef99aa1337c51eaa766852f5ff56c93ee"
     },
     {
       "date": "2026-04-07",
       "path": "data/scraped/2026-04-07.json",
-      "sha256": "3a5b7f29af6a05d693e7a271b596d1157626385d48a6d58f372b6377e703f51f"
+      "sha256": "0bc1632363476eed87a6ff3693e0657da8a22c69688de5656680389f6b9dbde2"
     },
     {
       "date": "2026-04-10",
       "path": "data/scraped/2026-04-10.json",
-      "sha256": "1070d440841a1086bc26e19bf2a2263d4b02570e34da4cb1ebcd3969df217e89"
+      "sha256": "d40d4a27338f0c8c283e46e035dee816d3f6243a9f566578d5996d2a44a5b509"
     },
     {
       "date": "2026-04-14",
       "path": "data/scraped/2026-04-14.json",
-      "sha256": "4687efbc2204c0dce4929676377003bf27da09e23964b8f37c353f322abd0e58"
+      "sha256": "3042a31e030b7c7b49da665a5ea85c3ef07e7d2e9c318ec6610c6f8ac9d006bf"
     },
     {
       "date": "2026-04-17",
       "path": "data/scraped/2026-04-17.json",
-      "sha256": "72cd07c9e1ba5500e2dba6ffc047e54dc732d71df8932c40953de39a2f2f46fd"
+      "sha256": "acfde61507d39f15198102819832664b8cd0552a5636d4eaa8af166dbea9fdab"
     },
     {
       "date": "2026-04-21",
       "path": "data/scraped/2026-04-21.json",
-      "sha256": "58df7fd9d549309b3a9d945381f016f20c34dd638a436d06a03e45ec0050d3fc"
+      "sha256": "4e9a0d583da44d6d77c66eacfa6e05d3367c0d1283978278171d55ea2823a4a8"
     },
     {
       "date": "2026-04-24",
       "path": "data/scraped/2026-04-24.json",
-      "sha256": "53133a86cec72e2a4fc789b17df37c3f4515120bf10e31227345d889c67f2c00"
+      "sha256": "5771581abb00c7b84e393ead9925db24552304cebad6c8203e4ff5414bcf0221"
     },
     {
       "date": "2026-04-28",
       "path": "data/scraped/2026-04-28.json",
-      "sha256": "4387846c8580c7ee2675f8351da361cfabd97d149d3ab0b9a486eb21b77090eb"
+      "sha256": "beb71d4a7bbaae4a523476b20eb174e75fe59047cbab724f481acd2d3db6c1a0"
     },
     {
       "date": "2026-05-01",
       "path": "data/scraped/2026-05-01.json",
-      "sha256": "9aef217818f0b8002125350cfff8c70d2574caa42bd667b2d9b934013a24a3a5"
+      "sha256": "5472c93a3b6c9579c5c7a4b6538bbd00a3f2f6172a88c40de5b7183e8cc7c2ee"
     },
     {
       "date": "2026-05-05",
       "path": "data/scraped/2026-05-05.json",
-      "sha256": "a2393ceeedcc01cffbc86f5681fcd18fe3e79765322b43ee3d7540a2caec778d"
+      "sha256": "3079d5f3a7b3a125121da53edfde232065f1bb86747de87ab3c7be637b0e6789"
     },
     {
       "date": "2026-05-08",
       "path": "data/scraped/2026-05-08.json",
-      "sha256": "5ceee010fa0a929055a06e7a4840909de8553b5a97aa841e7200400725ba7447"
+      "sha256": "2a4bba5fc57fd6fab65a73af73c730fe6a6a6c21e4926a3ecbda67a863fb287a"
     },
     {
       "date": "2026-05-12",
       "path": "data/scraped/2026-05-12.json",
-      "sha256": "6085d27d996a14aff13d1bdf2b86b3b90a0e9e14dfbe45fadab212193c33ce9e"
+      "sha256": "1a41ac72173a84d8140a7c8d1d38863eaf2381da560dafebd52f2553867c2e4e"
     },
     {
       "date": "2026-05-15",
       "path": "data/scraped/2026-05-15.json",
-      "sha256": "713216915cba786ee7a6ae46db8112641d7f89d02bcaaf38de554310c89b9f06"
+      "sha256": "bdf8cb24663d599e1eb6cd1bc88f841a19ca6f89af7ff0a38e545ddf0cde0343"
     },
     {
       "date": "2026-05-19",
       "path": "data/scraped/2026-05-19.json",
-      "sha256": "2a4d4c9f4ffe6fad93d5959deec6bea02d418ef764f50fba992f575a91b2f81e"
+      "sha256": "e8487107db4a9d4d2acf9fa95d288a2abe3b21840fa249181945db67d73ad970"
     },
     {
       "date": "2026-05-22",
@@ -835,167 +704,167 @@
     {
       "date": "2026-06-02",
       "path": "data/scraped/2026-06-02.json",
-      "sha256": "3640a9ea951c479f902ff621571fdb4b519a027649dd220fde39f8bd2e68952f"
+      "sha256": "26217523155c7970f40ef909baff888bfe8953ea960b0ce441d02584ee744012"
     },
     {
       "date": "2026-06-05",
       "path": "data/scraped/2026-06-05.json",
-      "sha256": "5186e4ed4c6d6fc50a1db0951a855283be45d838d8cd812a486e57dd76603c26"
+      "sha256": "bfb0357e77c6d1dc605bc34023f805a3e3ab2a351304fab5fe3e96299c610f83"
     },
     {
       "date": "2026-06-09",
       "path": "data/scraped/2026-06-09.json",
-      "sha256": "04ecc389593ae1ec3cec394be385d1853864791b833af0c41de8a0a67d0aa33f"
+      "sha256": "003fe216fb9f7248f7bce8634eaccd235863731c21ab5af3415c008737144292"
     },
     {
       "date": "2026-06-12",
       "path": "data/scraped/2026-06-12.json",
-      "sha256": "8f5a81dcd9dff3d7b44dba9cca440e1a8320b107d7d4e88a49f0d452a5542a56"
+      "sha256": "2eb2631ba4e6ae2ce26612f3649bb8c2159f7f2bed6a856551cb8cb3261b842a"
     },
     {
       "date": "2026-06-16",
       "path": "data/scraped/2026-06-16.json",
-      "sha256": "d8890812e15798e06875c5ca8a583593801ba9a269ba78bd86c7b2e34ea51fe9"
+      "sha256": "b88ce836f9988d2082820673e8b85d1bacbffb77ed9795a0db93090e0c2c4f81"
     },
     {
       "date": "2026-06-19",
       "path": "data/scraped/2026-06-19.json",
-      "sha256": "203dedbdd53e26174a1485799d4161c73ee2c42d1d03aebb6cf4b839749e1e39"
+      "sha256": "26e65b76a2118649c24aadc310eba270bf66b4c366aae0a43bfa6fc07645c6fd"
     },
     {
       "date": "2026-06-23",
       "path": "data/scraped/2026-06-23.json",
-      "sha256": "f281f2208dd0da0222e93ac926cca2c15a26b0d9b40255eb597dfe87260a6246"
+      "sha256": "cbb6a1307b4ab4fefe3f73f193dee01b8a09d140771457e9cbbdcdd86e773247"
     },
     {
       "date": "2026-06-26",
       "path": "data/scraped/2026-06-26.json",
-      "sha256": "a9ce9506d8d5e885024749d83e94db78782d52d00c1068e46d650a31b9f5a5e7"
+      "sha256": "16774b41effd36007726df675243d4c24c6935e4aab291c2d9e7f26eb22425f5"
     },
     {
       "date": "2026-06-30",
       "path": "data/scraped/2026-06-30.json",
-      "sha256": "0941b4dd54ece172612a8f8878cc44f120708268bb5910ae5ffe4d4b9b77348d"
+      "sha256": "4ca3313cfbf3212acc85c5ad009bc17a0a59bfbb75d8c28f66d06b4410c1f2e2"
     },
     {
       "date": "2026-07-03",
       "path": "data/scraped/2026-07-03.json",
-      "sha256": "48aabc3118a5f12272195ebb7d4ef4874592b0620c6d0410f8f9fe1563c7911a"
+      "sha256": "9ad405c415fa7f39b04ce6843546baa126cdc1c09a4fffcd1504b02f95dec5a8"
     },
     {
       "date": "2026-07-07",
       "path": "data/scraped/2026-07-07.json",
-      "sha256": "35801d212bd534d6741fa69d7e0ff580f0eaf5497c565cb69d64045a71b5ff09"
+      "sha256": "ba3a93ca84b8f865962b27ae502f44fc4f88bee05261bd90056b5b799568b38f"
     },
     {
       "date": "2026-07-10",
       "path": "data/scraped/2026-07-10.json",
-      "sha256": "2dde504db8c31a1137fb947943eeb1669171493d776b6c6fae624a82407d71b4"
+      "sha256": "b5641fc34a13b688e6b66a175f7eebff802f24e8f22e1fe4e80f627fba095a66"
     },
     {
       "date": "2026-07-14",
       "path": "data/scraped/2026-07-14.json",
-      "sha256": "454ab0a8b802e511847d4ff6ae0788c8cfd14c033cfe822a4f9b3d9a836660d6"
+      "sha256": "ed202819fafbdab730de579b44eb52b3fe07d53c20e33cf63b4484b4bf692ea6"
     },
     {
       "date": "2026-07-17",
       "path": "data/scraped/2026-07-17.json",
-      "sha256": "8376d0d0882fb1b26f4f9568860e96a9afbac1923d49c580b3635b6ab7fd7958"
+      "sha256": "8e33c22144f2306f18997e3e45add9c8d43da1dcdee6162651bac499c93fac31"
     },
     {
       "date": "2026-07-21",
       "path": "data/scraped/2026-07-21.json",
-      "sha256": "f8cf1ee50441ba6531685597683361ecfbe7599f49b9f5e6531f772342186a9e"
+      "sha256": "e6356733a51d5076a39f16a97ea215a0100145d2af2eae90590497d04c971da3"
     },
     {
       "date": "2026-07-24",
       "path": "data/scraped/2026-07-24.json",
-      "sha256": "a2290bf0f4f40de2fda154bb80e40f87eee41afa3efa215479f716ed0b4b699a"
+      "sha256": "3d23915f04e7c17ec657af3a51cd645a3b0838530ace6c3b6ae3a1c3af65c77f"
     },
     {
       "date": "2026-07-28",
       "path": "data/scraped/2026-07-28.json",
-      "sha256": "c13fdbd80f3c78370a1795f1d75c0108d3a8a9651ecadc9f05408ac907eb534d"
+      "sha256": "fa853c647a138ce745a84c86e726dd64bbdb713540acb51cc467e7c40528bbb8"
     },
     {
       "date": "2026-07-31",
       "path": "data/scraped/2026-07-31.json",
-      "sha256": "4ab171bc350fc3b1118c4322c0af9f32c7507e6bf77e52b8fbed0337da41c3ae"
+      "sha256": "aee839604b876f79c75058d5c86cd8c42b3d4df93ce4ce92594d251c816ece85"
     },
     {
       "date": "2026-08-04",
       "path": "data/scraped/2026-08-04.json",
-      "sha256": "71585f096c0266c9d47309ba9c04e1794585e569f7c300b3a2bb8cb3fcd72ff7"
+      "sha256": "b2371441c65b92cd82775eead3af9b092d9d26bfab041b691b089e5f0e572575"
     },
     {
       "date": "2026-08-07",
       "path": "data/scraped/2026-08-07.json",
-      "sha256": "31e81fdc6858a52b0d522fc70c3d981fb23af78b756074a910f2f692d011181d"
+      "sha256": "23f80d22d398eaabca567da632d08986767660c525ff149512e64cf7cad3c7f7"
     },
     {
       "date": "2026-08-11",
       "path": "data/scraped/2026-08-11.json",
-      "sha256": "cb8266bdc83fff0a77b1a07021bc76e8796eba3ddc917ce5e76a600499537490"
+      "sha256": "5a0dbdb82d51d4b18b76167c07ac489be6917ce087967fd001f687da40f6adde"
     },
     {
       "date": "2026-08-14",
       "path": "data/scraped/2026-08-14.json",
-      "sha256": "4f16978ba0e74a0803471c3124ebc8cd11c605ab16ea1341859ddcebc4b98dd6"
+      "sha256": "9bef46318328bd1fcbbd810be9cfe17134ad12252382a8e0f549d42aa08ad947"
     },
     {
       "date": "2026-08-18",
       "path": "data/scraped/2026-08-18.json",
-      "sha256": "a40e2789e2c4942cb251fc16871728d47e107bf7ec3783f401084336fa749e04"
+      "sha256": "92b1df06f66882fedefad6cb18cb8789fcdc6d9724bf0abf2a9b61087701bffa"
     },
     {
       "date": "2026-08-21",
       "path": "data/scraped/2026-08-21.json",
-      "sha256": "dc7ef1dd083291e783b617d062b2559032f4fa9f7bb5cac74d8e5b1397f49e35"
+      "sha256": "d410a1318bdc9d7715f329482874321af09f68c7bb9a744512fac633c9535d68"
     },
     {
       "date": "2026-08-25",
       "path": "data/scraped/2026-08-25.json",
-      "sha256": "dabd72407b824f4d7006f907e8406f3bdbe298148974e9867aed69ed5d93b367"
+      "sha256": "91e0e390d0c5af8282c722e740ff1446788aa4264366dea8234864de1c9110ef"
     },
     {
       "date": "2026-08-28",
       "path": "data/scraped/2026-08-28.json",
-      "sha256": "3e0afaa5d60f0f8a1113421a9157465e7e9a53ec90341849d3bca97d7b2b98e7"
+      "sha256": "0ce1eec9c969dcfa57ffbb53befd302b205472f7050bea8597e4986f60e1eaff"
     },
     {
       "date": "2026-09-01",
       "path": "data/scraped/2026-09-01.json",
-      "sha256": "9acc75479ad5373fa3649a6f2f0f81e1b71d208cfa2c162503d39342e842ee34"
+      "sha256": "4937130b08780b2102d63ad60971d38b4d1911d84d8873d9e6d1770bb1ca26c0"
     },
     {
       "date": "2026-09-04",
       "path": "data/scraped/2026-09-04.json",
-      "sha256": "81b54b478048e02e2b0d155ce998a34264b7e6a3426892066cbe772d2aa89955"
+      "sha256": "2f706ce266214b4cd6cadc16e15d5b392800aac786fa23c7beb273be857dcba1"
     },
     {
       "date": "2026-09-08",
       "path": "data/scraped/2026-09-08.json",
-      "sha256": "6c0d789b509be384334841cba387b317b8e6e24be208470615a5efd441059d8a"
+      "sha256": "c753671f4ea303abfe2624265e7b5aadc134fb5a9882250ec155a7725cbb54b9"
     },
     {
       "date": "2026-09-11",
       "path": "data/scraped/2026-09-11.json",
-      "sha256": "793c528ef2a7ecfa0a6f1bcde91b336d7eb88613458544d72dd96d66c615d56a"
+      "sha256": "c65b0807de4586baf1700cc37bcc5a03831b18652e353a470e64a482ea9cd479"
     },
     {
       "date": "2026-09-15",
       "path": "data/scraped/2026-09-15.json",
-      "sha256": "0c202ce0675b5e5559bcc9c7153bca89ef77a1228d735756c47b53e15d7fe868"
+      "sha256": "be6649298e41c0b82cf5f831ef5f82529f0bff3f21f5fa6f7e2acaede960de1c"
     },
     {
       "date": "2026-09-18",
       "path": "data/scraped/2026-09-18.json",
-      "sha256": "0372ea10f3d47b2b625e9a165ce5baa73cca0bd47517fddf59b2d2d990621e84"
+      "sha256": "4b0c5e8baacb85071ab518143c8a185d4d54ea4f009acd62f968f0dc38d52708"
     },
     {
       "date": "2026-09-22",
       "path": "data/scraped/2026-09-22.json",
-      "sha256": "4db56ecfb4e9ad870b6548ed97f4a01406b8267ce99d075f0c785394e6661cbc"
+      "sha256": "e2af69b5d2f6e9009ab858b5beea8a45720b58a0a7ca1e575eeae907f8e3c51c"
     }
   ]
 }

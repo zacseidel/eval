@@ -383,20 +383,29 @@ class PolygonCacheTests(unittest.TestCase):
                  patch.object(
                      polygon_client,
                      "_get",
-                     side_effect=[{"status": "OK", "results": []}, monday],
+                     side_effect=[
+                         {"status": "OK", "results": []},
+                         monday,
+                         {"status": "OK", "results": [self._aggregate("2026-03-06", 200.0)]},
+                     ],
                  ) as get:
                 summary = polygon_client.update_grouped_daily_bars(
                     {"AAA", "CCC"}, "2026-03-09"
                 )
+                seeded = json.loads((Path(temp_dir) / "CCC.json").read_text())
                 bars = polygon_client.get_daily_bars("CCC", "2025-09-09", "2026-03-09")
             ccc = json.loads((Path(temp_dir) / "CCC.json").read_text())
 
-        self.assertEqual(2, get.call_count)  # split query + one grouped day
         self.assertEqual("2026-03-09", summary["through"])
-        self.assertEqual("2026-03-09", ccc["_fetched_from"])
+        self.assertEqual("2026-03-09", seeded["_fetched_from"])
+        self.assertEqual(201.0, seeded["2026-03-09"]["close"])
+        # Split query + one grouped day, then one request for the older history
+        # a grouped seed cannot supply.
+        self.assertEqual(3, get.call_count)
+        self.assertIn("/range/1/day/2025-09-09/2026-03-08", get.call_args_list[2].args[0])
+        self.assertEqual("2025-09-09", ccc["_fetched_from"])
         self.assertEqual("2026-03-09", ccc["_fetched_through"])
-        self.assertEqual(201.0, ccc["2026-03-09"]["close"])
-        self.assertEqual([201.0], [bar["close"] for bar in bars])
+        self.assertEqual([200.0, 201.0], [bar["close"] for bar in bars])
 
     def test_grouped_update_rereads_latest_day_to_seed_new_tickers(self):
         with tempfile.TemporaryDirectory() as temp_dir:

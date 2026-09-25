@@ -159,12 +159,8 @@ class MungerLifecycleTests(unittest.TestCase):
         snapshots = process.build_signal_snapshots(reports)
         top = [s for s in snapshots if s["strategy"] == "sp500_top5"]
         next_five = [s for s in snapshots if s["strategy"] == "sp500_next5"]
-        top_sma = [s for s in snapshots if s["strategy"] == "sp500_top5_sma10"]
-        next_sma = [s for s in snapshots if s["strategy"] == "sp500_next5_sma10"]
         self.assertEqual(["AAA"], [s["ticker"] for s in top])
         self.assertEqual(["BBB"], [s["ticker"] for s in next_five])
-        self.assertEqual(["AAA"], [s["ticker"] for s in top_sma])
-        self.assertEqual(["BBB"], [s["ticker"] for s in next_sma])
 
     def test_munger400_signals_begin_only_when_each_section_appears(self):
         reports = [
@@ -175,18 +171,14 @@ class MungerLifecycleTests(unittest.TestCase):
 
         snapshots = process.build_signal_snapshots(reports)
         l_ema = [s for s in snapshots if s["strategy"] == "munger400l"]
-        l_sma = [s for s in snapshots if s["strategy"] == "munger400l_sma10"]
         r_ema = [s for s in snapshots if s["strategy"] == "munger400r"]
-        r_sma = [s for s in snapshots if s["strategy"] == "munger400r_sma10"]
 
         self.assertEqual(["2026-08-21"], [s["report_date"] for s in l_ema])
         self.assertEqual(["MID"], [s["ticker"] for s in l_ema])
-        self.assertEqual(["2026-08-21"], [s["report_date"] for s in l_sma])
         self.assertEqual(["2026-08-25"], [s["report_date"] for s in r_ema])
         self.assertEqual(["RET"], [s["ticker"] for s in r_ema])
-        self.assertEqual(["2026-08-25"], [s["report_date"] for s in r_sma])
 
-    def test_build_positions_routes_both_munger400_models_to_both_exit_models(self):
+    def test_build_positions_routes_both_munger400_models_to_ema21_exit(self):
         reports = [report(
             "2026-01-05",
             munger400l=[munger_entry("AAA")],
@@ -198,7 +190,7 @@ class MungerLifecycleTests(unittest.TestCase):
         signals = process.build_signal_snapshots(reports)
 
         self.assertEqual(
-            {"munger400l", "munger400l_sma10", "munger400r", "munger400r_sma10"},
+            {"munger400l", "munger400r"},
             {position["strategy"] for position in positions},
         )
         process.validate_positions(positions, "2026-01-07", signals)
@@ -276,7 +268,7 @@ class MungerLifecycleTests(unittest.TestCase):
         self.assertTrue(all(call.args[2] == "2026-03-09" for call in get.call_args_list))
 
 
-class SmaVariantLifecycleTests(unittest.TestCase):
+class SmaExitLifecycleTests(unittest.TestCase):
     @staticmethod
     def _bars():
         bars = []
@@ -303,7 +295,7 @@ class SmaVariantLifecycleTests(unittest.TestCase):
     def test_sma10_exit_executes_next_session_and_same_day_report_reenters(self):
         bars = self._bars()
         positions = process._build_price_exit_ticker_positions(
-            "sp500_top5_sma10",
+            "industry_up5",
             "AAA",
             ["2026-01-05", "2026-01-07", "2026-01-08"],
             bars,
@@ -324,13 +316,13 @@ class SmaVariantLifecycleTests(unittest.TestCase):
         self.assertEqual("2026-01-08", closed[1]["exit_date"])
         self.assertEqual("2026-01-08", opened["signal_date"])
 
-    def test_report_disappearance_does_not_close_sma10_variant(self):
+    def test_report_disappearance_does_not_close_sma10_trade(self):
         bars = [
             {**bar, "open": 100.0, "close": 100.0, "vwap": 100.0}
             for bar in self._bars()
         ]
         positions = process._build_price_exit_ticker_positions(
-            "sp500_top5_sma10",
+            "industry_up5",
             "AAA",
             ["2026-01-05"],
             bars,
@@ -353,23 +345,6 @@ class SmaVariantLifecycleTests(unittest.TestCase):
         self.assertNotIn("2026-01-09", values)
         self.assertEqual(5.5, values["2026-01-10"])
         self.assertEqual(6.5, values["2026-01-11"])
-
-    def test_munger400l_uses_the_same_sma10_lifecycle(self):
-        reports = [report(
-            "2026-01-05",
-            munger400l=[munger_entry("AAA")],
-        )]
-
-        with patch.object(process, "get_daily_bars", return_value=self._bars()):
-            positions = process._build_sma10_positions(
-                reports, "munger400l_sma10", "2026-01-07"
-            )
-
-        self.assertEqual(1, len(positions))
-        self.assertEqual("munger400l_sma10", positions[0]["strategy"])
-        self.assertEqual("2026-01-06", positions[0]["exit_signal_date"])
-        self.assertEqual("2026-01-07", positions[0]["exit_date"])
-        process.validate_positions(positions, "2026-01-07")
 
 
 class IndustryRankChangeTests(unittest.TestCase):
@@ -629,15 +604,12 @@ class MegaLaggardsHoldTests(unittest.TestCase):
              patch.object(process, "get_execution_price", side_effect=self._execution):
             return process._build_hold_positions(reports, "megalaggards2", as_of)
 
-    def test_worst_two_config_and_sma10_twin(self):
+    def test_worst_two_config_holds_21_sessions(self):
         base = process.STRATEGIES["megalaggards2"]
-        twin = process.STRATEGIES["megalaggards2_sma10"]
         self.assertEqual("megalaggards", base["section"])
         self.assertEqual([1, 2], list(base["ranks"]))
         self.assertEqual("hold21", base["exit_model"])
-        self.assertEqual([1, 2], list(twin["ranks"]))
-        self.assertEqual("sma10", twin["exit_model"])
-        self.assertEqual("below", twin["exit_direction"])
+        self.assertFalse(any(sid.endswith("_sma10") for sid in process.STRATEGIES))
 
     def test_each_listing_opens_a_lot_that_sells_21_sessions_later(self):
         reports = [
@@ -712,6 +684,123 @@ class MegaLaggardsHoldTests(unittest.TestCase):
         self.assertEqual(4, stats["megalaggards2"]["closed_count"])
         self.assertEqual(3, stats["megalaggards2"]["independent_run_count"])
         self.assertIsNone(stats["munger"]["independent_run_count"])
+
+
+class RankMomentumNextSessionExitTests(unittest.TestCase):
+    def setUp(self):
+        self.bars = [
+            {**bar, "open": 100.0 + i, "close": 100.0 + i, "vwap": 100.0 + i}
+            for i, bar in enumerate(weekday_bars("2026-03-02", 15))
+        ]
+
+    def _execution(self, _ticker, start, as_of=None):
+        bar = next(
+            (bar for bar in self.bars if start <= bar["date"] <= (as_of or "9999")),
+            None,
+        )
+        return (bar["date"], bar["vwap"]) if bar else (None, None)
+
+    def _build(self, reports, strategy_id, as_of):
+        with patch.object(process, "get_execution_price", side_effect=self._execution), \
+             patch.object(process, "get_daily_bars",
+                          side_effect=lambda _t, start, end: [
+                              b for b in self.bars if start <= b["date"] <= end
+                          ]):
+            return process._build_next_session_rank_positions(reports, strategy_id, as_of)
+
+    @staticmethod
+    def _report(report_date, tickers):
+        return {
+            "date": report_date,
+            "rankmom500": [munger_entry(t, rank) for rank, t in enumerate(tickers, start=1)],
+        }
+
+    def test_top_and_next_five_configs(self):
+        for sid, section, ranks in (
+            ("rankmom500_top5", "rankmom500", [1, 2, 3, 4, 5]),
+            ("rankmom500_next5", "rankmom500", [6, 7, 8, 9, 10]),
+            ("rankmom400_top5", "rankmom400", [1, 2, 3, 4, 5]),
+            ("rankmom400_next5", "rankmom400", [6, 7, 8, 9, 10]),
+        ):
+            config = process.STRATEGIES[sid]
+            self.assertEqual(section, config["section"])
+            self.assertEqual(ranks, list(config["ranks"]))
+            self.assertEqual("rank_next_session", config["exit_model"])
+
+    def test_drop_sells_the_session_after_the_drop_report(self):
+        # Mar 2 lists AAA; the Mar 5 report drops it, so it sells Mar 6.
+        reports = [self._report("2026-03-02", ["AAA"]), self._report("2026-03-05", ["BBB"])]
+        positions = self._build(reports, "rankmom500_top5", "2026-03-13")
+
+        aaa = next(p for p in positions if p["ticker"] == "AAA")
+        self.assertEqual("2026-03-02", aaa["entry_date"])
+        self.assertEqual("2026-03-05", aaa["exit_signal_date"])
+        self.assertEqual("2026-03-06", aaa["exit_date"])
+        self.assertEqual("closed", aaa["status"])
+        bbb = next(p for p in positions if p["ticker"] == "BBB")
+        self.assertEqual("2026-03-05", bbb["entry_date"])
+        self.assertEqual("open", bbb["status"])
+        process.validate_positions(positions, "2026-03-13")
+
+    def test_relisting_before_the_sale_session_cancels_it(self):
+        # Dropped Mar 5 (sale due Mar 6), relisted in the Mar 6 report.
+        reports = [
+            self._report("2026-03-02", ["AAA"]),
+            self._report("2026-03-05", ["BBB"]),
+            self._report("2026-03-06", ["AAA"]),
+        ]
+        positions = self._build(reports, "rankmom500_top5", "2026-03-13")
+
+        aaa = [p for p in positions if p["ticker"] == "AAA"]
+        self.assertEqual(1, len(aaa))
+        self.assertEqual("open", aaa[0]["status"])
+        self.assertIsNone(aaa[0]["exit_signal_date"])
+
+    def test_sale_after_the_last_session_stays_pending(self):
+        reports = [self._report("2026-03-02", ["AAA"]), self._report("2026-03-05", [])]
+        positions = self._build(reports, "rankmom500_top5", "2026-03-05")
+
+        self.assertEqual(1, len(positions))
+        self.assertEqual("open", positions[0]["status"])
+        self.assertEqual("2026-03-05", positions[0]["exit_signal_date"])
+        self.assertEqual("2026-03-05", positions[0]["current_date"])
+
+    def test_next_five_ignores_top_five_rows(self):
+        reports = [self._report("2026-03-02", [f"T{i}" for i in range(1, 11)])]
+        positions = self._build(reports, "rankmom500_next5", "2026-03-03")
+
+        self.assertEqual(["T10", "T6", "T7", "T8", "T9"], sorted(p["ticker"] for p in positions))
+
+    def test_validation_rejects_a_same_session_rank_exit(self):
+        trade = process._new_position("rankmom500_top5", "AAA", "2026-03-02", "2026-03-02", 100.0)
+        closed = process._close_position(trade, "2026-03-05", "2026-03-05", 101.0)
+        with self.assertRaisesRegex(ValueError, "not after its drop report"):
+            process.validate_positions([closed], "2026-03-06")
+
+
+class SharpeTests(unittest.TestCase):
+    def test_full_period_sharpe_uses_each_series_and_its_own_spy_window(self):
+        days = [bar["date"] for bar in weekday_bars("2026-01-05", 60)]
+        series = [
+            {"date": day, "value": 100.0 * (1.01 if i % 2 else 1.0) + i,
+             "spy_value": 100.0 + (i % 3)}
+            for i, day in enumerate(days)
+        ]
+        short = series[-20:]
+        sharpe = process.compute_sharpe({"long": series, "short": short}, days[-1])
+
+        self.assertIsNone(sharpe["long"]["12m"])
+        self.assertEqual(
+            process._sharpe_from_series(series, "", 40), sharpe["long"]["inception"]
+        )
+        self.assertEqual(
+            process._sharpe_from_series(series, "", 40, "spy_value"),
+            sharpe["long"]["spy_inception"],
+        )
+        self.assertNotIn("3m", sharpe["long"])
+        # Fewer than 40 daily returns publishes no full-period Sharpe.
+        self.assertIsNone(sharpe["short"]["inception"])
+        self.assertIsNone(sharpe["short"]["spy_inception"])
 
 
 class KellySizingTests(unittest.TestCase):

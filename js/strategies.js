@@ -9,23 +9,13 @@ export const STRATEGY_META = {
   munger400l:       { label: "Munger400L EMA21", color: "#22d3ee" },
   munger400r:       { label: "Munger400R EMA21", color: "#f59e0b" },
   megalaggards2:    { label: "Mega Laggards 2 · Hold 21", color: "#e879f9" },
-  sp500_top5_sma10:       { label: "S&P 500 Top 5 · SMA10", color: "#6c8ef7" },
-  sp500_next5_sma10:      { label: "S&P 500 Next 5 · SMA10", color: "#a78bfa" },
-  megacap_top5_sma10:     { label: "Megacap Top 5 · SMA10", color: "#34d399" },
-  megacap_next5_sma10:    { label: "Megacap Next 5 · SMA10", color: "#10b981" },
-  sp400_mcap5_sma10:      { label: "S&P 400 Top 5 · SMA10", color: "#fb923c" },
-  sp400_mcap_next5_sma10: { label: "S&P 400 Next 5 · SMA10", color: "#fbbf24" },
-  munger_sma10:           { label: "Munger Signals · SMA10", color: "#f472b6" },
-  munger400l_sma10:       { label: "Munger400L SMA10", color: "#22d3ee" },
-  munger400r_sma10:       { label: "Munger400R SMA10", color: "#f59e0b" },
-  megalaggards2_sma10:    { label: "Mega Laggards 2 · SMA10", color: "#e879f9" },
+  rankmom500_top5:  { label: "S&P 500 Rank Momentum Top 5", color: "#2dd4bf" },
+  rankmom500_next5: { label: "S&P 500 Rank Momentum Next 5", color: "#5eead4" },
+  rankmom400_top5:  { label: "S&P 400 Rank Momentum Top 5", color: "#0ea5e9" },
+  rankmom400_next5: { label: "S&P 400 Rank Momentum Next 5", color: "#7dd3fc" },
   industry_up5:     { label: "Rank Gains Top 5 · Below SMA10", color: "#4ade80" },
   industry_down5:   { label: "Rank Losses Top 5 · Above SMA10", color: "#f87171" },
 };
-
-function isSma10(sid) {
-  return sid.endsWith("_sma10");
-}
 
 function isIndustryRank(sid) {
   return sid === "industry_up5" || sid === "industry_down5";
@@ -46,13 +36,11 @@ export function summarizeLots(openPositions) {
 }
 
 function showsPendingExit(sid) {
-  return isMungerFamily(sid) || isSma10(sid) || isIndustryRank(sid);
+  return isMungerFamily(sid) || isIndustryRank(sid) || sid.startsWith("rankmom");
 }
 
 function isMungerFamily(sid) {
-  return sid === "munger" || sid === "munger_sma10" ||
-    sid === "munger400l" || sid === "munger400l_sma10" ||
-    sid === "munger400r" || sid === "munger400r_sma10";
+  return sid === "munger" || sid === "munger400l" || sid === "munger400r";
 }
 
 function formatPct(val) {
@@ -114,7 +102,7 @@ export function getAvailableStrategyEntries(strategyReturns) {
 
 function buildCard(item) {
   const { sid, meta, returnLabel, ret12m, ret3m, spy12m, spy3m,
-          stratSharpe12m, stratSharpe3m, spySharpe12m, spySharpe3m,
+          stratSharpe12m, stratSharpeInception, spySharpe12m, spySharpeInception,
           openCount, closedCount, pendingExitCount, openTickers, openLots,
           signalTickers, tradeStats } = item;
   const lotBased = isLotStrategy(sid);
@@ -168,9 +156,9 @@ function buildCard(item) {
             ${formatBenchmark(spy3m)}
           </div>
           <div class="metric">
-            <span class="label">Sharpe 3M</span>
-            ${formatSharpe(stratSharpe3m)}
-            ${formatSharpeBenchmark(spySharpe3m)}
+            <span class="label">Sharpe Since Start</span>
+            ${formatSharpe(stratSharpeInception)}
+            ${formatSharpeBenchmark(spySharpeInception)}
           </div>
         </div>
       </div>
@@ -226,8 +214,8 @@ export function compareCards(a, b, sortKey) {
     comparison = descendingNullable(a.ret12m, b.ret12m);
   } else if (sortKey === "sharpe") {
     comparison = descendingNullable(
-      a.stratSharpe12m ?? a.stratSharpe3m,
-      b.stratSharpe12m ?? b.stratSharpe3m,
+      a.stratSharpe12m ?? a.stratSharpeInception,
+      b.stratSharpe12m ?? b.stratSharpeInception,
     );
   } else if (sortKey === "size") {
     comparison = descendingNullable(
@@ -244,15 +232,11 @@ function renderCards(sortKey) {
   const sorted = [..._cardData].sort((a, b) => compareCards(a, b, sortKey));
 
   const primaryGrid = document.getElementById("strategy-grid");
-  const smaGrid = document.getElementById("sma-strategy-grid");
   const industryGrid = document.getElementById("industry-strategy-grid");
   primaryGrid.innerHTML = "";
-  smaGrid.innerHTML = "";
   industryGrid.innerHTML = "";
   sorted.forEach(item => {
-    const grid = isIndustryRank(item.sid)
-      ? industryGrid
-      : isSma10(item.sid) ? smaGrid : primaryGrid;
+    const grid = isIndustryRank(item.sid) ? industryGrid : primaryGrid;
     grid.appendChild(buildCard(item));
   });
   const industrySection = document.getElementById("industry-strategy-section");
@@ -287,9 +271,9 @@ export function renderStrategies(
         spy12m:        spySummary?.value ?? null,
         spy3m:         getLatest3mReturn(series, "spy_rolling_3m"),
         stratSharpe12m: sharpeMap[sid]?.["12m"] ?? null,
-        stratSharpe3m:  sharpeMap[sid]?.["3m"]  ?? null,
+        stratSharpeInception: sharpeMap[sid]?.inception ?? null,
         spySharpe12m:   sharpeMap["spy"]?.["12m"] ?? null,
-        spySharpe3m:    sharpeMap["spy"]?.["3m"]  ?? null,
+        spySharpeInception:   sharpeMap[sid]?.spy_inception ?? null,
         openCount:  openPositions.length,
         closedCount: stratPositions.filter(p => p.status === "closed").length,
         pendingExitCount: pendingExitPositions.length,

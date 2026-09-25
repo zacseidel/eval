@@ -91,7 +91,6 @@ main { padding: 32px 32px; max-width: 1200px; }
 
 /* === Strategy Grid === */
 #strategy-grid,
-#sma-strategy-grid,
 #industry-strategy-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));

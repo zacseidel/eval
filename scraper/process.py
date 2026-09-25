@@ -31,11 +31,10 @@ MUNGER_EMA_SPAN = 21
 MUNGER_EMA_LOOKBACK_DAYS = 120
 SMA_EXIT_WINDOW = 10
 SMA_EXIT_LOOKBACK_DAYS = 30
-SMA10_SUFFIX = "_sma10"
 HOLD_EXIT_SESSIONS = 21
 KELLY_MIN_CLOSED_TRADES = 20
 RISK_FREE_RATE_ANNUAL = 0.05
-PROCESSOR_VERSION = 10
+PROCESSOR_VERSION = 13
 
 # Every selection below is made only from ranks or membership in a scraped
 # report. The legacy IDs are retained so existing links keep working.
@@ -52,10 +51,16 @@ BASE_STRATEGIES = {
     # Each listing opens its own 21-session lot, so consecutive reports stack
     # overlapping lots of the same ticker and the portfolio weights each lot.
     "megalaggards2":    {"section": "megalaggards", "ranks": range(1, 3), "exit_model": "hold21"},
+    # Rank Momentum lists the ten names with the best average 3/6/12-month
+    # return rank. A name that leaves its slot sells the session after the
+    # report that dropped it.
+    "rankmom500_top5":  {"section": "rankmom500", "ranks": range(1, 6),  "exit_model": "rank_next_session"},
+    "rankmom500_next5": {"section": "rankmom500", "ranks": range(6, 11), "exit_model": "rank_next_session"},
+    "rankmom400_top5":  {"section": "rankmom400", "ranks": range(1, 6),  "exit_model": "rank_next_session"},
+    "rankmom400_next5": {"section": "rankmom400", "ranks": range(6, 11), "exit_model": "rank_next_session"},
 }
-# Industry rank-change cards are their own entry rules, not SMA variants of a
-# rank-membership strategy. Positive changes exit below the 10-day SMA.
-# Negative changes exit above it.
+# Industry rank-change cards buy from the report's largest stock rank changes.
+# Positive changes exit below the 10-day SMA. Negative changes exit above it.
 INDUSTRY_RANK_STRATEGIES = {
     "industry_up5": {
         "section": "industry_rank_up",
@@ -71,15 +76,6 @@ INDUSTRY_RANK_STRATEGIES = {
     },
 }
 STRATEGIES = dict(BASE_STRATEGIES)
-STRATEGIES.update({
-    f"{strategy_id}{SMA10_SUFFIX}": {
-        **config,
-        "variant_of": strategy_id,
-        "exit_model": "sma10",
-        "exit_direction": "below",
-    }
-    for strategy_id, config in BASE_STRATEGIES.items()
-})
 STRATEGIES.update(INDUSTRY_RANK_STRATEGIES)
 
 
@@ -363,6 +359,63 @@ def _build_price_exit_ticker_positions(strategy_id: str, ticker: str,
     return positions
 
 
+def _build_next_session_rank_positions(reports: list[dict], strategy_id: str,
+                                       as_of: str) -> list[dict]:
+    """Enter on report membership; sell the session after the report that drops it.
+
+    The drop report is the exit signal, and the sale executes on the first
+    session strictly after that report date. If a later report relists the
+    ticker before that session trades, the sale is cancelled and the trade
+    continues.
+    """
+    positions = []
+    open_positions: dict[str, dict] = {}
+    # ticker -> (drop report date, exit session or None, exit price or None)
+    pending_exits: dict[str, tuple] = {}
+
+    def settle(before_date: Optional[str]) -> None:
+        for ticker in sorted(pending_exits):
+            signal_date, exit_date, exit_price = pending_exits[ticker]
+            if exit_date is None or (before_date is not None and exit_date >= before_date):
+                continue
+            positions.append(_close_position(
+                open_positions.pop(ticker), signal_date, exit_date, exit_price
+            ))
+            del pending_exits[ticker]
+
+    for report in _strategy_reports(reports, strategy_id):
+        report_date = report["date"]
+        # Sales scheduled before this report's session have already traded.
+        settle(report_date)
+        selected = {entry["ticker"] for entry in _selected_entries(report, strategy_id)}
+
+        for ticker in sorted(selected & set(pending_exits)):
+            del pending_exits[ticker]
+
+        next_day = (_parse_date(report_date) + timedelta(days=1)).isoformat()
+        for ticker in sorted(set(open_positions) - selected - set(pending_exits)):
+            exit_date, exit_price = get_execution_price(ticker, next_day, as_of=as_of)
+            if exit_date is not None and exit_date > as_of:
+                exit_date, exit_price = None, None
+            pending_exits[ticker] = (
+                report_date, exit_date, float(exit_price) if exit_price else None
+            )
+
+        for ticker in sorted(selected - set(open_positions)):
+            entry_date, entry_price = _execution_price(ticker, report_date, as_of)
+            open_positions[ticker] = _new_position(
+                strategy_id, ticker, report_date, entry_date, entry_price
+            )
+
+    settle(None)
+    for ticker in sorted(open_positions):
+        position = _mark_open_position(open_positions[ticker], as_of)
+        if ticker in pending_exits:
+            position["exit_signal_date"] = pending_exits[ticker][0]
+        positions.append(position)
+    return positions
+
+
 def _build_ema21_ticker_positions(strategy_id: str, ticker: str,
                                   signal_dates: list[str], bars: list[dict],
                                   as_of: str) -> list[dict]:
@@ -487,6 +540,8 @@ def build_positions(reports: list[dict], as_of: str) -> list[dict]:
             positions.extend(_build_ema21_positions(reports, strategy_id, as_of))
         elif exit_model == "hold21":
             positions.extend(_build_hold_positions(reports, strategy_id, as_of))
+        elif exit_model == "rank_next_session":
+            positions.extend(_build_next_session_rank_positions(reports, strategy_id, as_of))
         else:
             positions.extend(_build_rank_positions(reports, strategy_id, as_of))
     positions.sort(key=lambda p: (p["strategy"], p["entry_date"], p["ticker"]))
@@ -527,6 +582,11 @@ def validate_positions(positions: list[dict], as_of: str,
         if position["status"] == "closed":
             if position["exit_price"] is None or position["exit_price"] <= 0:
                 raise ValueError(f"Invalid exit price: {trade_id}")
+            if exit_model == "rank_next_session" and not (
+                position["exit_signal_date"]
+                and position["exit_signal_date"] < position["exit_date"]
+            ):
+                raise ValueError(f"Rank exit is not after its drop report: {trade_id}")
             if _parse_date(position["exit_date"]).weekday() >= 5:
                 raise ValueError(f"Weekend exit date: {trade_id} {position['exit_date']}")
             if position["exit_date"] < position["entry_date"]:
@@ -867,8 +927,9 @@ def build_strategy_returns(reports: list[dict], positions: list[dict],
     return result
 
 
-def _sharpe_from_series(series: list[dict], cutoff: str, min_returns: int) -> Optional[float]:
-    values = [point["value"] for point in series if point["date"] >= cutoff]
+def _sharpe_from_series(series: list[dict], cutoff: str, min_returns: int,
+                        field: str = "value") -> Optional[float]:
+    values = [point[field] for point in series if point["date"] >= cutoff]
     returns = [
         math.log(values[index] / values[index - 1])
         for index in range(1, len(values))
@@ -887,11 +948,13 @@ def _sharpe_from_series(series: list[dict], cutoff: str, min_returns: int) -> Op
 def compute_sharpe(strategy_returns: dict, as_of: str) -> dict:
     as_of_date = _parse_date(as_of)
     cutoff_12m = (as_of_date - timedelta(days=365)).isoformat()
-    cutoff_3m = (as_of_date - timedelta(days=91)).isoformat()
+    # Full-period Sharpe covers each strategy's own series, and its SPY
+    # benchmark uses the SPY marks over that same window.
     return {
         strategy_id: {
             "12m": _sharpe_from_series(series, cutoff_12m, 200),
-            "3m": _sharpe_from_series(series, cutoff_3m, 40),
+            "inception": _sharpe_from_series(series, "", 40),
+            "spy_inception": _sharpe_from_series(series, "", 40, "spy_value"),
         }
         for strategy_id, series in strategy_returns.items()
         if isinstance(series, list)
@@ -975,15 +1038,16 @@ def _source_manifest(reports: list[dict], as_of: str,
             "ema_lookback_calendar_days": MUNGER_EMA_LOOKBACK_DAYS,
             "by_strategy": ema21_strategy_audit,
         },
-        "sma10_variants": {
-            "strategy_suffix": SMA10_SUFFIX,
-            "entry": "same scraped report membership as the corresponding base strategy while flat",
-            "report_disappearance_exit": False,
-            "exit_signal": "daily split-adjusted close below trailing close-based 10-session SMA",
-            "exit_execution": "next available trading session after the signal",
-            "sma_window": SMA_EXIT_WINDOW,
-            "lookback_calendar_days": SMA_EXIT_LOOKBACK_DAYS,
-            "reentry": "a later qualifying report while flat opens a new trade",
+        "rank_next_session_strategies": {
+            "strategy_ids": [
+                strategy_id for strategy_id, config in BASE_STRATEGIES.items()
+                if config.get("exit_model") == "rank_next_session"
+            ],
+            "source": "S&P 500 and S&P 400 Rank Momentum sections: ten names with the best average 3-, 6-, and 12-month return rank",
+            "selection": "top 5 = ranks 1-5; next 5 = ranks 6-10",
+            "entry": "qualifying report membership while flat, first session on or after the report",
+            "exit_signal": "first later report that no longer lists the ticker in the selected ranks",
+            "exit_execution": "first session strictly after the exit-signal report; a relisting before that session cancels the sale",
         },
         "hold21_strategies": {
             "strategy_ids": [
@@ -1016,7 +1080,6 @@ def _source_manifest(reports: list[dict], as_of: str,
         },
         "strategy_families": {
             "base": list(BASE_STRATEGIES),
-            "sma10": [f"{strategy_id}{SMA10_SUFFIX}" for strategy_id in BASE_STRATEGIES],
             "industry_rank": list(INDUSTRY_RANK_STRATEGIES),
         },
         "kelly": {

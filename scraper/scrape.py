@@ -11,7 +11,7 @@ BASE_URL = "https://zacseidel.github.io/momentum"
 INDEX_URL = f"{BASE_URL}/"
 # Bump when a momentum-report section is added so cached snapshots are
 # re-parsed from the same source URL.
-SNAPSHOT_PARSER_VERSION = 2
+SNAPSHOT_PARSER_VERSION = 3
 SCRAPED_DIR = Path(__file__).parent.parent / "data" / "scraped"
 SECTION_IDS = {
     "munger":  "summary-munger",
@@ -21,6 +21,8 @@ SECTION_IDS = {
     "megalaggards": "summary-megalaggards",
     "sp500":   "summary-sp500",
     "sp400":   "summary-sp400",
+    "rankmom500": "summary-rankmom500",
+    "rankmom400": "summary-rankmom400",
 }
 
 SECTION_TITLE_PREFIXES = {
@@ -177,6 +179,19 @@ def parse_laggards_section(h2_tag, report_date):
     return rows
 
 
+def parse_rank_momentum_section(h2_tag, report_date):
+    """
+    Parse an S&P 500 or S&P 400 Rank Momentum section, listed best average rank first.
+    Span text format:
+      ($172.94 | Avg Rank 1.7 | 3M 170.4% / 6M 236.6% / 12M 585.2%, +17.9% 1W) - 🔥 since 2026-08-21
+    """
+    rows = parse_laggards_section(h2_tag, report_date)
+    for row, (_ticker, text) in zip(rows, _parse_entry_divs(h2_tag, report_date)):
+        ret1w_m = re.search(r"([+-][0-9.]+)%\s*1W", text)
+        row["return_1w"] = float(ret1w_m.group(1)) if ret1w_m else None
+    return rows
+
+
 _TICKER_AT_END = re.compile(r"\(([A-Z][A-Z0-9.\-]*)\)\s*$")
 
 
@@ -324,6 +339,8 @@ def parse_report(date, soup, source_url=None):
         "munger": [],
         "munger400l": [],
         "munger400r": [],
+        "rankmom500": [],
+        "rankmom400": [],
     }
 
     for section, h2_id in SECTION_IDS.items():
@@ -344,6 +361,8 @@ def parse_report(date, soup, source_url=None):
             result[section] = parse_munger_section(h2, date)
         elif section == "megalaggards":
             result[section] = parse_laggards_section(h2, date)
+        elif section in {"rankmom500", "rankmom400"}:
+            result[section] = parse_rank_momentum_section(h2, date)
         else:
             result[section] = parse_leaders_section(h2, date)
 
@@ -370,6 +389,8 @@ def _empty_report(report_date):
         "munger": [],
         "munger400l": [],
         "munger400r": [],
+        "rankmom500": [],
+        "rankmom400": [],
         "universe_updates": [],
     }
 

@@ -46,6 +46,10 @@ GitHub Actions runs the pipeline every **Tuesday and Friday at 7 PM MDT**, after
 | `munger400l` | Buy a qualifying Munger400L large-midcap report signal while flat; exit after a daily close below its 21-day EMA |
 | `munger400r` | Buy a qualifying Munger400R former-return-leader report signal while flat; exit after a daily close below its 21-day EMA |
 | `megalaggards2` | Buy the two worst names in the Mega Cap Laggards list as a new lot on every report; sell each lot 21 trading sessions after entry |
+| `rankmom500_top5` | Ranks 1–5 in the S&P 500 Rank Momentum list (best average 3/6/12-month return rank); sell the session after a report drops the name from ranks 1–5 |
+| `rankmom500_next5` | Ranks 6–10 in the S&P 500 Rank Momentum list; sell the session after a report drops the name from ranks 6–10 |
+| `rankmom400_top5` | Ranks 1–5 in the S&P 400 Rank Momentum list; sell the session after a report drops the name from ranks 1–5 |
+| `rankmom400_next5` | Ranks 6–10 in the S&P 400 Rank Momentum list; sell the session after a report drops the name from ranks 6–10 |
 | `industry_up5` | Buy a top-5 positive stock rank change from the industry report while flat; exit after a daily close below its 10-day SMA |
 | `industry_down5` | Buy a top-5 negative stock rank change from the industry report while flat; exit after a daily close above its 10-day SMA |
 
@@ -59,13 +63,15 @@ The Mega Cap Laggards section ranks the 10 largest S&P 500 stocks by 3-, 6-, and
 
 Overlapping lots of one ticker share most of their holding period, so their outcomes are correlated. The card's half-Kelly uses the closed lots, and its note reports `independent_run_count`, which merges overlapping lots of a ticker into continuous holding runs. Treat the Kelly estimate with caution while that count is small.
 
-### Parallel 10-day SMA evaluations
+### Rank Momentum
 
-Every base strategy also has a parallel evaluation whose ID adds `_sma10` (for example, `sp500_top5_sma10`, `munger_sma10`, `munger400l_sma10`, and `munger400r_sma10`). These variants use exactly the same scraped-report selections as their corresponding base strategies. `megalaggards2_sma10` does not stack lots: a repeated listing while holding the ticker is ignored, as in the other SMA10 variants. A ticker is bought on the first available session after a qualifying report signal while the strategy is flat. Disappearing from a later report does not close an SMA10 trade.
+The S&P 500 and S&P 400 Rank Momentum sections rank each index by 3-, 6-, and 12-month return and list the ten names with the best average rank, best first. Each index has a Top 5 card (ranks 1–5) and a Next 5 card (ranks 6–10). A name is bought on the first session on or after a report that lists it in the card's ranks while that card is flat. The first later report that no longer lists it there is the exit signal, and the sale executes on the first session strictly after that report date. If a report relists the name before that session trades (reports on consecutive days), the sale is cancelled and the trade continues. A sale whose session has not traded yet is shown as a pending exit.
 
-After entry, each completed adjusted close is compared with the arithmetic mean of that session and the prior nine trading-session closes. A close below that trailing 10-session SMA signals a mandatory sale on the next available trading session. If a new report recommendation is available on that exit session, the sale executes first and the recommendation opens a new trade at that session's execution price. This keeps both the technical exit and the scraped buy signal auditable without using future data. The calculation follows [NIST's definition of a simple moving average](https://www.itl.nist.gov/div898/handbook/pmc/section4/pmc421.htm).
+### Card layout
 
-The overview displays the ten base-strategy cards under **Primary exit rules** and the ten `_sma10` cards under **10-day SMA exit variants**. Each Munger400 model therefore has two cards. Every card has its own returns, Sharpe ratios, open/closed counts, pending exits, and half-Kelly estimate.
+The overview shows the fourteen strategy cards under **Strategies**. Every card has its own returns, Sharpe ratios, open/closed counts, pending exits, and half-Kelly estimate.
+
+The SMA10 and EMA21 exit-rule variants of these strategies were evaluated and removed in 2026-09: neither beat the primary exit of any strategy with a positive primary return.
 
 ### Industry rank-change evaluations
 
@@ -157,7 +163,7 @@ npm test
 
 - **Rate limit:** 5 requests/minute on the free tier — the client enforces a 12.5-second delay between calls.
 - **Disk cache:** Every bar range is stored in `data/price_cache/{TICKER}.json`. The cache tracks `_fetched_from` and `_fetched_through` metadata. Routine updates use one grouped daily aggregate request per missing weekday plus one split-reference request. New signal tickers are seeded from those same grouped sessions. Per-ticker requests are reserved for split-adjusted history refreshes and for tickers that never appear in the grouped responses.
-- **Execution price:** Report entries and rank exits use the first session on or after the report signal. Munger EMA and SMA10 exits execute on the first session after the triggering close. VWAP is used when available, with midpoint fallback.
+- **Execution price:** Report entries and rank exits use the first session on or after the report signal. EMA21 and SMA10 exits execute on the first session after the triggering close. VWAP is used when available, with midpoint fallback.
 - **EMA history:** A close-based 21-day EMA is published only after 21 cached sessions. Existing Munger caches keep their pre-report history; new names warm up from grouped daily sessions going forward.
 - **SMA history:** A trailing 10-session SMA is published only after 10 cached sessions. The same grouped daily path supplies those closes.
 - **Bar dates:** Polygon timestamps are converted in UTC. Cache schema versions prevent legacy timezone-shifted bars from mixing with corrected data.
@@ -183,7 +189,7 @@ The workflow (`.github/workflows/update-data.yml`) runs on a schedule and can al
 
 No build step. The frontend is three ES modules loaded directly by `index.html`:
 
-- **Strategies tab** — one card per available strategy showing 12M price return when a full year exists (otherwise since inception), rolling 3M price return, open/closed position counts, current holdings, closed-trade win/loss statistics, and the historical half-Kelly risk budget. Cards can be sorted by return, available Sharpe ratio, or half-Kelly size. Munger, Munger400L, and Munger400R separately show latest report buy signals and currently open positions. Mega Laggards 2 · Hold 21 shows each held ticker with its open lot count. A strategy first appears when its source section first appears in a report.
+- **Strategies tab** — one card per available strategy showing 12M price return when a full year exists (otherwise since inception), rolling 3M price return, annualized Sharpe ratios (12-month once 200 daily returns exist, and full period since the strategy's first session once 40 exist; each compared with SPY over the same window), open/closed position counts, current holdings, closed-trade win/loss statistics, and the historical half-Kelly risk budget. Cards can be sorted by return, available Sharpe ratio, or half-Kelly size. Munger, Munger400L, and Munger400R separately show latest report buy signals and currently open positions. Mega Laggards 2 · Hold 21 shows each held ticker with its open lot count. A strategy first appears when its source section first appears in a report.
 - **Positions tab** — sortable, filterable table of all trades with entry/exit dates, prices, Munger EMA trigger values, hold duration, and return %.
 - **Charts tab** — Chart.js line charts of portfolio NAV on its original 100 baseline for all-history views (range-relative views rebase to 100) and rolling 3-month price return, both overlaid with an SPY benchmark.
 

@@ -30,6 +30,12 @@ REPORT_HTML = """
 <p>The 10 largest S&amp;P 500 stocks ranked by 3-, 6-, and 12-month return.</p>
 <div><a>LAG</a><span>($375.30 | 3M -6.3% / 6M 2.0% / 12M -11.9% | Avg Rank 9.3 of 10) - 🔥 since 2026-08-14</span></div>
 <div><a>SLO</a><span>($120.00 | 3M 1.5% / 6M -4.0% / 12M 3.0% | Avg Rank 8.7 of 10) - ✨ New Entrant</span></div>
+<h2 id="summary-rankmom500">S&amp;P 500 Rank Momentum</h2>
+<p>S&amp;P 500 stocks ranked by 3-, 6-, and 12-month return; these are the ten with the best average rank.</p>
+<div><a>MOM</a><span>($172.94 | Avg Rank 1.7 | 3M 170.4% / 6M 236.6% / 12M 585.2%, +17.9% 1W) - 🔥 since 2026-08-21</span></div>
+<div><a>NEW</a><span>($238.82 | Avg Rank 15.3 | 3M 47.5% / 6M 92.1% / 12M 132.4%, -1.5% 1W) - ✨ New Entrant</span></div>
+<h2 id="summary-rankmom400">S&amp;P 400 Rank Momentum</h2>
+<div><a>MID</a><span>($191.33 | Avg Rank 7.3 | 3M 62.4% / 6M 144.0% / 12M 104.9%, +2.6% 1W) - 🔥 since 2026-08-04</span></div>
 <h2 id="summary-sp500">SP500 Leaders</h2>
 <div><a>CCC</a><span>($300.00 | 20.0% 12M, +1.0% 1W) - New Entrant</span></div>
 <h2 id="summary-sp400">SP400 Leaders</h2>
@@ -73,6 +79,27 @@ class MomentumSourceTests(unittest.TestCase):
         self.assertTrue(second["new_entrant"])
         # The Leaders parser must not swallow the laggards rows.
         self.assertEqual(["BBB"], [row["ticker"] for row in parsed["megacap"]])
+
+    def test_rank_momentum_sections_parse_in_published_best_first_order(self):
+        parsed = scrape.parse_report("2026-09-22", soup(REPORT_HTML))
+
+        self.assertIn("rankmom500", parsed["sections_present"])
+        self.assertIn("rankmom400", parsed["sections_present"])
+        first, second = parsed["rankmom500"]
+        self.assertEqual(("MOM", 1), (first["ticker"], first["rank"]))
+        self.assertEqual(1.7, first["avg_rank"])
+        self.assertEqual(170.4, first["return_3m"])
+        self.assertEqual(236.6, first["return_6m"])
+        self.assertEqual(585.2, first["return_12m"])
+        self.assertEqual(17.9, first["return_1w"])
+        self.assertEqual("2026-08-21", first["entry_date"])
+        self.assertEqual(("NEW", 2), (second["ticker"], second["rank"]))
+        self.assertEqual(-1.5, second["return_1w"])
+        self.assertTrue(second["new_entrant"])
+        self.assertEqual(["MID"], [row["ticker"] for row in parsed["rankmom400"]])
+        # Neighbouring parsers must not swallow the Rank Momentum rows.
+        self.assertEqual(["SLO"], [row["ticker"] for row in parsed["megalaggards"]][1:])
+        self.assertEqual(["CCC"], [row["ticker"] for row in parsed["sp500"]])
 
     def test_report_without_laggards_is_marked_absent(self):
         parsed = scrape.parse_report(
