@@ -2,7 +2,7 @@
   "processor_version": 13,
   "price_cache_schema_version": 3,
   "as_of": "2026-09-25",
-  "latest_report_date": "2026-09-22",
+  "latest_report_date": "2026-09-25",
   "market_data_through": "2026-09-24",
   "entry_signal_source": "scraped_reports_only",
   "rank_exit_signal_source": "scraped_report_membership_only",
@@ -401,8 +401,8 @@
       "kelly_status": "insufficient_sample"
     }
   },
-  "report_count": 79,
-  "signal_snapshot_count": 4888,
+  "report_count": 80,
+  "signal_snapshot_count": 4985,
   "position_count": 1652,
   "positions_by_strategy": {
     "sp500_top5": {
@@ -865,6 +865,11 @@
       "date": "2026-09-22",
       "path": "data/scraped/2026-09-22.json",
       "sha256": "e2af69b5d2f6e9009ab858b5beea8a45720b58a0a7ca1e575eeae907f8e3c51c"
+    },
+    {
+      "date": "2026-09-25",
+      "path": "data/scraped/2026-09-25.json",
+      "sha256": "4c9ca89da49b65c6af88b306b1e221bbc222401acf60cc5df65317b312dfe13b"
     }
   ]
 }
